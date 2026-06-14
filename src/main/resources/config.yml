@@ -1,0 +1,172 @@
+# ItemMagnet configuration
+# Docs: https://github.com/RMHavelaar101/item-magent/blob/main/docs/configuration.md
+
+# Optional preset to merge on top of defaults (copy presets/theryn.yml values here instead)
+preset: none
+
+settings:
+  scan-interval-ticks: 2
+  max-items-per-tick: 10
+  pull-step-blocks: 0.4
+  pickup-distance: 1.5
+  sneak-to-disable: true
+  fuel-radius: 3
+  show-charge-bar: true
+  particle-type: REVERSE_PORTAL
+  deny-message-cooldown-ticks: 40
+
+metrics:
+  bstats-enabled: true
+  bstats-plugin-id: 0
+  update-check: ON_STARTUP
+
+anti-afk:
+  enabled: false
+  required-blocks-moved: 2
+  window-seconds: 60
+  disable-auto-fuel-when-afk: true
+
+height:
+  use-y-range: false
+  min-y: -64
+  max-y: 320
+  underground:
+    enabled: false
+    threshold-y: 50
+    radius-modifier: -2
+    drain-multiplier: 1.25
+  surface:
+    radius-modifier: 0
+
+fuel:
+  REDSTONE:
+    charge-per-item: 50
+    radius-bonus: 0
+    boost-level-add: 0
+    boost-duration-seconds: 0
+  REDSTONE_BLOCK:
+    charge-per-item: 450
+    radius-bonus: 3
+    boost-level-add: 1
+    boost-duration-seconds: 120
+
+integrations:
+  lands:
+    enabled: false
+    check-at: BOTH
+    wilderness: ALLOW
+    wilderness-permission: itemmagnet.wilderness
+    claimed-land: RESPECT_FLAGS
+    require-player-in-allowed-land: false
+  worldguard:
+    enabled: false
+    check-at: BOTH
+    respect-item-pickup-flag: true
+    region-mode: NONE
+    regions: []
+    worlds: {}
+
+tiers:
+  fragment:
+    material: COMPASS
+    display-name: "&6Fragment Resonator"
+    lore:
+      - "&7Archive salvage tool"
+      - "&7Hold in main hand to pull items"
+      - ""
+      - "&eCharge: &f{charge}/{max_charge}"
+      - "&eBoost: &f{boost}"
+    enchant-glint: true
+    radius: 6
+    max-charge: 1000
+    base-drain-per-second: 1
+    extra-drain-per-item: 2
+    boost-drain-multiplier: 1.15
+    min-radius: 1
+    max-radius: 16
+    blacklist: []
+    unlock:
+      type: NONE
+    recipe:
+      enabled: true
+      hidden: true
+      shape:
+        - "EAE"
+        - "CLC"
+        - "RDR"
+      ingredients:
+        E: ECHO_SHARD
+        A: AMETHYST_SHARD
+        C: COMPASS
+        L: LODESTONE
+        R: REDSTONE_BLOCK
+        D: DIAMOND
+
+  survey:
+    material: RECOVERY_COMPASS
+    display-name: "&bSurvey Resonator"
+    lore:
+      - "&7Extended-range salvage tool"
+      - ""
+      - "&eCharge: &f{charge}/{max_charge}"
+      - "&eBoost: &f{boost}"
+    enchant-glint: true
+    radius: 9
+    max-charge: 1500
+    base-drain-per-second: 1
+    extra-drain-per-item: 2
+    boost-drain-multiplier: 1.1
+    min-radius: 1
+    max-radius: 20
+    blacklist: []
+    unlock:
+      type: PERMISSION
+      permission: itemmagnet.craft.survey
+    recipe:
+      enabled: true
+      hidden: true
+      shape:
+        - "ESE"
+        - "RCR"
+        - "ENE"
+      ingredients:
+        E: ECHO_SHARD
+        S: RECOVERY_COMPASS
+        R: REDSTONE_BLOCK
+        C: COMPASS
+        N: NETHERITE_SCRAP
+
+  anchor:
+    material: CLOCK
+    display-name: "&dAnchor Resonator"
+    lore:
+      - "&7Maximum-range salvage tool"
+      - ""
+      - "&eCharge: &f{charge}/{max_charge}"
+      - "&eBoost: &f{boost}"
+    enchant-glint: true
+    radius: 12
+    max-charge: 2000
+    base-drain-per-second: 1
+    extra-drain-per-item: 1
+    boost-drain-multiplier: 1.0
+    min-radius: 1
+    max-radius: 24
+    blacklist: []
+    unlock:
+      type: PERMISSION
+      permission: itemmagnet.craft.anchor
+    recipe:
+      enabled: true
+      hidden: true
+      shape:
+        - "BEB"
+        - "DCD"
+        - "RGR"
+      ingredients:
+        B: BEACON
+        E: ENDER_EYE
+        D: DRAGON_BREATH
+        C: CLOCK
+        R: REDSTONE_BLOCK
+        G: GOLD_BLOCK

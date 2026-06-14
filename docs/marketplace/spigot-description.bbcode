@@ -1,0 +1,81 @@
+[SIZE=5][B]ItemMagnet[/B] — Claim-Aware Tiered Item Magnets with Redstone Fuel[/SIZE]
+
+[CENTER][I]Paper 26.1+ · Java 25 · Lands & WorldGuard optional[/I][/CENTER]
+
+[HR]
+
+[B]Compatibility[/B]
+[LIST]
+[*]Paper 26.1.x (tested on 26.1.2 build 69)
+[*]Java 25 required
+[*]Optional: Lands, WorldGuard, CMI
+[/LIST]
+
+[B]Support[/B]: [URL='https://github.com/RMHavelaar101/item-magent/issues']GitHub Issues[/URL]
+
+[HR]
+
+[SIZE=4][B]About[/B][/SIZE]
+
+ItemMagnet adds craftable tiered magnet tools that pull nearby dropped items toward the player with [B]visible, line-of-sight physics[/B] — items slide around corners and stop at walls instead of teleporting through blocks.
+
+Fuel your resonator with [B]redstone dust[/B] (shift+right-click with off-hand) or let it [B]auto-absorb[/B] redstone from the ground. [B]Redstone blocks[/B] provide a power surge — extra charge and temporary radius boost.
+
+Built for survival servers that need [B]Lands[/B] and [B]WorldGuard[/B] respect out of the box, with fully configurable tiers, recipes, unlock gates, and messages.
+
+[SIZE=4][B]Features[/B][/SIZE]
+[LIST]
+[*]Three tiers (configurable materials, names, radius, drain)
+[*]Line-of-sight pull physics with particles
+[*]Redstone fuel + power surge system
+[*]Lands: wilderness / owner / member / flag modes
+[*]WorldGuard: region whitelist/blacklist + item-pickup flag
+[*]Unlock gates: permission, advancement, CMI stat/rank, command
+[*]Anti-AFK movement check (optional)
+[*]Underground vs surface radius modifiers
+[/LIST]
+
+[HR]
+
+[SIZE=4][B]Commands[/B][/SIZE]
+
+[TABLE]
+[TR][TH]Command[/TH][TH]Permission[/TH][TH]Description[/TH][/TR]
+[TR][TD]/itemmagnet reload[/TD][TD]itemmagnet.reload[/TD][TD]Reload config[/TD][/TR]
+[TR][TD]/itemmagnet version[/TD][TD]itemmagnet.admin[/TD][TD]Version and hook status[/TD][/TR]
+[TR][TD]/itemmagnet give <player> <tier> [charge][/TD][TD]itemmagnet.give[/TD][TD]Give a magnet[/TD][/TR]
+[TR][TD]/itemmagnet unlock <player> <tier>[/TD][TD]itemmagnet.unlock[/TD][TD]Unlock recipe[/TD][/TR]
+[TR][TD]/itemmagnet debug[/TD][TD]itemmagnet.debug[/TD][TD]Debug held magnet[/TD][/TR]
+[/TABLE]
+
+[SIZE=4][B]Permissions[/B][/SIZE]
+
+[LIST]
+[*][B]itemmagnet.use[/B] (default: true) — use magnets
+[*][B]itemmagnet.wilderness[/B] (default: op) — use in Lands wilderness
+[*][B]itemmagnet.bypass.lands[/B] — skip Lands checks
+[*][B]itemmagnet.bypass.regions[/B] — skip WG region lists
+[*][B]itemmagnet.admin[/B] (default: op) — admin commands
+[/LIST]
+
+[HR]
+
+[SIZE=4][B]Configuration[/B][/SIZE]
+
+On first run, edit [CODE]plugins/ItemMagnet/config.yml[/CODE].
+
+Key sections:
+[LIST]
+[*][B]tiers[/B] — materials, names, radius, recipes, unlocks
+[*][B]fuel[/B] — redstone dust vs block charge values
+[*][B]integrations.lands[/B] — claim protection
+[*][B]integrations.worldguard[/B] — region rules
+[*][B]anti-afk[/B] — movement requirement
+[*][B]height[/B] — underground radius modifier
+[/LIST]
+
+Full reference: [URL='https://github.com/RMHavelaar101/item-magent/blob/main/docs/configuration.md']Configuration docs[/URL]
+
+[HR]
+
+[I]Report bugs on GitHub. Include Paper version, config snippet, and steps to reproduce.[/I]

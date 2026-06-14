@@ -1,0 +1,52 @@
+# Theryn server preset — copy sections into config.yml or set preset: theryn (if loader supports merge)
+# This file is reference-only unless copied into the live config.
+
+integrations:
+  lands:
+    enabled: true
+    check-at: BOTH
+    wilderness: DENY
+    wilderness-permission: itemmagnet.wilderness
+    claimed-land: MEMBER_ONLY
+    require-player-in-allowed-land: true
+  worldguard:
+    enabled: true
+    check-at: BOTH
+    respect-item-pickup-flag: true
+    region-mode: BLACKLIST
+    regions:
+      - archive_landing
+      - spawn
+
+anti-afk:
+  enabled: true
+  required-blocks-moved: 2
+  window-seconds: 60
+  disable-auto-fuel-when-afk: true
+
+height:
+  use-y-range: false
+  underground:
+    enabled: true
+    threshold-y: 50
+    radius-modifier: -2
+    drain-multiplier: 1.25
+
+tiers:
+  fragment:
+    display-name: "&6Fragment Resonator"
+    unlock:
+      type: CMI_STAT
+      stat: blocksmined
+      sub: DEEPSLATE
+      amount: 5000
+  survey:
+    unlock:
+      type: ADVANCEMENT
+      advancement: itemmagnet:unlock_survey
+  anchor:
+    unlock:
+      type: COMMAND
+
+# CMI event command example:
+# - "itemmagnet unlock [playerName] fragment"

@@ -1,0 +1,36 @@
+prefix: "&8[&cItemMagnet&8]&r "
+
+general:
+  no-permission: "{prefix}&cYou do not have permission."
+  reload-success: "{prefix}&aConfiguration reloaded."
+  player-only: "{prefix}&cOnly players can use this command."
+
+magnet:
+  depleted: "{prefix}&cYour resonator is out of charge."
+  denied-location: "{prefix}&cYou cannot pull items here."
+  afk-disabled: "{prefix}&7Magnet paused — move around to reactivate."
+  y-disabled: "{prefix}&cResonator cannot be used at this height."
+  fuel-absorbed: "{prefix}&aAbsorbed fuel. Charge: &f{charge}&a/&f{max_charge}"
+  fuel-transferred: "{prefix}&aTransferred fuel. Charge: &f{charge}&a/&f{max_charge}"
+  fuel-full: "{prefix}&eResonator is fully charged."
+  boost-active: "{prefix}&dPower surge! Radius boosted for &f{seconds}&ds."
+
+craft:
+  locked: "{prefix}&cYou have not unlocked this recipe yet."
+  unlocked: "{prefix}&aYou unlocked the &f{tier}&a resonator recipe."
+
+command:
+  usage: "{prefix}&7Usage: /itemmagnet <reload|version|give|unlock|debug|help>"
+  unknown-tier: "{prefix}&cUnknown tier: &f{tier}"
+  player-not-found: "{prefix}&cPlayer not found: &f{player}"
+  give-success: "{prefix}&aGave &f{tier}&a resonator to &f{player}"
+  unlock-success: "{prefix}&aUnlocked &f{tier}&a recipe for &f{player}"
+  version: "{prefix}&7ItemMagnet &fv{version}&7 | Paper &f{paper}&7 | Lands: &f{lands}&7 | WG: &f{worldguard}&7 | CMI: &f{cmi}"
+  update-available: "{prefix}&eA new version is available: &f{version}&e — &f{url}"
+  debug-header: "{prefix}&7--- Magnet Debug ---"
+  debug-tier: "&7Tier: &f{tier}"
+  debug-charge: "&7Charge: &f{charge}&7/&f{max_charge}"
+  debug-boost: "&7Boost: &f{boost}&7 (expires tick &f{expiry}&7)"
+  debug-radius: "&7Effective radius: &f{radius}"
+  debug-protection: "&7Can pull at feet: &f{allowed}"
+  debug-afk: "&7AFK blocked: &f{afk}"
