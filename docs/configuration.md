@@ -21,13 +21,22 @@ All settings live in `plugins/ItemMagnet/config.yml`.
 | `show-charge-bar` | bool | `true` | Show durability-style charge bar |
 | `particle-type` | string | `REVERSE_PORTAL` | Bukkit `Particle` enum name |
 | `deny-message-cooldown-ticks` | int | `40` | Cooldown for protection deny messages |
+| `pull-experience` | bool | `true` | Pull experience orbs (XP bubbles) |
+| `hold-mode` | enum | `MAIN_HAND` | `MAIN_HAND`, `HOTBAR`, `INVENTORY` |
+| `multi-magnet-policy` | enum | `BEST_TIER` | `BEST_TIER`, `FIRST_FOUND` |
+| `disable-in-creative` | bool | `true` | Disable for creative players |
+| `disable-in-spectator` | bool | `true` | Disable for spectators |
+| `world-filter.mode` | enum | `NONE` | `NONE`, `WHITELIST`, `BLACKLIST` |
+| `world-filter.worlds` | list | `[]` | World names for filter |
+| `sounds.enabled` | bool | `false` | Play magnet sound effects |
+| `sounds.pull` / `fuel` / `depleted` / `denied` | string | — | Bukkit `Sound` enum names |
 
 ## metrics
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `bstats-enabled` | bool | `true` | Enable bStats |
-| `bstats-plugin-id` | int | `0` | Your bStats plugin ID |
+| `bstats-plugin-id` | int | `31998` | Your bStats plugin ID |
 | `update-check` | enum | `ON_STARTUP` | `ALWAYS`, `ON_STARTUP`, `DISABLED` |
 
 ## anti-afk
@@ -86,13 +95,29 @@ Per-material fuel entries (`REDSTONE`, `REDSTONE_BLOCK`):
 | `worlds.<world>.region-mode` | enum | — | Per-world override |
 | `worlds.<world>.regions` | list | — | Per-world region list |
 
+## integrations.towny
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `enabled` | bool | `false` | Enable Towny hook |
+| `wilderness` | enum | `ALLOW` | `ALLOW`, `DENY`, `PERMISSION` |
+| `wilderness-permission` | string | `itemmagnet.wilderness` | Wilderness permission |
+| `claimed-town` | enum | `RESPECT_FLAGS` | See [towny.md](integrations/towny.md) |
+
+## integrations.griefprevention
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `enabled` | bool | `false` | Enable GriefPrevention hook |
+| `claimed-land` | enum | `RESPECT_FLAGS` | See [griefprevention.md](integrations/griefprevention.md) |
+
 ## tiers.<id>
 
 Each tier supports:
 
 | Key | Type | Description |
 |-----|------|-------------|
-| `material` | string | Bukkit material (e.g. `COMPASS`) |
+| `material` | string | Bukkit material for the held item model (e.g. `FLINT_AND_STEEL`) |
 | `display-name` | string | Item name (`&` color codes) |
 | `lore` | list | Lore lines; placeholders: `{charge}`, `{max_charge}`, `{boost}` |
 | `enchant-glint` | bool | Fake enchant glint |
@@ -103,5 +128,8 @@ Each tier supports:
 | `boost-drain-multiplier` | double | Drain multiplier during boost |
 | `min-radius` / `max-radius` | double | Radius clamps |
 | `blacklist` | list | Materials never pulled |
+| `whitelist-enabled` | bool | Enable whitelist filtering |
+| `whitelist` | list | Allowed materials when whitelist enabled |
+| `pull-experience` | bool | Pull XP orbs for this tier (requires global `pull-experience`) |
 | `unlock` | section | See [recipes-and-unlocks.md](recipes-and-unlocks.md) |
 | `recipe` | section | Shaped recipe definition |

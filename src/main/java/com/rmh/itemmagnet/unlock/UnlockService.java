@@ -10,17 +10,20 @@ import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 public final class UnlockService {
 
     private final ItemMagnetPlugin plugin;
-    private final Set<String> commandUnlocks = new HashSet<>();
+    private final UnlockStorage storage;
 
-    public UnlockService(ItemMagnetPlugin plugin) {
+    public UnlockService(ItemMagnetPlugin plugin, UnlockStorage storage) {
         this.plugin = plugin;
+        this.storage = storage;
+    }
+
+    public void load() {
+        storage.load();
     }
 
     public boolean isUnlocked(Player player, TierConfig tier) {
@@ -31,18 +34,14 @@ public final class UnlockService {
             case ADVANCEMENT -> hasAdvancement(player, unlock.getAdvancement());
             case CMI_STAT -> checkCmiStat(player, unlock);
             case CMI_RANK -> checkCmiRank(player, unlock);
-            case COMMAND -> commandUnlocks.contains(unlockKey(player, tier))
+            case COMMAND -> storage.has(player.getUniqueId(), tier.getId())
                     || player.hasPermission("itemmagnet.unlock." + tier.getId());
         };
     }
 
     public void grantUnlock(Player player, TierConfig tier) {
-        commandUnlocks.add(unlockKey(player, tier));
+        storage.grant(player.getUniqueId(), tier.getId());
         discoverRecipe(player, tier);
-    }
-
-    private String unlockKey(Player player, TierConfig tier) {
-        return player.getUniqueId() + ":" + tier.getId();
     }
 
     public void discoverRecipesOnJoin(Player player) {

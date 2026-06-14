@@ -47,4 +47,11 @@ public final class TextUtil {
         }
         return result;
     }
+
+    public static String stripColor(String input) {
+        if (input == null) {
+            return "";
+        }
+        return ChatColor.stripColor(color(input));
+    }
 }

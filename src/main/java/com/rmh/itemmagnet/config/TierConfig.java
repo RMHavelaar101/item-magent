@@ -20,6 +20,9 @@ public final class TierConfig {
     private final double minRadius;
     private final double maxRadius;
     private final List<Material> blacklist;
+    private final boolean whitelistEnabled;
+    private final List<Material> whitelist;
+    private final boolean pullExperience;
     private final UnlockConfig unlock;
     private final RecipeConfig recipe;
 
@@ -37,6 +40,9 @@ public final class TierConfig {
             double minRadius,
             double maxRadius,
             List<Material> blacklist,
+            boolean whitelistEnabled,
+            List<Material> whitelist,
+            boolean pullExperience,
             UnlockConfig unlock,
             RecipeConfig recipe
     ) {
@@ -53,6 +59,9 @@ public final class TierConfig {
         this.minRadius = minRadius;
         this.maxRadius = maxRadius;
         this.blacklist = Collections.unmodifiableList(blacklist);
+        this.whitelistEnabled = whitelistEnabled;
+        this.whitelist = Collections.unmodifiableList(whitelist);
+        this.pullExperience = pullExperience;
         this.unlock = unlock;
         this.recipe = recipe;
     }
@@ -107,6 +116,28 @@ public final class TierConfig {
 
     public List<Material> getBlacklist() {
         return blacklist;
+    }
+
+    public boolean isWhitelistEnabled() {
+        return whitelistEnabled;
+    }
+
+    public List<Material> getWhitelist() {
+        return whitelist;
+    }
+
+    public boolean isPullExperience() {
+        return pullExperience;
+    }
+
+    public boolean canPullMaterial(Material material) {
+        if (blacklist.contains(material)) {
+            return false;
+        }
+        if (!whitelistEnabled || whitelist.isEmpty()) {
+            return true;
+        }
+        return whitelist.contains(material);
     }
 
     public UnlockConfig getUnlock() {

@@ -4,6 +4,80 @@ All notable changes to ItemMagnet are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.2.1] - 2026-06-14
+
+### Added
+
+- Config GUI: rename tier display names via chat input (name tag button in tier editor)
+
+### Changed
+
+- Removed bStats/metrics section from config GUI (still configurable in config.yml if needed)
+
+## [1.2.0] - 2026-06-14
+
+### Added
+
+- Live `{radius}` and `{base_radius}` placeholders on magnet item lore
+- `settings.fuel-use-effective-radius` — absorb fuel within pull radius
+- Per-fuel recharge sounds (`fuel.<MATERIAL>.sound`)
+- AFK `notify-once` — single message per idle session
+- Optional `settings.pull-arm-swing` hand animation on pull
+- Permission-filtered help and tab completion (`commands.filter-by-permission`)
+- Specific usage errors for give/unlock commands
+- `/itemmagnet config` — full in-game config GUI with descriptions
+- Reload restart warnings for metrics keys (bStats, update-check)
+
+### Changed
+
+- Manual and ground fuel transfer play per-material sounds (throttled)
+
+## [1.1.1] - 2026-06-14
+
+### Added
+
+- Experience orb (XP bubble) pulling when `pull-experience` is enabled
+- `/itemmagnet giveall` and `/itemmagnet unlockall` commands
+- `give <player> all` and `unlock <player> all` aliases
+- Multi-line `/itemmagnet help` (also shown when command has no args)
+- `presets/testing.yml` for QA on live servers
+
+### Fixed
+
+- Shift+right-click fuel transfer no longer places redstone blocks (full interact deny + either-hand fuel)
+- Fuel transfer writes to correct inventory slots (no main-hand overwrite)
+- Manual fuel transfer now sends boost-active message
+- `/itemmagnet debug` uses MagnetLocator and shows slot, hold-mode, boost timer, world/gamemode state
+
+## [1.1.0] - 2026-06-14
+
+### Added
+
+- Paper **1.21.1+** / Java **21+** support (tested up to Paper 26.1)
+- Passive magnet modes: `hold-mode` MAIN_HAND, HOTBAR, or INVENTORY
+- Per-tier use permissions (`itemmagnet.use.<tier>`)
+- Per-tier item whitelist (`whitelist-enabled` + `whitelist`)
+- World blacklist/whitelist filter
+- Configurable pull/fuel/depleted/denied sounds
+- Towny and GriefPrevention protection hooks
+- PlaceholderAPI placeholders (`%itemmagnet_charge%`, `%itemmagnet_radius%`, etc.)
+- Public API events: `ItemMagnetPullEvent`, `ItemMagnetFuelAbsorbEvent`, `ItemMagnetDepleteEvent`
+- Persistent COMMAND unlock storage (`unlocks.yml`)
+- Nearby-entity item scanning for better performance on busy servers
+
+### Fixed
+
+- Update checker no longer reports false positives (`v1.0.0` vs `1.0.0`)
+- `/itemmagnet version` now requires `itemmagnet.admin`
+- `/itemmagnet give` charge argument validates input
+- Reload reschedules magnet tick interval
+- AFK, fuel-full, and craft-locked messages now sent when appropriate
+
+### Changed
+
+- Default tier 1 material is `FLINT_AND_STEEL` (avoids WorldEdit compass nav wand conflict)
+- Build toolchain lowered to Java 21 for broader host compatibility
+
 ## [1.0.0] - 2026-06-14
 
 ### Added

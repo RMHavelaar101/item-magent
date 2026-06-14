@@ -22,7 +22,11 @@ Hold **redstone dust** in your **off hand**.
 
 ## 4. Test item pull
 
-Drop items on the ground nearby. While holding the charged magnet in your main hand, items should visibly slide toward you.
+Drop items on the ground nearby. With a charged magnet active (see `hold-mode` in config), items should visibly slide toward you.
+
+### Passive mode
+
+Set `hold-mode: INVENTORY` in config to pull items while the magnet sits anywhere in your inventory — no need to hold it in your main hand.
 
 ## 5. Try a power surge
 

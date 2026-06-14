@@ -9,29 +9,33 @@ version = property("version") as String
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${findProperty("paperVersion")}")
+    compileOnly("me.clip:placeholderapi:2.11.6")
 
     implementation("org.bstats:bstats-bukkit:3.2.1")
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.mockito:mockito-core:5.12.0")
+    testImplementation("io.papermc.paper:paper-api:${findProperty("paperVersion")}")
 }
 
 tasks {
     processResources {
         val props = mapOf(
             "version" to version,
-            "paperApiVersion" to (findProperty("paperApiVersion") ?: "26.1")
+            "paperApiVersion" to (findProperty("paperApiVersion") ?: "1.21")
         )
         inputs.properties(props)
         filesMatching("plugin.yml") {
@@ -75,11 +79,14 @@ hangarPublish {
         platforms {
             paper {
                 jar.set(tasks.shadowJar.flatMap { it.archiveFile })
-                platformVersions.set(listOf("26.1"))
+                platformVersions.set(listOf("1.21.1", "1.21.4", "26.1"))
                 dependencies {
                     hangar("Lands") { required = false }
                     hangar("WorldGuard") { required = false }
                     hangar("CMI") { required = false }
+                    hangar("Towny") { required = false }
+                    hangar("GriefPrevention") { required = false }
+                    hangar("PlaceholderAPI") { required = false }
                 }
             }
         }

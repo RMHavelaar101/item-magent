@@ -1,80 +1,370 @@
-# ItemMagnet configuration
-# Docs: https://github.com/RMHavelaar101/item-magent/blob/main/docs/configuration.md
+# =============================================================================
+# ItemMagnet — main configuration
+# =============================================================================
+#
+# After editing, run:  /itemmagnet reload
+#
+# Full reference: https://github.com/RMHavelaar101/item-magent/blob/main/docs/configuration.md
+#
+# Quick start
+#   • Hold a magnet in your MAIN hand to pull nearby dropped items (line-of-sight).
+#   • Sneak to pause pulling (when sneak-to-disable is true).
+#   • Shift + right-click (sneak) with magnet and fuel in either hand to transfer fuel.
+#   • Give magnets: /itemmagnet give <player> <tier>
+#   • Unlock crafting: /itemmagnet unlock <player> <tier>
+#
+# Tier IDs in this file: fragment, survey, anchor (you can add more tiers).
+# Changing a tier's "material" only affects NEW items — re-give magnets after edits.
+# =============================================================================
 
-# Optional preset to merge on top of defaults (copy presets/theryn.yml values here instead)
+# Optional server preset merged on top of this file at load time.
+# Built-in presets live in the plugin jar under presets/ (e.g. presets/theryn.yml).
+# Values from the preset override matching keys here. Set to "none" to disable.
+# Available: none, theryn, testing
 preset: none
 
+# -----------------------------------------------------------------------------
+# settings — core magnet behaviour and performance
+# -----------------------------------------------------------------------------
 settings:
+  # How often (in server ticks, 20 ticks = 1 second) each player is scanned.
+  # Lower = snappier pull, higher CPU. Default: 2
   scan-interval-ticks: 2
+
+  # Max dropped items one player can pull per scan tick (performance cap).
+  # Default: 10
   max-items-per-tick: 10
+
+  # Blocks an item moves toward the player per pull step (visible motion).
+  # Default: 0.4
   pull-step-blocks: 0.4
+
+  # When an item is this close (blocks), vanilla pickup runs.
+  # Default: 1.5
   pickup-distance: 1.5
+
+  # If true, sneaking while holding the magnet pauses pulling.
+  # Default: true
   sneak-to-disable: true
+
+  # Radius (blocks) around the player where redstone fuel items are auto-absorbed
+  # into the magnet charge (when not AFK-blocked).
+  # Default: 3
   fuel-radius: 3
+
+  # When true, fuel is also absorbed within the effective pull radius (not just fuel-radius).
+  # Default: true
+  fuel-use-effective-radius: true
+
+  # Swing the player's hand when pulling items (visual feedback).
+  # Default: false
+  pull-arm-swing: false
+
+  # Show remaining charge as a durability-style bar on the item.
+  # Default: true
   show-charge-bar: true
+
+  # Particle trail on pulled items. Must be a valid Bukkit Particle enum name.
+  # Examples: REVERSE_PORTAL, ENCHANT, CRIT, END_ROD, WITCH
+  # Default: REVERSE_PORTAL
   particle-type: REVERSE_PORTAL
+
+  # Minimum ticks between "denied" messages (Lands/WorldGuard/range) per player.
+  # Default: 40
   deny-message-cooldown-ticks: 40
 
+  # Pull experience orbs (XP bubbles) toward the player using the same radius and physics.
+  # Default: true
+  pull-experience: true
+
+  # Where the magnet item must be to activate pulling.
+  # Options: MAIN_HAND | HOTBAR | INVENTORY
+  # MAIN_HAND = selected hotbar slot only (default)
+  # HOTBAR = any hotbar slot (0-8)
+  # INVENTORY = hotbar + main inventory (passive magnet mode)
+  # Default: MAIN_HAND
+  hold-mode: MAIN_HAND
+
+  # When multiple magnets are found (HOTBAR/INVENTORY modes):
+  # BEST_TIER = highest base radius wins
+  # FIRST_FOUND = lowest slot index wins
+  # Default: BEST_TIER
+  multi-magnet-policy: BEST_TIER
+
+  # Disable magnet effects for creative-mode players.
+  # Default: true
+  disable-in-creative: true
+
+  # Disable magnet effects for spectator-mode players.
+  # Default: true
+  disable-in-spectator: true
+
+  # Restrict magnet use to/from specific worlds.
+  world-filter:
+    # Options: NONE | WHITELIST | BLACKLIST
+    # Default: NONE
+    mode: NONE
+    # World names for WHITELIST/BLACKLIST modes.
+    worlds: []
+
+  # Optional sound effects (set enabled: true to turn on).
+  sounds:
+    enabled: false
+    pull: ENTITY_ITEM_PICKUP
+    fuel: BLOCK_REDSTONE_BLOCK_CLICK
+    depleted: BLOCK_BEACON_DEACTIVATE
+    denied: BLOCK_NOTE_BLOCK_BASS
+
+# -----------------------------------------------------------------------------
+# metrics — anonymous stats and update checks
+# -----------------------------------------------------------------------------
 metrics:
+  # Send anonymous usage stats to bStats (no player names or locations).
+  # Default: true
   bstats-enabled: true
+
+  # bStats plugin ID (leave as-is unless you fork the plugin).
+  # Default: 31998
   bstats-plugin-id: 31998
+
+  # When to check hangar.papermc.io for new versions and notify admins on join.
+  # Options: ALWAYS | ON_STARTUP | DISABLED
+  # Default: ON_STARTUP
   update-check: ON_STARTUP
 
+# -----------------------------------------------------------------------------
+# anti-afk — optional movement requirement
+# -----------------------------------------------------------------------------
 anti-afk:
+  # Enable AFK detection (horizontal block travel in a time window).
+  # Default: false
   enabled: false
+
+  # Minimum horizontal blocks the player must move within the window to count as active.
+  # Default: 2
   required-blocks-moved: 2
+
+  # Seconds in which required-blocks-moved must be met.
+  # Default: 60
   window-seconds: 60
+
+  # When AFK, block automatic fuel absorption from the ground.
+  # Default: true
   disable-auto-fuel-when-afk: true
 
+  # Send the AFK message once per idle session (until the player moves again).
+  # Default: true
+  notify-once: true
+
+# -----------------------------------------------------------------------------
+# height — Y-level limits and radius/drain modifiers
+# -----------------------------------------------------------------------------
 height:
+  # If true, magnet is fully disabled when player Y is outside min-y / max-y.
+  # Default: false
   use-y-range: false
+
+  # Lowest Y level where the magnet works (when use-y-range is true).
+  # Default: -64
   min-y: -64
+
+  # Highest Y level where the magnet works (when use-y-range is true).
+  # Default: 320
   max-y: 320
+
   underground:
+    # Apply underground radius/drain modifiers below threshold-y.
+    # Default: false
     enabled: false
+
+    # Y level at or below this counts as "underground".
+    # Default: 50
     threshold-y: 50
+
+    # Added to base pull radius underground (can be negative).
+    # Default: -2
     radius-modifier: -2
+
+    # Multiplier on charge drain underground (1.0 = normal, 1.25 = 25% faster drain).
+    # Default: 1.25
     drain-multiplier: 1.25
+
   surface:
+    # Added to base pull radius on the surface (above threshold-y).
+    # Default: 0
     radius-modifier: 0
 
+# -----------------------------------------------------------------------------
+# fuel — materials that recharge the magnet
+# -----------------------------------------------------------------------------
+# Add one section per Bukkit Material name (uppercase).
+# Players can also shift+right-click to transfer fuel from off-hand.
+#
+#   charge-per-item        — charge added per item absorbed
+#   radius-bonus           — extra pull radius per active boost level
+#   boost-level-add        — boost stacks added when this fuel is used
+#   boost-duration-seconds — how long each boost stack lasts (0 = no timed boost)
 fuel:
   REDSTONE:
     charge-per-item: 50
     radius-bonus: 0
     boost-level-add: 0
     boost-duration-seconds: 0
+    sound: BLOCK_REDSTONE_TORCH_BURNOUT
   REDSTONE_BLOCK:
     charge-per-item: 450
     radius-bonus: 3
     boost-level-add: 1
     boost-duration-seconds: 120
+    sound: BLOCK_ANVIL_LAND
 
+# -----------------------------------------------------------------------------
+# integrations — optional protection plugins (reflection; no hard dependency)
+# -----------------------------------------------------------------------------
 integrations:
   lands:
+    # Enable Lands integration (plugin must be installed).
+    # Default: false
     enabled: false
+
+    # Where to evaluate land rules: ITEM (item location), PLAYER (feet), BOTH
+    # Default: BOTH
     check-at: BOTH
+
+    # Behaviour in unclaimed wilderness.
+    # Options: ALLOW | DENY | PERMISSION
+    # PERMISSION uses wilderness-permission below.
+    # Default: ALLOW
     wilderness: ALLOW
+
+    # Permission checked when wilderness is PERMISSION.
+    # Default: itemmagnet.wilderness
     wilderness-permission: itemmagnet.wilderness
+
+    # Behaviour in claimed land.
+    # Options: RESPECT_FLAGS | OWNER_ONLY | MEMBER_ONLY | DENY
+    # Default: RESPECT_FLAGS
     claimed-land: RESPECT_FLAGS
+
+    # If true, the player's feet must be in allowed land (not just the item).
+    # Default: false
     require-player-in-allowed-land: false
+
   worldguard:
+    # Enable WorldGuard integration (plugin must be installed).
+    # Default: false
     enabled: false
+
+    # Where to evaluate regions: ITEM | PLAYER | BOTH
+    # Default: BOTH
     check-at: BOTH
+
+    # Honor WorldGuard's item-pickup flag when present.
+    # Default: true
     respect-item-pickup-flag: true
+
+    # Global region filter (per-world overrides below).
+    # Options: NONE | WHITELIST | BLACKLIST
+    # NONE = no region list filtering (flags still apply if respect-item-pickup-flag).
+    # Default: NONE
     region-mode: NONE
+
+    # Region IDs for WHITELIST/BLACKLIST (global).
+    # Default: []
     regions: []
+
+    # Per-world overrides (optional). Example:
+    # worlds:
+    #   world:
+    #     region-mode: BLACKLIST
+    #     regions: [spawn, shop]
     worlds: {}
 
+  towny:
+    # Enable Towny integration (plugin must be installed).
+    # Default: false
+    enabled: false
+
+    # Behaviour in wilderness (unclaimed areas).
+    # Options: ALLOW | DENY | PERMISSION
+    # Default: ALLOW
+    wilderness: ALLOW
+
+    # Permission for wilderness when mode is PERMISSION.
+    # Default: itemmagnet.wilderness
+    wilderness-permission: itemmagnet.wilderness
+
+    # Behaviour inside a town.
+    # Options: RESPECT_FLAGS | OWNER_ONLY | MEMBER_ONLY | DENY
+    # Default: RESPECT_FLAGS
+    claimed-town: RESPECT_FLAGS
+
+  griefprevention:
+    # Enable GriefPrevention integration (plugin must be installed).
+    # Default: false
+    enabled: false
+
+    # Behaviour inside a claim.
+    # Options: RESPECT_FLAGS | OWNER_ONLY | MEMBER_ONLY | DENY
+    # Default: RESPECT_FLAGS
+    claimed-land: RESPECT_FLAGS
+
+# -----------------------------------------------------------------------------
+# commands — command visibility
+# -----------------------------------------------------------------------------
+commands:
+  # Hide help entries and tab-complete subcommands the sender lacks permission for.
+  # Works with LuckPerms permission nodes. Default: true
+  filter-by-permission: true
+
+# -----------------------------------------------------------------------------
+# tiers — magnet variants (item look, stats, recipes, unlock gates)
+# -----------------------------------------------------------------------------
+# Each tier needs a unique key (e.g. fragment, survey, anchor).
+#
+# Item appearance
+#   material      — Bukkit material for the held item model (e.g. FLINT_AND_STEEL).
+#                   Avoid COMPASS if staff use WorldEdit's navigation wand.
+#   display-name  — Item name; & color codes supported.
+#   lore          — Lore lines; placeholders: {charge} {max_charge} {boost} {radius} {base_radius}
+#   enchant-glint — Fake enchant shimmer on the item.
+#
+# Pull / charge
+#   radius                  — Base pull radius in blocks.
+#   max-charge              — Maximum stored charge.
+#   base-drain-per-second   — Passive charge drain while magnet is active.
+#   extra-drain-per-item    — Extra drain per item pulled per step.
+#   boost-drain-multiplier  — Drain multiplier while boost is active.
+#   min-radius / max-radius — Clamp final radius after bonuses.
+#   blacklist               — Material names never pulled (e.g. BEDROCK).
+#   whitelist-enabled       — If true and whitelist is non-empty, only listed materials pull.
+#   whitelist               — Material names allowed when whitelist-enabled is true.
+#   pull-experience         — Pull XP orbs when global settings.pull-experience is true.
+#
+# unlock — who can see/craft this tier's recipe
+#   type: NONE        — always unlocked (default tier 1)
+#   type: PERMISSION  — requires permission: <node>
+#   type: ADVANCEMENT — requires advancement: <namespace:key>
+#   type: CMI_STAT    — requires CMI stat/sub/amount (CMI plugin)
+#   type: CMI_RANK    — requires rank: <CMI rank name>
+#   type: COMMAND     — hidden until /itemmagnet unlock <player> <tier>
+#
+# recipe — shaped crafting recipe
+#   enabled   — Register this recipe.
+#   hidden    — Hide from recipe book until unlocked.
+#   shape     — Up to 3 rows of 1–3 symbols (spaces = empty).
+#   ingredients — Map symbol character to Bukkit Material (recipe grid only).
+# -----------------------------------------------------------------------------
 tiers:
   fragment:
-    material: COMPASS
+    material: FLINT_AND_STEEL
     display-name: "&6Fragment Resonator"
     lore:
       - "&7Archive salvage tool"
       - "&7Hold in main hand to pull items"
       - ""
       - "&eCharge: &f{charge}/{max_charge}"
+      - "&eRange: &f{radius} &7blocks"
       - "&eBoost: &f{boost}"
     enchant-glint: true
     radius: 6
@@ -85,6 +375,9 @@ tiers:
     min-radius: 1
     max-radius: 16
     blacklist: []
+    whitelist-enabled: false
+    whitelist: []
+    pull-experience: true
     unlock:
       type: NONE
     recipe:
@@ -109,6 +402,7 @@ tiers:
       - "&7Extended-range salvage tool"
       - ""
       - "&eCharge: &f{charge}/{max_charge}"
+      - "&eRange: &f{radius} &7blocks"
       - "&eBoost: &f{boost}"
     enchant-glint: true
     radius: 9
@@ -119,6 +413,9 @@ tiers:
     min-radius: 1
     max-radius: 20
     blacklist: []
+    whitelist-enabled: false
+    whitelist: []
+    pull-experience: true
     unlock:
       type: PERMISSION
       permission: itemmagnet.craft.survey
@@ -143,6 +440,7 @@ tiers:
       - "&7Maximum-range salvage tool"
       - ""
       - "&eCharge: &f{charge}/{max_charge}"
+      - "&eRange: &f{radius} &7blocks"
       - "&eBoost: &f{boost}"
     enchant-glint: true
     radius: 12
@@ -153,6 +451,9 @@ tiers:
     min-radius: 1
     max-radius: 24
     blacklist: []
+    whitelist-enabled: false
+    whitelist: []
+    pull-experience: true
     unlock:
       type: PERMISSION
       permission: itemmagnet.craft.anchor

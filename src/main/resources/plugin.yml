@@ -5,15 +5,28 @@ api-version: '${paperApiVersion}'
 description: Configurable tiered item magnets with redstone fuel, Lands/WorldGuard protection, and visible LOS pull physics.
 author: rmh
 website: https://github.com/RMHavelaar101/item-magent
-softdepend: [Lands, WorldGuard, CMI]
+softdepend: [Lands, WorldGuard, CMI, Towny, GriefPrevention, PlaceholderAPI]
 commands:
   itemmagnet:
     description: ItemMagnet admin and info commands
-    usage: /itemmagnet <reload|version|give|unlock|debug|help> [args]
+    usage: /itemmagnet <reload|version|give|giveall|unlock|unlockall|debug|config|help> [args]
     aliases: [im, magnet]
 permissions:
   itemmagnet.use:
     description: Allows using item magnets
+    default: true
+    children:
+      itemmagnet.use.fragment: true
+      itemmagnet.use.survey: true
+      itemmagnet.use.anchor: true
+  itemmagnet.use.fragment:
+    description: Allows using the fragment tier magnet
+    default: true
+  itemmagnet.use.survey:
+    description: Allows using the survey tier magnet
+    default: true
+  itemmagnet.use.anchor:
+    description: Allows using the anchor tier magnet
     default: true
   itemmagnet.craft.fragment:
     description: Allows crafting the fragment tier magnet
@@ -25,13 +38,19 @@ permissions:
     description: Allows crafting the anchor tier magnet
     default: true
   itemmagnet.wilderness:
-    description: Allows magnet use in unclaimed Lands wilderness
+    description: Allows magnet use in unclaimed Lands/Towny wilderness
     default: op
   itemmagnet.bypass.regions:
     description: Bypasses WorldGuard region whitelist/blacklist checks
     default: false
   itemmagnet.bypass.lands:
     description: Bypasses Lands protection checks
+    default: false
+  itemmagnet.bypass.towny:
+    description: Bypasses Towny protection checks
+    default: false
+  itemmagnet.bypass.griefprevention:
+    description: Bypasses GriefPrevention protection checks
     default: false
   itemmagnet.admin:
     description: Access to admin commands
@@ -41,6 +60,10 @@ permissions:
       itemmagnet.give: true
       itemmagnet.unlock: true
       itemmagnet.debug: true
+      itemmagnet.config: true
+  itemmagnet.config:
+    description: Open the in-game config editor
+    default: op
   itemmagnet.reload:
     description: Reload plugin configuration
     default: op

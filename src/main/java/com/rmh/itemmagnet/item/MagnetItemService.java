@@ -4,7 +4,10 @@ import com.rmh.itemmagnet.ItemMagnetPlugin;
 import com.rmh.itemmagnet.config.FuelConfig;
 import com.rmh.itemmagnet.config.MagnetConfig;
 import com.rmh.itemmagnet.config.TierConfig;
+import com.rmh.itemmagnet.item.LoreContext;
 import com.rmh.itemmagnet.util.TextUtil;
+import com.rmh.itemmagnet.magnet.FuelTransferHelper;
+import com.rmh.itemmagnet.magnet.MagnetSlot;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -58,11 +61,15 @@ public final class MagnetItemService {
     public ItemStack create(TierConfig tier, int charge) {
         ItemStack item = new ItemStack(tier.getMaterial());
         MagnetData data = new MagnetData(tier, Math.min(charge, tier.getMaxCharge()), 0, 0);
-        write(item, data);
+        write(item, data, LoreContext.baseOnly(tier.getRadius()));
         return item;
     }
 
     public void write(ItemStack item, MagnetData data) {
+        write(item, data, LoreContext.baseOnly(data.getTier().getRadius()));
+    }
+
+    public void write(ItemStack item, MagnetData data, LoreContext loreContext) {
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         pdc.set(keys.isMagnet, PdcKeys.BYTE, (byte) 1);
@@ -76,6 +83,8 @@ public final class MagnetItemService {
         placeholders.put("charge", String.valueOf(data.getCharge()));
         placeholders.put("max_charge", String.valueOf(data.getTier().getMaxCharge()));
         placeholders.put("boost", data.getBoostLevel() > 0 ? "+" + data.getBoostLevel() : "None");
+        placeholders.put("radius", loreContext.formatRadius());
+        placeholders.put("base_radius", loreContext.formatBaseRadius());
 
         meta.setDisplayName(TextUtil.color(TextUtil.applyPlaceholders(data.getTier().getDisplayName(), placeholders)));
         List<String> lore = new ArrayList<>();
@@ -101,45 +110,56 @@ public final class MagnetItemService {
         item.setItemMeta(meta);
     }
 
-    public boolean transferFuel(Player player, ItemStack mainHand, ItemStack offHand) {
-        Optional<MagnetData> magnetDataOptional = read(mainHand);
-        if (magnetDataOptional.isEmpty() || offHand == null || offHand.getType() == Material.AIR) {
-            return false;
+    public FuelTransferResult transferFuel(Player player, MagnetSlot magnetSlot, ItemStack fuelStack, int fuelSlot) {
+        ItemStack magnetStack = magnetSlot.getItemStack();
+        Optional<MagnetData> magnetDataOptional = read(magnetStack);
+        if (magnetDataOptional.isEmpty() || fuelStack == null || fuelStack.getType() == Material.AIR) {
+            return FuelTransferResult.of(FuelTransferStatus.NO_MAGNET);
         }
 
         FuelConfig fuelConfig = plugin.getConfigManager().getMagnetConfig()
                 .getFuel()
-                .get(offHand.getType().name());
+                .get(fuelStack.getType().name());
         if (fuelConfig == null) {
-            return false;
+            return FuelTransferResult.of(FuelTransferStatus.INVALID_FUEL);
         }
 
         MagnetData data = magnetDataOptional.get();
         int maxCharge = data.getTier().getMaxCharge();
         if (data.getCharge() >= maxCharge) {
-            return false;
+            return FuelTransferResult.of(FuelTransferStatus.FULL);
         }
 
-        int transferable = Math.min(offHand.getAmount(), (int) Math.ceil((maxCharge - data.getCharge()) / (double) fuelConfig.getChargePerItem()));
+        int transferable = Math.min(fuelStack.getAmount(), (int) Math.ceil((maxCharge - data.getCharge()) / (double) fuelConfig.getChargePerItem()));
         if (transferable <= 0) {
-            return false;
+            return FuelTransferResult.of(FuelTransferStatus.FULL);
         }
 
         int addedCharge = transferable * fuelConfig.getChargePerItem();
         data.setCharge(Math.min(maxCharge, data.getCharge() + addedCharge));
 
+        int boostDurationSeconds = 0;
         if (fuelConfig.getBoostLevelAdd() > 0) {
             long expiry = plugin.getServer().getCurrentTick() + (fuelConfig.getBoostDurationSeconds() * 20L);
             data.setBoostLevel(data.getBoostLevel() + fuelConfig.getBoostLevelAdd());
             data.setBoostExpiryTick(Math.max(data.getBoostExpiryTick(), expiry));
+            boostDurationSeconds = fuelConfig.getBoostDurationSeconds();
         }
 
-        write(mainHand, data);
-        player.getInventory().setItemInMainHand(mainHand);
+        write(magnetStack, data);
+        player.getInventory().setItem(magnetSlot.getSlot(), magnetStack);
 
-        offHand.setAmount(offHand.getAmount() - transferable);
-        player.getInventory().setItemInOffHand(offHand.getAmount() > 0 ? offHand : null);
-        return true;
+        fuelStack.setAmount(fuelStack.getAmount() - transferable);
+        writeFuelToSlot(player, fuelSlot, fuelStack);
+        return FuelTransferResult.success(boostDurationSeconds);
+    }
+
+    private void writeFuelToSlot(Player player, int fuelSlot, ItemStack fuelStack) {
+        if (fuelSlot == FuelTransferHelper.OFF_HAND_SLOT) {
+            player.getInventory().setItemInOffHand(fuelStack.getAmount() > 0 ? fuelStack : null);
+            return;
+        }
+        player.getInventory().setItem(fuelSlot, fuelStack.getAmount() > 0 ? fuelStack : null);
     }
 
     public FuelConfig getFuelConfig(Material material) {

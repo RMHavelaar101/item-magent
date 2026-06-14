@@ -6,12 +6,20 @@ public final class AntiAfkConfig {
     private final double requiredBlocksMoved;
     private final int windowSeconds;
     private final boolean disableAutoFuelWhenAfk;
+    private final boolean notifyOnce;
 
-    public AntiAfkConfig(boolean enabled, double requiredBlocksMoved, int windowSeconds, boolean disableAutoFuelWhenAfk) {
+    public AntiAfkConfig(
+            boolean enabled,
+            double requiredBlocksMoved,
+            int windowSeconds,
+            boolean disableAutoFuelWhenAfk,
+            boolean notifyOnce
+    ) {
         this.enabled = enabled;
         this.requiredBlocksMoved = requiredBlocksMoved;
         this.windowSeconds = windowSeconds;
         this.disableAutoFuelWhenAfk = disableAutoFuelWhenAfk;
+        this.notifyOnce = notifyOnce;
     }
 
     public boolean isEnabled() {
@@ -28,5 +36,9 @@ public final class AntiAfkConfig {
 
     public boolean isDisableAutoFuelWhenAfk() {
         return disableAutoFuelWhenAfk;
+    }
+
+    public boolean isNotifyOnce() {
+        return notifyOnce;
     }
 }

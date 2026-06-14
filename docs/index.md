@@ -18,7 +18,10 @@ Welcome to the ItemMagnet documentation.
 
 - [Lands](integrations/lands.md)
 - [WorldGuard](integrations/worldguard.md)
+- [Towny](integrations/towny.md)
+- [GriefPrevention](integrations/griefprevention.md)
 - [CMI unlock gates](integrations/cmi-unlocks.md)
+- [Developer API](api.md)
 
 ## Help
 
@@ -26,7 +29,14 @@ Welcome to the ItemMagnet documentation.
 - [bStats setup](bstats.md)
 - [Troubleshooting](troubleshooting.md)
 
+## Admin
+
+- [Config GUI](config-gui.md)
+
 ## Marketplace
 
+- [Publishing checklist](marketplace/PUBLISHING.md)
+- [Version compatibility](marketplace/compatibility.md)
 - [Hangar page copy](marketplace/hangar-page.md)
 - [SpigotMC listing copy](marketplace/spigot-description.bbcode)
+- [SpigotMC form fields](marketplace/spigot-metadata.md)

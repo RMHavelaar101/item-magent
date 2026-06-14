@@ -1,0 +1,46 @@
+# Testing preset — merge via preset: testing in config.yml
+# Enables sounds, protection hooks, AFK/height modifiers, and obvious boost radius for QA.
+
+settings:
+  sounds:
+    enabled: true
+  hold-mode: MAIN_HAND
+
+anti-afk:
+  enabled: true
+
+height:
+  underground:
+    enabled: true
+
+integrations:
+  lands:
+    enabled: true
+    check-at: BOTH
+    wilderness: DENY
+    wilderness-permission: itemmagnet.wilderness
+    claimed-land: MEMBER_ONLY
+    require-player-in-allowed-land: true
+  worldguard:
+    enabled: true
+    check-at: BOTH
+    respect-item-pickup-flag: true
+    region-mode: BLACKLIST
+    regions:
+      - archive_landing
+      - spawn
+
+fuel:
+  REDSTONE_BLOCK:
+    radius-bonus: 5
+
+tiers:
+  fragment:
+    unlock:
+      type: NONE
+  survey:
+    unlock:
+      type: NONE
+  anchor:
+    unlock:
+      type: NONE

@@ -19,6 +19,7 @@ public final class AfkTracker {
             record.setLocation(location.clone());
             record.setLastMovedAt(System.currentTimeMillis());
             record.addDistance(distance);
+            record.setAfkNotified(false);
         }
     }
 
@@ -35,6 +36,24 @@ public final class AfkTracker {
         return record.getDistanceInWindow() < requiredBlocksMoved;
     }
 
+    public boolean shouldNotifyAfk(Player player, double requiredBlocksMoved, int windowSeconds) {
+        if (!isAfk(player, requiredBlocksMoved, windowSeconds)) {
+            return false;
+        }
+        MovementRecord record = records.get(player.getUniqueId());
+        if (record == null) {
+            return true;
+        }
+        return !record.isAfkNotified();
+    }
+
+    public void markAfkNotified(Player player) {
+        MovementRecord record = records.get(player.getUniqueId());
+        if (record != null) {
+            record.setAfkNotified(true);
+        }
+    }
+
     public void clear(Player player) {
         records.remove(player.getUniqueId());
     }
@@ -49,6 +68,7 @@ public final class AfkTracker {
         private Location location;
         private long lastMovedAt;
         private double distanceInWindow;
+        private boolean afkNotified;
 
         private MovementRecord(Location location, long lastMovedAt) {
             this.location = location.clone();
@@ -81,6 +101,14 @@ public final class AfkTracker {
 
         public void resetDistance() {
             this.distanceInWindow = 0;
+        }
+
+        public boolean isAfkNotified() {
+            return afkNotified;
+        }
+
+        public void setAfkNotified(boolean afkNotified) {
+            this.afkNotified = afkNotified;
         }
     }
 }

@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 public final class ConfigManager {
 
@@ -80,9 +81,20 @@ public final class ConfigManager {
         double pickupDistance = settings != null ? settings.getDouble("pickup-distance", 1.5) : 1.5;
         boolean sneakDisable = settings == null || settings.getBoolean("sneak-to-disable", true);
         double fuelRadius = settings != null ? settings.getDouble("fuel-radius", 3) : 3;
+        boolean fuelUseEffectiveRadius = settings == null || settings.getBoolean("fuel-use-effective-radius", true);
+        boolean pullArmSwing = settings != null && settings.getBoolean("pull-arm-swing", false);
         boolean showChargeBar = settings == null || settings.getBoolean("show-charge-bar", true);
         Particle particle = parseParticle(settings != null ? settings.getString("particle-type", "REVERSE_PORTAL") : "REVERSE_PORTAL");
         int denyCooldown = settings != null ? settings.getInt("deny-message-cooldown-ticks", 40) : 40;
+        boolean pullExperience = settings == null || settings.getBoolean("pull-experience", true);
+        HoldMode holdMode = parseHoldMode(settings != null ? settings.getString("hold-mode", "MAIN_HAND") : "MAIN_HAND");
+        MultiMagnetPolicy multiMagnetPolicy = parseMultiMagnetPolicy(
+                settings != null ? settings.getString("multi-magnet-policy", "BEST_TIER") : "BEST_TIER"
+        );
+        boolean disableInCreative = settings == null || settings.getBoolean("disable-in-creative", true);
+        boolean disableInSpectator = settings == null || settings.getBoolean("disable-in-spectator", true);
+        WorldFilterConfig worldFilter = parseWorldFilter(settings != null ? settings.getConfigurationSection("world-filter") : null);
+        SoundsConfig sounds = parseSounds(settings != null ? settings.getConfigurationSection("sounds") : null);
 
         MetricsConfig metrics = parseMetrics(config.getConfigurationSection("metrics"));
         AntiAfkConfig antiAfk = parseAntiAfk(config.getConfigurationSection("anti-afk"));
@@ -90,7 +102,10 @@ public final class ConfigManager {
         Map<String, FuelConfig> fuel = parseFuel(config.getConfigurationSection("fuel"));
         LandsConfig lands = parseLands(config.getConfigurationSection("integrations.lands"));
         WorldGuardConfig worldGuard = parseWorldGuard(config.getConfigurationSection("integrations.worldguard"));
+        TownyConfig towny = parseTowny(config.getConfigurationSection("integrations.towny"));
+        GriefPreventionConfig griefPrevention = parseGriefPrevention(config.getConfigurationSection("integrations.griefprevention"));
         Map<String, TierConfig> tiers = parseTiers(config.getConfigurationSection("tiers"));
+        CommandsConfig commands = parseCommands(config.getConfigurationSection("commands"));
 
         return new MagnetConfig(
                 config.getString("preset", "none"),
@@ -100,17 +115,36 @@ public final class ConfigManager {
                 pickupDistance,
                 sneakDisable,
                 fuelRadius,
+                fuelUseEffectiveRadius,
+                pullArmSwing,
                 showChargeBar,
                 particle,
                 denyCooldown,
+                pullExperience,
+                holdMode,
+                multiMagnetPolicy,
+                disableInCreative,
+                disableInSpectator,
+                worldFilter,
+                sounds,
                 metrics,
                 antiAfk,
                 height,
                 fuel,
                 lands,
                 worldGuard,
-                tiers
+                towny,
+                griefPrevention,
+                tiers,
+                commands
         );
+    }
+
+    private CommandsConfig parseCommands(ConfigurationSection section) {
+        if (section == null) {
+            return new CommandsConfig(true);
+        }
+        return new CommandsConfig(section.getBoolean("filter-by-permission", true));
     }
 
     private MetricsConfig parseMetrics(ConfigurationSection section) {
@@ -131,13 +165,14 @@ public final class ConfigManager {
 
     private AntiAfkConfig parseAntiAfk(ConfigurationSection section) {
         if (section == null) {
-            return new AntiAfkConfig(false, 2, 60, true);
+            return new AntiAfkConfig(false, 2, 60, true, true);
         }
         return new AntiAfkConfig(
                 section.getBoolean("enabled", false),
                 section.getDouble("required-blocks-moved", 2),
                 section.getInt("window-seconds", 60),
-                section.getBoolean("disable-auto-fuel-when-afk", true)
+                section.getBoolean("disable-auto-fuel-when-afk", true),
+                section.getBoolean("notify-once", true)
         );
     }
 
@@ -175,7 +210,8 @@ public final class ConfigManager {
                     fuelSection.getInt("charge-per-item", 50),
                     fuelSection.getInt("radius-bonus", 0),
                     fuelSection.getInt("boost-level-add", 0),
-                    fuelSection.getInt("boost-duration-seconds", 0)
+                    fuelSection.getInt("boost-duration-seconds", 0),
+                    parseSound(fuelSection.getString("sound"))
             ));
         }
         return fuel;
@@ -234,7 +270,7 @@ public final class ConfigManager {
             if (tierSection == null) {
                 continue;
             }
-            Material material = Material.matchMaterial(tierSection.getString("material", "COMPASS"));
+            Material material = Material.matchMaterial(tierSection.getString("material", "FLINT_AND_STEEL"));
             if (material == null) {
                 plugin.getLogger().warning("Invalid material for tier " + tierId);
                 continue;
@@ -244,6 +280,14 @@ public final class ConfigManager {
                 Material blacklisted = Material.matchMaterial(entry);
                 if (blacklisted != null) {
                     blacklist.add(blacklisted);
+                }
+            }
+            boolean whitelistEnabled = tierSection.getBoolean("whitelist-enabled", false);
+            List<Material> whitelist = new ArrayList<>();
+            for (String entry : tierSection.getStringList("whitelist")) {
+                Material allowed = Material.matchMaterial(entry);
+                if (allowed != null) {
+                    whitelist.add(allowed);
                 }
             }
             UnlockConfig unlock = parseUnlock(tierSection.getConfigurationSection("unlock"));
@@ -262,6 +306,9 @@ public final class ConfigManager {
                     tierSection.getDouble("min-radius", 1),
                     tierSection.getDouble("max-radius", 16),
                     blacklist,
+                    whitelistEnabled,
+                    whitelist,
+                    tierSection.getBoolean("pull-experience", true),
                     unlock,
                     recipe
             ));
@@ -388,6 +435,79 @@ public final class ConfigManager {
         }
     }
 
+    private HoldMode parseHoldMode(String value) {
+        try {
+            return HoldMode.valueOf(value.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException exception) {
+            return HoldMode.MAIN_HAND;
+        }
+    }
+
+    private MultiMagnetPolicy parseMultiMagnetPolicy(String value) {
+        try {
+            return MultiMagnetPolicy.valueOf(value.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException exception) {
+            return MultiMagnetPolicy.BEST_TIER;
+        }
+    }
+
+    private WorldFilterConfig parseWorldFilter(ConfigurationSection section) {
+        if (section == null) {
+            return new WorldFilterConfig(RegionMode.NONE, List.of());
+        }
+        return new WorldFilterConfig(
+                parseRegionMode(section.getString("mode", "NONE")),
+                section.getStringList("worlds")
+        );
+    }
+
+    private SoundsConfig parseSounds(ConfigurationSection section) {
+        if (section == null) {
+            return new SoundsConfig(false, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+        }
+        return new SoundsConfig(
+                section.getBoolean("enabled", false),
+                parseSound(section.getString("pull")),
+                parseSound(section.getString("fuel")),
+                parseSound(section.getString("depleted")),
+                parseSound(section.getString("denied"))
+        );
+    }
+
+    private Optional<org.bukkit.Sound> parseSound(String name) {
+        if (name == null || name.isBlank()) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(org.bukkit.Sound.valueOf(name.toUpperCase(Locale.ROOT)));
+        } catch (IllegalArgumentException exception) {
+            plugin.getLogger().warning("Invalid sound in config: " + name);
+            return Optional.empty();
+        }
+    }
+
+    private TownyConfig parseTowny(ConfigurationSection section) {
+        if (section == null) {
+            return new TownyConfig(false, WildernessPolicy.ALLOW, "itemmagnet.wilderness", ClaimedLandPolicy.RESPECT_FLAGS);
+        }
+        return new TownyConfig(
+                section.getBoolean("enabled", false),
+                parseWilderness(section.getString("wilderness", "ALLOW")),
+                section.getString("wilderness-permission", "itemmagnet.wilderness"),
+                parseClaimedLand(section.getString("claimed-town", "RESPECT_FLAGS"))
+        );
+    }
+
+    private GriefPreventionConfig parseGriefPrevention(ConfigurationSection section) {
+        if (section == null) {
+            return new GriefPreventionConfig(false, ClaimedLandPolicy.RESPECT_FLAGS);
+        }
+        return new GriefPreventionConfig(
+                section.getBoolean("enabled", false),
+                parseClaimedLand(section.getString("claimed-land", "RESPECT_FLAGS"))
+        );
+    }
+
     public void validateStartup() {
         if (magnetConfig.getTiers().isEmpty()) {
             plugin.getLogger().severe("No magnet tiers configured!");
@@ -397,6 +517,12 @@ public final class ConfigManager {
         }
         if (magnetConfig.getWorldGuard().isEnabled() && plugin.getServer().getPluginManager().getPlugin("WorldGuard") == null) {
             plugin.getLogger().warning("WorldGuard integration enabled but WorldGuard is not installed.");
+        }
+        if (magnetConfig.getTowny().isEnabled() && plugin.getServer().getPluginManager().getPlugin("Towny") == null) {
+            plugin.getLogger().warning("Towny integration enabled but Towny is not installed.");
+        }
+        if (magnetConfig.getGriefPrevention().isEnabled() && plugin.getServer().getPluginManager().getPlugin("GriefPrevention") == null) {
+            plugin.getLogger().warning("GriefPrevention integration enabled but GriefPrevention is not installed.");
         }
     }
 }

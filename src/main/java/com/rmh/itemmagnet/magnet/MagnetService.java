@@ -1,24 +1,34 @@
 package com.rmh.itemmagnet.magnet;
 
 import com.rmh.itemmagnet.ItemMagnetPlugin;
+import com.rmh.itemmagnet.api.event.ItemMagnetDepleteEvent;
+import com.rmh.itemmagnet.api.event.ItemMagnetExperiencePullEvent;
+import com.rmh.itemmagnet.api.event.ItemMagnetFuelAbsorbEvent;
+import com.rmh.itemmagnet.api.event.ItemMagnetPullEvent;
 import com.rmh.itemmagnet.config.AntiAfkConfig;
 import com.rmh.itemmagnet.config.FuelConfig;
 import com.rmh.itemmagnet.config.MagnetConfig;
 import com.rmh.itemmagnet.config.MessagesConfig;
 import com.rmh.itemmagnet.config.TierConfig;
+import com.rmh.itemmagnet.item.LoreContext;
 import com.rmh.itemmagnet.item.MagnetData;
 import com.rmh.itemmagnet.item.MagnetItemService;
 import com.rmh.itemmagnet.protection.ProtectionService;
+import com.rmh.itemmagnet.sound.SoundService;
 import com.rmh.itemmagnet.util.TextUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,24 +39,39 @@ public final class MagnetService extends BukkitRunnable {
     private final MagnetItemService itemService;
     private final ProtectionService protectionService;
     private final AfkTracker afkTracker;
+    private final MagnetLocator magnetLocator;
+    private SoundService soundService;
     private final Map<UUID, Long> denyCooldowns = new HashMap<>();
+    private final Map<UUID, Long> afkMessageCooldowns = new HashMap<>();
     private final Map<UUID, Double> drainAccumulator = new HashMap<>();
 
     public MagnetService(
             ItemMagnetPlugin plugin,
             MagnetItemService itemService,
             ProtectionService protectionService,
-            AfkTracker afkTracker
+            AfkTracker afkTracker,
+            MagnetLocator magnetLocator
     ) {
         this.plugin = plugin;
         this.itemService = itemService;
         this.protectionService = protectionService;
         this.afkTracker = afkTracker;
+        this.magnetLocator = magnetLocator;
+        refreshSoundService();
+    }
+
+    public void refreshSoundService() {
+        this.soundService = new SoundService(plugin.getConfigManager().getMagnetConfig());
     }
 
     public void start() {
         int interval = plugin.getConfigManager().getMagnetConfig().getScanIntervalTicks();
         runTaskTimer(plugin, interval, interval);
+    }
+
+    public void restart() {
+        cancel();
+        start();
     }
 
     @Override
@@ -63,10 +88,27 @@ public final class MagnetService extends BukkitRunnable {
         if (!player.hasPermission("itemmagnet.use")) {
             return;
         }
+        if (config.isDisableInCreative() && player.getGameMode() == GameMode.CREATIVE) {
+            return;
+        }
+        if (config.isDisableInSpectator() && player.getGameMode() == GameMode.SPECTATOR) {
+            return;
+        }
+        if (!config.getWorldFilter().isAllowed(player.getWorld().getName())) {
+            return;
+        }
 
-        ItemStack mainHand = player.getInventory().getItemInMainHand();
-        Optional<MagnetData> magnetOptional = itemService.read(mainHand);
-        if (magnetOptional.isEmpty()) {
+        Optional<MagnetSlot> slotOptional = magnetLocator.locate(player, config);
+        if (slotOptional.isEmpty()) {
+            return;
+        }
+
+        MagnetSlot magnetSlot = slotOptional.get();
+        ItemStack magnetStack = magnetSlot.getItemStack();
+        MagnetData magnet = magnetSlot.getData();
+        TierConfig tier = magnet.getTier();
+
+        if (!player.hasPermission("itemmagnet.use." + tier.getId())) {
             return;
         }
 
@@ -74,7 +116,6 @@ public final class MagnetService extends BukkitRunnable {
             return;
         }
 
-        MagnetData magnet = magnetOptional.get();
         if (!RadiusCalculator.isHeightAllowed(config, player)) {
             sendMessage(player, "magnet.y-disabled", Map.of());
             return;
@@ -84,6 +125,14 @@ public final class MagnetService extends BukkitRunnable {
         boolean afkBlocked = antiAfk.isEnabled()
                 && afkTracker.isAfk(player, antiAfk.getRequiredBlocksMoved(), antiAfk.getWindowSeconds());
         if (afkBlocked) {
+            if (antiAfk.isNotifyOnce()) {
+                if (afkTracker.shouldNotifyAfk(player, antiAfk.getRequiredBlocksMoved(), antiAfk.getWindowSeconds())) {
+                    sendMessage(player, "magnet.afk-disabled", Map.of());
+                    afkTracker.markAfkNotified(player);
+                }
+            } else {
+                sendThrottledMessage(player, afkMessageCooldowns, config.getDenyMessageCooldownTicks(), "magnet.afk-disabled", Map.of());
+            }
             return;
         }
 
@@ -94,45 +143,46 @@ public final class MagnetService extends BukkitRunnable {
         if (!magnet.isBoostActive(currentTick) && magnet.getBoostLevel() > 0) {
             magnet.setBoostLevel(0);
             magnet.setBoostExpiryTick(0);
-            itemService.write(mainHand, magnet);
-            player.getInventory().setItemInMainHand(mainHand);
+            writeMagnet(player, magnetSlot, magnet);
         }
 
         applyBaseDrain(player, magnet, config);
         if (magnet.getCharge() <= 0) {
             sendMessage(player, "magnet.depleted", Map.of());
-            itemService.write(mainHand, magnet);
-            player.getInventory().setItemInMainHand(mainHand);
+            soundService.playDepleted(player);
+            Bukkit.getPluginManager().callEvent(new ItemMagnetDepleteEvent(player, tier));
+            writeMagnet(player, magnetSlot, magnet);
             return;
         }
 
-        double radius = RadiusCalculator.calculateEffectiveRadius(config, magnet.getTier(), magnet, player, currentTick);
+        double radius = RadiusCalculator.calculateEffectiveRadius(config, tier, magnet, player, currentTick);
         int processed = 0;
 
         if (!afkBlocked || !antiAfk.isDisableAutoFuelWhenAfk()) {
-            processed += absorbFuel(player, mainHand, magnet, config, currentTick);
+            processed += absorbFuel(player, magnetSlot, magnet, config, currentTick, radius);
         }
 
-        for (Item entity : player.getWorld().getEntitiesByClass(Item.class)) {
+        List<Item> nearbyItems = NearbyItemScanner.findItems(player, radius);
+        for (Item entity : nearbyItems) {
             if (processed >= config.getMaxItemsPerTick()) {
                 break;
-            }
-            if (!entity.isValid() || entity.isDead()) {
-                continue;
-            }
-            if (entity.getLocation().distance(player.getLocation()) > radius) {
-                continue;
             }
 
             ItemStack stack = entity.getItemStack();
             if (isFuelItem(config, stack.getType())) {
                 continue;
             }
-            if (magnet.getTier().getBlacklist().contains(stack.getType())) {
+            if (!tier.canPullMaterial(stack.getType())) {
                 continue;
             }
             if (!protectionService.canPull(player, entity.getLocation())) {
                 sendDenyMessage(player, config);
+                continue;
+            }
+
+            ItemMagnetPullEvent pullEvent = new ItemMagnetPullEvent(player, entity, stack);
+            Bukkit.getPluginManager().callEvent(pullEvent);
+            if (pullEvent.isCancelled()) {
                 continue;
             }
 
@@ -143,27 +193,83 @@ public final class MagnetService extends BukkitRunnable {
 
             entity.teleport(next);
             spawnTrail(config, next);
+            soundService.playPull(player);
+            maybeSwingArm(player, magnetSlot, config);
             processed++;
-
-            if (PullPhysics.distance(next, player.getLocation()) <= config.getPickupDistance()) {
-                drainForItemPull(player, magnet, config);
-            } else {
-                drainForItemPull(player, magnet, config);
-            }
+            drainForItemPull(player, magnet, config);
         }
 
-        itemService.write(mainHand, magnet);
-        player.getInventory().setItemInMainHand(mainHand);
+        if (config.isPullExperience() && tier.isPullExperience()) {
+            processed = pullExperienceOrbs(player, magnet, config, radius, processed);
+        }
+
+        writeMagnet(player, magnetSlot, magnet, config, currentTick);
     }
 
-    private int absorbFuel(Player player, ItemStack mainHand, MagnetData magnet, MagnetConfig config, long currentTick) {
-        int absorbed = 0;
-        for (Item entity : player.getWorld().getEntitiesByClass(Item.class)) {
-            Material type = entity.getItemStack().getType();
-            if (!isFuelItem(config, type)) {
+    private int pullExperienceOrbs(
+            Player player,
+            MagnetData magnet,
+            MagnetConfig config,
+            double radius,
+            int processed
+    ) {
+        List<ExperienceOrb> experienceOrbs = NearbyExperienceScanner.findExperienceOrbs(player, radius);
+        for (ExperienceOrb orb : experienceOrbs) {
+            if (processed >= config.getMaxItemsPerTick()) {
+                break;
+            }
+            if (!protectionService.canPull(player, orb.getLocation())) {
+                sendDenyMessage(player, config);
                 continue;
             }
-            if (entity.getLocation().distance(player.getLocation()) > config.getFuelRadius()) {
+
+            int experience = orb.getExperience();
+            ItemMagnetExperiencePullEvent pullEvent = new ItemMagnetExperiencePullEvent(player, orb, experience);
+            Bukkit.getPluginManager().callEvent(pullEvent);
+            if (pullEvent.isCancelled()) {
+                continue;
+            }
+
+            if (PullPhysics.distance(orb.getLocation(), player.getLocation()) <= config.getPickupDistance()) {
+                orb.remove();
+                player.giveExp(experience);
+                spawnTrail(config, player.getLocation());
+                soundService.playPull(player);
+                processed++;
+                drainForItemPull(player, magnet, config);
+                continue;
+            }
+
+            Location next = PullPhysics.stepToward(orb.getLocation(), player.getLocation(), config.getPullStepBlocks());
+            if (next.equals(orb.getLocation())) {
+                continue;
+            }
+
+            orb.teleport(next);
+            spawnTrail(config, next);
+            soundService.playPull(player);
+            processed++;
+            drainForItemPull(player, magnet, config);
+        }
+        return processed;
+    }
+
+    private int absorbFuel(
+            Player player,
+            MagnetSlot magnetSlot,
+            MagnetData magnet,
+            MagnetConfig config,
+            long currentTick,
+            double effectiveRadius
+    ) {
+        int absorbed = 0;
+        double scanRadius = config.isFuelUseEffectiveRadius()
+                ? Math.max(config.getFuelRadius(), effectiveRadius)
+                : config.getFuelRadius();
+        List<Item> fuelItems = NearbyItemScanner.findItems(player, scanRadius);
+        for (Item entity : fuelItems) {
+            Material type = entity.getItemStack().getType();
+            if (!isFuelItem(config, type)) {
                 continue;
             }
             if (!protectionService.canPull(player, entity.getLocation())) {
@@ -173,6 +279,12 @@ public final class MagnetService extends BukkitRunnable {
             FuelConfig fuelConfig = config.getFuel().get(type.name());
             if (fuelConfig == null) {
                 continue;
+            }
+
+            int maxCharge = magnet.getTier().getMaxCharge();
+            if (magnet.getCharge() >= maxCharge) {
+                sendThrottledMessage(player, denyCooldowns, config.getDenyMessageCooldownTicks(), "magnet.fuel-full", Map.of());
+                break;
             }
 
             Location next = PullPhysics.stepToward(entity.getLocation(), player.getLocation(), config.getPullStepBlocks());
@@ -185,12 +297,13 @@ public final class MagnetService extends BukkitRunnable {
                 continue;
             }
 
-            int maxCharge = magnet.getTier().getMaxCharge();
-            if (magnet.getCharge() >= maxCharge) {
-                break;
+            int amount = entity.getItemStack().getAmount();
+            ItemMagnetFuelAbsorbEvent fuelEvent = new ItemMagnetFuelAbsorbEvent(player, entity, type, amount);
+            Bukkit.getPluginManager().callEvent(fuelEvent);
+            if (fuelEvent.isCancelled()) {
+                continue;
             }
 
-            int amount = entity.getItemStack().getAmount();
             int chargeToAdd = amount * fuelConfig.getChargePerItem();
             magnet.setCharge(Math.min(maxCharge, magnet.getCharge() + chargeToAdd));
 
@@ -203,12 +316,37 @@ public final class MagnetService extends BukkitRunnable {
 
             entity.remove();
             absorbed++;
+            soundService.playFuel(player, type);
             sendMessage(player, "magnet.fuel-absorbed", Map.of(
                     "charge", String.valueOf(magnet.getCharge()),
                     "max_charge", String.valueOf(maxCharge)
             ));
         }
         return absorbed;
+    }
+
+    private void writeMagnet(Player player, MagnetSlot magnetSlot, MagnetData magnet, MagnetConfig config, long currentTick) {
+        ItemStack stack = magnetSlot.getItemStack();
+        TierConfig tier = magnet.getTier();
+        double effectiveRadius = RadiusCalculator.calculateEffectiveRadius(config, tier, magnet, player, currentTick);
+        LoreContext loreContext = new LoreContext(effectiveRadius, tier.getRadius());
+        itemService.write(stack, magnet, loreContext);
+        player.getInventory().setItem(magnetSlot.getSlot(), stack);
+    }
+
+    private void writeMagnet(Player player, MagnetSlot magnetSlot, MagnetData magnet) {
+        writeMagnet(player, magnetSlot, magnet, plugin.getConfigManager().getMagnetConfig(), plugin.getServer().getCurrentTick());
+    }
+
+    private void maybeSwingArm(Player player, MagnetSlot magnetSlot, MagnetConfig config) {
+        if (!config.isPullArmSwing()) {
+            return;
+        }
+        if (magnetSlot.getSlot() == 40) {
+            player.swingOffHand();
+            return;
+        }
+        player.swingMainHand();
     }
 
     private void applyBaseDrain(Player player, MagnetData magnet, MagnetConfig config) {
@@ -247,6 +385,24 @@ public final class MagnetService extends BukkitRunnable {
         }
         denyCooldowns.put(player.getUniqueId(), now);
         sendMessage(player, "magnet.denied-location", Map.of());
+        soundService.playDenied(player);
+    }
+
+    private void sendThrottledMessage(
+            Player player,
+            Map<UUID, Long> cooldownMap,
+            int cooldownTicks,
+            String key,
+            Map<String, String> placeholders
+    ) {
+        long now = System.currentTimeMillis();
+        long cooldownMillis = cooldownTicks * 50L;
+        Long last = cooldownMap.get(player.getUniqueId());
+        if (last != null && now - last < cooldownMillis) {
+            return;
+        }
+        cooldownMap.put(player.getUniqueId(), now);
+        sendMessage(player, key, placeholders);
     }
 
     private void sendMessage(Player player, String key, Map<String, String> placeholders) {
@@ -256,5 +412,13 @@ public final class MagnetService extends BukkitRunnable {
 
     public AfkTracker getAfkTracker() {
         return afkTracker;
+    }
+
+    public SoundService getSoundService() {
+        return soundService;
+    }
+
+    public MagnetLocator getMagnetLocator() {
+        return magnetLocator;
     }
 }

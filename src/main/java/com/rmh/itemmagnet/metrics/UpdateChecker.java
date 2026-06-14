@@ -3,6 +3,7 @@ package com.rmh.itemmagnet.metrics;
 import com.rmh.itemmagnet.ItemMagnetPlugin;
 import com.rmh.itemmagnet.config.MessagesConfig;
 import com.rmh.itemmagnet.config.UpdateCheckMode;
+import com.rmh.itemmagnet.util.PluginCompat;
 import com.rmh.itemmagnet.util.TextUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -50,7 +51,7 @@ public final class UpdateChecker implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 HttpURLConnection connection = (HttpURLConnection) URI.create(RELEASES_URL).toURL().openConnection();
-                connection.setRequestProperty("User-Agent", "ItemMagnet/" + plugin.getPluginMeta().getVersion());
+                connection.setRequestProperty("User-Agent", "ItemMagnet/" + PluginCompat.getVersion(plugin));
                 connection.setConnectTimeout(5000);
                 connection.setReadTimeout(5000);
                 if (connection.getResponseCode() != 200) {
@@ -63,7 +64,7 @@ public final class UpdateChecker implements Listener {
                         body.append(line);
                     }
                     String tag = extractJsonField(body.toString(), "tag_name");
-                    if (tag != null && !tag.equals(plugin.getPluginMeta().getVersion())) {
+                    if (tag != null && PluginCompat.isNewerVersion(tag, PluginCompat.getVersion(plugin))) {
                         latestVersion = tag;
                         updateAvailable = true;
                         plugin.getLogger().info("Update available: " + tag);
