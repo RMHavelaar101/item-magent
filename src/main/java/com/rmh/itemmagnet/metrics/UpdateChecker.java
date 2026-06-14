@@ -89,7 +89,7 @@ public final class UpdateChecker implements Listener {
         MessagesConfig messages = plugin.getConfigManager().getMessagesConfig();
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("version", latestVersion == null ? "unknown" : latestVersion);
-        placeholders.put("url", "https://hangar.papermc.io/RMHavelaar101/ItemMagnets");
+        placeholders.put("url", "https://hangar.papermc.io/Alcerious/ItemMagnets");
         player.sendMessage(TextUtil.component(TextUtil.color(messages.format("command.update-available", placeholders))));
     }
 

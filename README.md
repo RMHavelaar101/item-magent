@@ -78,7 +78,7 @@ Full matrix: [docs/marketplace/compatibility.md](docs/marketplace/compatibility.
 
 ## Quick start
 
-1. Download `ItemMagnet-1.2.1.jar` from [Releases](https://github.com/RMHavelaar101/item-magent/releases) or [Hangar](https://hangar.papermc.io/RMHavelaar101/ItemMagnets)
+1. Download `ItemMagnet-1.2.1.jar` from [Releases](https://github.com/RMHavelaar101/item-magent/releases) or [Hangar](https://hangar.papermc.io/Alcerious/ItemMagnets)
 2. Place in `plugins/` and restart the server
 3. Give yourself a magnet:
 

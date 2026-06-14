@@ -15,7 +15,7 @@
 
 ## Steps
 
-1. Download `ItemMagnet-1.2.1.jar` from [GitHub Releases](https://github.com/RMHavelaar101/item-magent/releases) or [Hangar](https://hangar.papermc.io/RMHavelaar101/ItemMagnets).
+1. Download `ItemMagnet-1.2.1.jar` from [GitHub Releases](https://github.com/RMHavelaar101/item-magent/releases) or [Hangar](https://hangar.papermc.io/Alcerious/ItemMagnets).
 2. Place the JAR in your server's `plugins/` directory.
 3. Start or restart the server.
 4. On first run, ItemMagnet creates:
