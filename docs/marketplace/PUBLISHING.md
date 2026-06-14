@@ -29,7 +29,7 @@ Upload screenshots to GitHub (`media/` folder) for stable raw URLs, or use Spigo
 
 ## Hangar (recommended primary)
 
-1. https://hangar.papermc.io — create project `RMHavelaar101/ItemMagnet`
+1. https://hangar.papermc.io — create project `RMHavelaar101/ItemMagnets`
 2. **Avatar:** `branding/icon-256.png`
 3. **Description:** paste from [hangar-page.md](hangar-page.md)
 4. **Platforms:** Paper — `1.21.1`, `1.21.4`, `26.1`

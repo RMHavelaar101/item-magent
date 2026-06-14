@@ -71,7 +71,7 @@ tasks {
 hangarPublish {
     publications.register("plugin") {
         version.set(project.version as String)
-        id.set("ItemMagnet")
+        id.set("ItemMagnets")
         channel.set("Release")
         changelog.set("See CHANGELOG.md on GitHub.")
         apiKey.set(System.getenv("HANGAR_API_TOKEN") ?: "")

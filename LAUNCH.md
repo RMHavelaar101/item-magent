@@ -22,7 +22,7 @@ Attach `build/libs/ItemMagnet-1.2.1.jar` (CI or manual upload).
 ## 2. Hangar (recommended primary)
 
 1. Create account at https://hangar.papermc.io
-2. Create project: namespace `RMHavelaar101`, name `ItemMagnet`
+2. Create project: namespace `RMHavelaar101`, name `ItemMagnets`
 3. **Avatar:** `branding/icon-256.png`
 4. **Description:** paste from `docs/marketplace/hangar-page.md`
 5. **Platforms:** Paper — `1.21.1`, `1.21.4`, `26.1`

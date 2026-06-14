@@ -59,7 +59,7 @@ https://github.com/RMHavelaar101/item-magent/releases
 Or Hangar:
 
 ```
-https://hangar.papermc.io/RMHavelaar101/ItemMagnet
+https://hangar.papermc.io/RMHavelaar101/ItemMagnets
 ```
 
 ## Resource icon
