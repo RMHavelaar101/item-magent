@@ -39,4 +39,6 @@ Welcome to the ItemMagnet documentation.
 - [Version compatibility](marketplace/compatibility.md)
 - [Hangar page copy](marketplace/hangar-page.md)
 - [SpigotMC listing copy](marketplace/spigot-description.bbcode)
+- [SpigotMC documentation copy](marketplace/spigot-documentation.bbcode)
+- [SpigotMC revival update post](marketplace/spigot-update-post.bbcode)
 - [SpigotMC form fields](marketplace/spigot-metadata.md)

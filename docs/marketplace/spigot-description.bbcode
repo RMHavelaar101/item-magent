@@ -1,25 +1,6 @@
 [SIZE=5][B]ItemMagnet[/B] — Tiered Item Magnets, Redstone Fuel & Claim Protection[/SIZE]
 
-[CENTER][I]v1.2.1 · Paper 1.21.1+ · Java 21+ · Lands, WorldGuard, Towny & more (optional)[/I][/CENTER]
-
-[HR]
-
-[B]Compatibility[/B]
-[LIST]
-[*][B]Paper 1.21.1 or newer[/B] — required (not Spigot/CraftBukkit)
-[*][B]Java 21+[/B] — LTS recommended
-[*]Tested on Paper [B]1.21.1[/B], [B]1.21.4[/B], and [B]26.1[/B]
-[*]Optional: Lands, WorldGuard, Towny, GriefPrevention, PlaceholderAPI, CMI
-[*]Not supported: Folia
-[/LIST]
-
-[B]Links[/B]
-[LIST]
-[*][URL='https://itemmagnet.theryn.org']Product website[/URL]
-[*][URL='https://github.com/RMHavelaar101/item-magent']GitHub & documentation[/URL]
-[*][URL='https://itemmagnet.theryn.org/#support']Request support[/URL]
-[*][URL='https://github.com/RMHavelaar101/item-magent/issues']Report bugs on GitHub[/URL]
-[/LIST]
+[CENTER][I]v1.2.1 · Paper 1.21.1+ · Java 21+[/I][/CENTER]
 
 [HR]
 
@@ -41,7 +22,7 @@ Built for survival SMPs that need [B]Lands[/B], [B]WorldGuard[/B], [B]Towny[/B],
 [*][B]Hold modes[/B] — main hand, any hotbar slot, or anywhere in inventory (passive magnet)
 [*][B]XP orb pulling[/B] — optional experience orb collection at the same radius
 [*][B]Redstone fuel loop[/B] — dust recharge, block power surge, per-fuel sounds
-[*][B]Claim-aware[/B] — Lands wilderness/owner/member/flag modes; WG regions; Towny; GP
+[*][B]Claim-aware[/B] — Lands, WorldGuard, Towny, and GriefPrevention hooks
 [*][B]In-game config GUI[/B] — [CODE]/itemmagnet config[/CODE] for settings, tiers, fuel, integrations
 [*][B]Rename items[/B] — change tier display names from the GUI (chat input, color codes)
 [*][B]Unlock gates[/B] — permission, advancement, CMI stat/rank, or admin command (persisted)
@@ -67,90 +48,21 @@ Built for survival SMPs that need [B]Lands[/B], [B]WorldGuard[/B], [B]Towny[/B],
 
 [HR]
 
-[SIZE=4][B]Commands[/B][/SIZE]
-
-[TABLE]
-[TR][TH]Command[/TH][TH]Permission[/TH][TH]Description[/TH][/TR]
-[TR][TD]/itemmagnet[/TD][TD]—[/TD][TD]Show help (filtered by permission)[/TD][/TR]
-[TR][TD]/itemmagnet reload[/TD][TD]itemmagnet.reload[/TD][TD]Reload config and messages[/TD][/TR]
-[TR][TD]/itemmagnet config[/TD][TD]itemmagnet.config[/TD][TD]Open in-game config editor[/TD][/TR]
-[TR][TD]/itemmagnet version[/TD][TD]itemmagnet.admin[/TD][TD]Version and hook status[/TD][/TR]
-[TR][TD]/itemmagnet give <player> <tier|all> [charge][/TD][TD]itemmagnet.give[/TD][TD]Give a resonator[/TD][/TR]
-[TR][TD]/itemmagnet giveall <player> [charge][/TD][TD]itemmagnet.give[/TD][TD]Give all tiers[/TD][/TR]
-[TR][TD]/itemmagnet unlock <player> <tier|all>[/TD][TD]itemmagnet.unlock[/TD][TD]Unlock a recipe[/TD][/TR]
-[TR][TD]/itemmagnet unlockall <player>[/TD][TD]itemmagnet.unlock[/TD][TD]Unlock all recipes[/TD][/TR]
-[TR][TD]/itemmagnet debug[/TD][TD]itemmagnet.debug[/TD][TD]Stats for your active magnet[/TD][/TR]
-[/TABLE]
-
-Aliases: [CODE]/im[/CODE], [CODE]/magnet[/CODE]
-
-[HR]
-
-[SIZE=4][B]Permissions[/B][/SIZE]
-
+[B]Requirements[/B]
 [LIST]
-[*][B]itemmagnet.use[/B] (default: true) — use magnets
-[*][B]itemmagnet.use.<tier>[/B] (default: true) — per-tier use (fragment, survey, anchor)
-[*][B]itemmagnet.wilderness[/B] (default: op) — use in Lands/Towny wilderness
-[*][B]itemmagnet.bypass.lands[/B] — skip Lands checks
-[*][B]itemmagnet.bypass.regions[/B] — skip WorldGuard region lists
-[*][B]itemmagnet.admin[/B] (default: op) — reload, give, unlock, config, version
+[*][B]Paper 1.21.1+[/B] (not Spigot/CraftBukkit)
+[*][B]Java 21+[/B]
+[*]Tested on Paper 1.21.1, 1.21.4, and 26.1
 [/LIST]
 
-Full list: [URL='https://github.com/RMHavelaar101/item-magent/blob/main/docs/permissions.md']Permissions docs[/URL]
-
-[HR]
-
-[SIZE=4][B]Configuration[/B][/SIZE]
-
-On first run, edit [CODE]plugins/ItemMagnet/config.yml[/CODE] or use [CODE]/itemmagnet config[/CODE].
-
-Key sections:
+[B]Links[/B]
 [LIST]
-[*][B]tiers[/B] — materials, display names, lore, radius, recipes, unlocks, whitelists
-[*][B]fuel[/B] — dust vs block charge, power surge, per-fuel sounds
-[*][B]integrations[/B] — Lands, WorldGuard, Towny, GriefPrevention
-[*][B]settings[/B] — hold-mode, sounds, XP pull, fuel radius, arm swing
-[*][B]anti-afk[/B] — movement requirement, notify-once
-[*][B]height[/B] — underground vs surface radius modifier
-[*][B]presets[/B] — [CODE]theryn[/CODE], [CODE]testing[/CODE], or custom
+[*][URL='https://itemmagnet.theryn.org']Product website[/URL]
+[*][URL='https://itemmagnet.theryn.org/#support']Request support[/URL]
+[*][URL='https://github.com/RMHavelaar101/item-magent/releases']Download latest JAR[/URL]
+[*][URL='https://hangar.papermc.io/RMHavelaar101/ItemMagnet']Hangar[/URL]
 [/LIST]
 
-Most settings hot-reload with [CODE]/itemmagnet reload[/CODE]. Metrics keys may need a restart (plugin warns you).
-
-Full docs & support: [URL='https://itemmagnet.theryn.org']itemmagnet.theryn.org[/URL]
-Configuration: [URL='https://github.com/RMHavelaar101/item-magent/blob/main/docs/configuration.md']Configuration docs[/URL]
-Config GUI: [URL='https://github.com/RMHavelaar101/item-magent/blob/main/docs/config-gui.md']Config GUI guide[/URL]
-
 [HR]
 
-[SIZE=4][B]Integrations[/B][/SIZE]
-
-[LIST]
-[*][B]Lands[/B] — wilderness, owner, member, flag-based modes
-[*][B]WorldGuard[/B] — region whitelist/blacklist, item-pickup flag
-[*][B]Towny[/B] — town plot protection
-[*][B]GriefPrevention[/B] — claim respect
-[*][B]PlaceholderAPI[/B] — [CODE]%itemmagnet_charge%[/CODE], [CODE]%itemmagnet_radius%[/CODE], tier, boost
-[*][B]CMI[/B] — stat/rank unlock gates
-[/LIST]
-
-All integrations are optional — the plugin runs standalone.
-
-[HR]
-
-[SIZE=4][B]For developers[/B][/SIZE]
-
-Public API events (cancellable):
-[LIST]
-[*]ItemMagnetPullEvent
-[*]ItemMagnetFuelAbsorbEvent
-[*]ItemMagnetDepleteEvent
-[*]ItemMagnetXpPullEvent
-[/LIST]
-
-API docs: [URL='https://github.com/RMHavelaar101/item-magent/blob/main/docs/api.md']Developer API[/URL]
-
-[HR]
-
-[I]Need help? [URL='https://itemmagnet.theryn.org/#support']Request support[/URL] or open a GitHub issue. Include Paper version, Java version, ItemMagnet version, and steps to reproduce.[/I]
+[I]Full commands, permissions, and configuration reference are in the [B]Documentation[/B] tab. Need help? [URL='https://itemmagnet.theryn.org/#support']Request support[/URL] or [URL='https://github.com/RMHavelaar101/item-magent/issues']open a GitHub issue[/URL].[/I]

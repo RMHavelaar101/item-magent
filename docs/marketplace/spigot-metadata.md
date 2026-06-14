@@ -1,6 +1,10 @@
 # SpigotMC form fields
 
-Copy these into the Spigot resource creation form. Body text goes in the description field from [spigot-description.bbcode](spigot-description.bbcode).
+Copy these into the Spigot resource creation form:
+
+- **Description** field → [spigot-description.bbcode](spigot-description.bbcode)
+- **Documentation** field → [spigot-documentation.bbcode](spigot-documentation.bbcode)
+- **Resource update / revival post** → [spigot-update-post.bbcode](spigot-update-post.bbcode)
 
 ## Resource title
 

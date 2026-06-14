@@ -1,0 +1,98 @@
+[SIZE=5][B]ItemMagnet is back — rebuilt for Paper 1.21+[/B][/SIZE]
+
+[CENTER][I]v1.2.1 · First release since 2021 · Modern survival SMP magnet plugin[/I][/CENTER]
+
+[HR]
+
+[B]It has been a while.[/B]
+
+ItemMagnet went quiet after 2021. If you used the original plugin on older versions, thank you for your patience — this is a full revival built for [B]modern Paper servers[/B], not a quick port.
+
+The core idea is the same: [B]tiered magnet tools[/B] that pull dropped loot toward you. Everything else has been rebuilt for how survival SMPs run today.
+
+[HR]
+
+[SIZE=4][B]What is new in the 1.2.x line[/B][/SIZE]
+
+[LIST]
+[*][B]Paper 1.21.1+[/B] and [B]Java 21+[/B] (tested through Paper 26.1)
+[*][B]Visible pull physics[/B] — line-of-sight movement; items slide around corners instead of teleporting through walls
+[*][B]Redstone fuel system[/B] — dust recharge, redstone block power surges, live charge/radius on item lore
+[*][B]Claim-aware[/B] — Lands, WorldGuard, Towny, and GriefPrevention hooks
+[*][B]Three tiers[/B] — Fragment, Survey, Anchor (configurable materials, recipes, unlock gates)
+[*][B]Hold modes[/B] — main hand, hotbar, or anywhere in inventory
+[*][B]In-game config GUI[/B] — [CODE]/itemmagnet config[/CODE] with tier editor and hot reload
+[*][B]XP orb pulling[/B], PlaceholderAPI placeholders, and a public developer API
+[/LIST]
+
+[HR]
+
+[SIZE=4][B]Requirements (important)[/B][/SIZE]
+
+[LIST]
+[*][B]Paper 1.21.1 or newer[/B] — required (not vanilla Spigot/CraftBukkit)
+[*][B]Java 21+[/B]
+[*][B]Folia[/B] — not supported
+[/LIST]
+
+Paper is a drop-in replacement on most hosts. If you ran the 2021 build on Spigot, you will need Paper for fuel transfer and modern interact handling.
+
+[HR]
+
+[SIZE=4][B]Download & links[/B][/SIZE]
+
+[LIST]
+[*][URL='https://itemmagnet.theryn.org']Product website[/URL] — screenshots, docs, support form
+[*][URL='https://github.com/RMHavelaar101/item-magent/releases/tag/v1.2.1']Download v1.2.1[/URL]
+[*][URL='https://hangar.papermc.io/RMHavelaar101/ItemMagnet']Hangar[/URL]
+[*][URL='https://github.com/RMHavelaar101/item-magent/tree/main/docs']Full documentation[/URL]
+[*][URL='https://itemmagnet.theryn.org/#support']Request support[/URL]
+[*][URL='https://github.com/RMHavelaar101/item-magent/issues']Report bugs[/URL]
+[/LIST]
+
+[HR]
+
+[SIZE=4][B]Quick start[/B][/SIZE]
+
+[LIST=1]
+[*]Download [B]ItemMagnet-1.2.1.jar[/B] and place it in [CODE]plugins/[/CODE]
+[*]Restart your Paper server
+[*][CODE]/itemmagnet give YourName fragment 500[/CODE]
+[*]Hold the magnet; fuel with redstone dust (sneak + right-click)
+[*]Drop items nearby — they pull with visible motion
+[/LIST]
+
+Optional: [CODE]/itemmagnet config[/CODE] to open the in-game editor.
+
+[HR]
+
+[SIZE=4][B]Migrating from the old 2021 build[/B][/SIZE]
+
+Treat this as a [B]fresh install[/B]:
+
+[LIST]
+[*]Config format, commands, and permissions have changed
+[*]Review [CODE]plugins/ItemMagnet/config.yml[/CODE] on first run or use [CODE]/itemmagnet config[/CODE]
+[*]Old magnet items in player inventories may need to be re-given
+[*]Integrations (Lands, WorldGuard, etc.) are optional but recommended for SMPs
+[/LIST]
+
+Full command and permission reference is in the resource [B]Documentation[/B] tab and on the website.
+
+[HR]
+
+[SIZE=4][B]v1.2.1 changelog highlights[/B][/SIZE]
+
+[LIST]
+[*]Config GUI tier renaming (chat input from tier editor)
+[*]Live [CODE]{radius}[/CODE] and [CODE]{base_radius}[/CODE] lore placeholders
+[*]Per-fuel recharge sounds and improved fuel transfer (either hand)
+[*][CODE]/itemmagnet giveall[/CODE] and [CODE]/itemmagnet unlockall[/CODE]
+[*]AFK [CODE]notify-once[/CODE], permission-filtered help, reload restart warnings
+[/LIST]
+
+[HR]
+
+[I]Screenshots and a full feature breakdown are on [URL='https://itemmagnet.theryn.org']itemmagnet.theryn.org[/URL]. Questions welcome — use the support form or open a GitHub issue with your Paper version and steps to reproduce.[/I]
+
+[B]Welcome back.[/B]

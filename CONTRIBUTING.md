@@ -5,9 +5,9 @@ Thank you for contributing!
 ## Development setup
 
 1. Clone the repository
-2. Ensure JDK 25 is available (Gradle toolchains auto-download via Foojay)
+2. Ensure JDK 21 is available (Gradle toolchains auto-download via Foojay)
 3. Build: `./gradlew build`
-4. Output JAR: `build/libs/ItemMagnet-1.0.0.jar`
+4. Output JAR: `build/libs/ItemMagnet-1.2.1.jar`
 
 ## Pull request process
 

@@ -1,0 +1,154 @@
+[SIZE=4][B]ItemMagnet Documentation[/B][/SIZE]
+[CENTER][I]v1.2.1 · [URL='https://itemmagnet.theryn.org']itemmagnet.theryn.org[/URL][/I][/CENTER]
+
+[HR]
+
+[SIZE=4][B]Installation[/B][/SIZE]
+
+[LIST=1]
+[*]Download [B]ItemMagnet-1.2.1.jar[/B] from [URL='https://github.com/RMHavelaar101/item-magent/releases']GitHub Releases[/URL] or [URL='https://hangar.papermc.io/RMHavelaar101/ItemMagnet']Hangar[/URL]
+[*]Place the JAR in your server's [CODE]plugins/[/CODE] folder
+[*]Restart the server (Paper [B]1.21.1+[/B], Java [B]21+[/B])
+[*]On first run, ItemMagnet creates [CODE]plugins/ItemMagnet/config.yml[/CODE] and [CODE]messages.yml[/CODE]
+[*]Give yourself a magnet: [CODE]/itemmagnet give YourName fragment 500[/CODE]
+[*]Optional: open the in-game editor with [CODE]/itemmagnet config[/CODE]
+[/LIST]
+
+[HR]
+
+[SIZE=4][B]Compatibility[/B][/SIZE]
+
+[TABLE]
+[TR][TH]Component[/TH][TH]Requirement[/TH][/TR]
+[TR][TD]Server[/TD][TD]Paper 1.21.1 or newer (required)[/TD][/TR]
+[TR][TD]Java[/TD][TD]21 or newer[/TD][/TR]
+[TR][TD]Tested[/TD][TD]Paper 1.21.1, 1.21.4, 26.1[/TD][/TR]
+[TR][TD]Not supported[/TD][TD]Spigot, CraftBukkit, Folia[/TD][/TR]
+[/TABLE]
+
+Optional plugins (soft dependencies): Lands, WorldGuard, Towny, GriefPrevention, PlaceholderAPI, CMI.
+
+Paper is required — the plugin uses Paper API features and modern interact handling for fuel transfer.
+
+[HR]
+
+[SIZE=4][B]Commands[/B][/SIZE]
+
+Base command: [CODE]/itemmagnet[/CODE] — aliases [CODE]/im[/CODE], [CODE]/magnet[/CODE]
+
+[TABLE]
+[TR][TH]Command[/TH][TH]Permission[/TH][TH]Description[/TH][/TR]
+[TR][TD]/itemmagnet[/TD][TD]—[/TD][TD]Show help (filtered by permission)[/TD][/TR]
+[TR][TD]/itemmagnet reload[/TD][TD]itemmagnet.reload[/TD][TD]Reload config and messages[/TD][/TR]
+[TR][TD]/itemmagnet config[/TD][TD]itemmagnet.config[/TD][TD]Open in-game config editor[/TD][/TR]
+[TR][TD]/itemmagnet version[/TD][TD]itemmagnet.admin[/TD][TD]Version and hook status[/TD][/TR]
+[TR][TD]/itemmagnet give <player> <tier|all> [charge][/TD][TD]itemmagnet.give[/TD][TD]Give a resonator[/TD][/TR]
+[TR][TD]/itemmagnet giveall <player> [charge][/TD][TD]itemmagnet.give[/TD][TD]Give all tiers[/TD][/TR]
+[TR][TD]/itemmagnet unlock <player> <tier|all>[/TD][TD]itemmagnet.unlock[/TD][TD]Unlock a recipe[/TD][/TR]
+[TR][TD]/itemmagnet unlockall <player>[/TD][TD]itemmagnet.unlock[/TD][TD]Unlock all recipes[/TD][/TR]
+[TR][TD]/itemmagnet debug[/TD][TD]itemmagnet.debug[/TD][TD]Stats for your active magnet[/TD][/TR]
+[/TABLE]
+
+Tier IDs: [CODE]fragment[/CODE], [CODE]survey[/CODE], [CODE]anchor[/CODE], or [CODE]all[/CODE].
+
+[HR]
+
+[SIZE=4][B]Permissions[/B][/SIZE]
+
+[LIST]
+[*][B]itemmagnet.use[/B] (default: true) — use magnets
+[*][B]itemmagnet.use.<tier>[/B] (default: true) — per-tier use (fragment, survey, anchor)
+[*][B]itemmagnet.wilderness[/B] (default: op) — use in Lands/Towny wilderness
+[*][B]itemmagnet.bypass.lands[/B] — skip Lands checks
+[*][B]itemmagnet.bypass.regions[/B] — skip WorldGuard region lists
+[*][B]itemmagnet.admin[/B] (default: op) — reload, give, unlock, config, version
+[*][B]itemmagnet.reload[/B] — reload config
+[*][B]itemmagnet.config[/B] — in-game config GUI
+[*][B]itemmagnet.give[/B] — give magnets
+[*][B]itemmagnet.unlock[/B] — unlock recipes
+[*][B]itemmagnet.debug[/B] — debug command
+[/LIST]
+
+Full list: [URL='https://github.com/RMHavelaar101/item-magent/blob/main/docs/permissions.md']Permissions docs[/URL]
+
+[HR]
+
+[SIZE=4][B]Configuration[/B][/SIZE]
+
+Edit [CODE]plugins/ItemMagnet/config.yml[/CODE] or use [CODE]/itemmagnet config[/CODE].
+
+[B]Key sections[/B]
+[LIST]
+[*][B]tiers[/B] — materials, display names, lore, radius, drain, recipes, unlocks, whitelists
+[*][B]fuel[/B] — redstone dust vs block charge, power surge, per-fuel sounds
+[*][B]integrations[/B] — Lands, WorldGuard, Towny, GriefPrevention
+[*][B]settings[/B] — hold-mode (MAIN_HAND, HOTBAR, INVENTORY), sounds, XP pull, fuel radius, arm swing
+[*][B]anti-afk[/B] — movement requirement, notify-once
+[*][B]height[/B] — underground vs surface radius modifier
+[*][B]world-filter[/B] — blacklist/whitelist worlds
+[*][B]presets[/B] — [CODE]theryn[/CODE], [CODE]testing[/CODE], or [CODE]none[/CODE]
+[/LIST]
+
+Most settings hot-reload with [CODE]/itemmagnet reload[/CODE]. Metrics keys (bStats) may require a server restart — the plugin warns you on reload.
+
+[B]Config GUI[/B]
+[LIST]
+[*]Open with [CODE]/itemmagnet config[/CODE] (permission: [CODE]itemmagnet.config[/CODE])
+[*]Edit settings, tiers, fuel, integrations in-game
+[*]Rename tier display names via name tag button → chat input ([CODE]&[/CODE] color codes supported)
+[/LIST]
+
+Reference: [URL='https://github.com/RMHavelaar101/item-magent/blob/main/docs/configuration.md']Configuration[/URL] · [URL='https://github.com/RMHavelaar101/item-magent/blob/main/docs/config-gui.md']Config GUI[/URL]
+
+[HR]
+
+[SIZE=4][B]Fuel system[/B][/SIZE]
+
+[LIST]
+[*][B]Manual recharge[/B] — sneak + right-click with redstone dust or block in [B]either hand[/B]
+[*][B]Auto-absorb[/B] — redstone drops on the ground can be absorbed when in range (configurable)
+[*][B]Redstone dust[/B] — adds charge
+[*][B]Redstone block[/B] — power surge: extra charge + temporary radius boost (shown on item lore)
+[*][B]Per-fuel sounds[/B] — configurable per material
+[/LIST]
+
+[HR]
+
+[SIZE=4][B]Integrations[/B][/SIZE]
+
+All optional — ItemMagnet runs without them.
+
+[LIST]
+[*][B]Lands[/B] — wilderness, owner, member, flag-based modes
+[*][B]WorldGuard[/B] — region whitelist/blacklist, [CODE]item-pickup[/CODE] flag
+[*][B]Towny[/B] — town plot protection
+[*][B]GriefPrevention[/B] — claim respect
+[*][B]PlaceholderAPI[/B] — [CODE]%itemmagnet_charge%[/CODE], [CODE]%itemmagnet_radius%[/CODE], [CODE]%itemmagnet_tier%[/CODE], [CODE]%itemmagnet_boost%[/CODE]
+[*][B]CMI[/B] — stat/rank unlock gates for tier recipes
+[/LIST]
+
+Integration guides: [URL='https://github.com/RMHavelaar101/item-magent/tree/main/docs/integrations']docs/integrations[/URL]
+
+[HR]
+
+[SIZE=4][B]Developer API[/B][/SIZE]
+
+Public cancellable events:
+[LIST]
+[*]ItemMagnetPullEvent
+[*]ItemMagnetFuelAbsorbEvent
+[*]ItemMagnetDepleteEvent
+[*]ItemMagnetXpPullEvent
+[/LIST]
+
+API reference: [URL='https://github.com/RMHavelaar101/item-magent/blob/main/docs/api.md']Developer API[/URL]
+
+[HR]
+
+[SIZE=4][B]Support[/B][/SIZE]
+
+[LIST]
+[*][URL='https://itemmagnet.theryn.org/#support']Request support[/URL] (include Paper version, ItemMagnet version, and steps to reproduce)
+[*][URL='https://github.com/RMHavelaar101/item-magent/issues']GitHub Issues[/URL]
+[*][URL='https://github.com/RMHavelaar101/item-magent/tree/main/docs']Full documentation[/URL]
+[/LIST]
