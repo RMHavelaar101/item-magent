@@ -1,6 +1,6 @@
 plugins {
     java
-    id("com.gradleup.shadow") version "8.3.5"
+    id("com.gradleup.shadow") version "9.3.1"
     id("io.papermc.hangar-publish-plugin") version "0.1.4"
 }
 
@@ -21,7 +21,7 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${findProperty("paperVersion")}")
 
-    implementation("org.bstats:bstats-bukkit:3.1.0")
+    implementation("org.bstats:bstats-bukkit:3.2.1")
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -42,8 +42,13 @@ tasks {
     shadowJar {
         archiveBaseName.set("ItemMagnet")
         archiveClassifier.set("")
-        // bStats bundled via Shadow (Gradle option from https://bstats.org/getting-started)
-        // Relocation skipped: Shadow ASM does not yet support Java 25 class files
+
+        // Official bStats Gradle setup: https://bstats.org/getting-started
+        configurations.set(listOf(project.configurations.runtimeClasspath.get()))
+        dependencies {
+            exclude { dependency -> dependency.moduleGroup != "org.bstats" }
+        }
+        relocate("org.bstats", project.group.toString())
     }
 
     jar {

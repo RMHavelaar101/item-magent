@@ -1,6 +1,6 @@
 # bStats Setup
 
-ItemMagnet uses the **Gradle Shadow** approach recommended by [bStats](https://bstats.org/getting-started).
+ItemMagnet follows the official [bStats Gradle Shadow guide](https://bstats.org/getting-started).
 
 ## How it is bundled
 
@@ -8,18 +8,28 @@ In `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("org.bstats:bstats-bukkit:3.1.0")
+    implementation("org.bstats:bstats-bukkit:3.2.1")
 }
 
-shadowJar {
-    // Relocation omitted on Java 25 — Shadow's ASM cannot remap Java 25 bytecode yet.
-    // bStats is still bundled into the release JAR via `implementation`.
+tasks.shadowJar {
+    configurations.set(listOf(project.configurations.runtimeClasspath.get()))
+    dependencies {
+        exclude { dependency -> dependency.moduleGroup != "org.bstats" }
+    }
+    relocate("org.bstats", project.group.toString()) // -> com.rmh
 }
 ```
 
-The Shadow plugin bundles bStats into `ItemMagnet-1.0.0.jar` and relocates the package so it does not conflict with other plugins that also use bStats.
+This:
 
-We did **not** use copy-paste because Gradle Shadow is cleaner for releases and CI.
+1. Merges **only** bStats into the release JAR (Paper API stays `compileOnly`)
+2. Relocates `org.bstats` → `com.rmh` to avoid conflicts with other plugins
+
+Build the release JAR:
+
+```bash
+./gradlew shadowJar
+```
 
 ## Register your plugin
 
