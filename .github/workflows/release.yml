@@ -38,6 +38,7 @@ jobs:
           generate_release_notes: true
 
       - name: Publish to Hangar
+        if: ${{ secrets.HANGAR_API_TOKEN != '' }}
         env:
           HANGAR_API_TOKEN: ${{ secrets.HANGAR_API_TOKEN }}
         run: ./gradlew publishPluginPublicationToHangar
