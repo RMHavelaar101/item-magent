@@ -17,7 +17,7 @@ settings:
 
 metrics:
   bstats-enabled: true
-  bstats-plugin-id: 0
+  bstats-plugin-id: 31998
   update-check: ON_STARTUP
 
 anti-afk:
