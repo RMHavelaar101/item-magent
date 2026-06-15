@@ -1,0 +1,49 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: repos/item-magnet
+
+      - uses: actions/checkout@v4
+        with:
+          repository: RMHavelaar101/theryn-plugin-test-utils
+          path: repos/theryn-plugin-test-utils
+
+      - uses: actions/checkout@v4
+        with:
+          repository: RMHavelaar101/theryn-fragments
+          path: repos/theryn-fragments
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: temurin
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: |
+          chmod +x repos/item-magnet/gradlew
+          chmod +x repos/theryn-plugin-test-utils/gradlew
+          chmod +x repos/theryn-fragments/gradlew
+
+      - name: Build dependencies
+        run: |
+          repos/theryn-fragments/gradlew -p repos/theryn-fragments build -x test
+          repos/theryn-plugin-test-utils/gradlew -p repos/theryn-plugin-test-utils build
+
+      - name: Run unit tests
+        run: repos/item-magnet/gradlew -p repos/item-magnet test
+
+      - name: Run MockBukkit integration tests
+        run: repos/item-magnet/gradlew -p repos/item-magnet integrationTest

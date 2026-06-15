@@ -32,7 +32,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
-public final class ItemMagnetPlugin extends JavaPlugin {
+public class ItemMagnetPlugin extends JavaPlugin {
 
     private ConfigManager configManager;
     private ConfigChangeTracker configChangeTracker;
@@ -113,13 +113,21 @@ public final class ItemMagnetPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         if (magnetService != null) {
-            magnetService.cancel();
+            safeCancel(magnetService);
         }
         if (proximityLoreService != null) {
-            proximityLoreService.cancel();
+            safeCancel(proximityLoreService);
         }
         if (recipeService != null) {
             recipeService.unregisterRecipes();
+        }
+    }
+
+    private void safeCancel(org.bukkit.scheduler.BukkitRunnable runnable) {
+        try {
+            runnable.cancel();
+        } catch (IllegalStateException ignored) {
+            // Task was never scheduled (e.g. proximity lore disabled).
         }
     }
 

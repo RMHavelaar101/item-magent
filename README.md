@@ -196,6 +196,22 @@ Output: `build/libs/ItemMagnet-1.2.2.jar`
 
 Requires **Java 21+**.
 
+### Testing
+
+MockBukkit integration tests live in a separate `integrationTest` source set so Mockito unit tests keep a clean classpath.
+
+```bash
+cd ~/dev/theryn-plugin-test-utils && ./gradlew build
+./gradlew test              # Mockito unit tests
+./gradlew integrationTest   # MockBukkit plugin load, PDC, listeners, commands
+```
+
+**What tests cover:** plugin enable, magnet PDC round-trip, join AFK tracker seeding, staff give flow.
+
+**Not covered:** full magnet pull E2E (spawned items + scheduler ticks + line-of-sight), live claim hooks, config GUI.
+
+For live-server QA, use your staging smoke checklist or [ItemMagnet docs](docs/faq.md).
+
 ---
 
 ## Support

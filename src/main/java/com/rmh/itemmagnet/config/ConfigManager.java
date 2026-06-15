@@ -446,9 +446,13 @@ public final class ConfigManager {
     private Particle parseParticle(String name) {
         try {
             return Particle.valueOf(name.toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException exception) {
+        } catch (Throwable exception) {
             plugin.getLogger().warning("Invalid particle type: " + name + ", using REVERSE_PORTAL");
-            return Particle.REVERSE_PORTAL;
+            try {
+                return Particle.valueOf("REVERSE_PORTAL");
+            } catch (Throwable ignored) {
+                return Particle.FLAME;
+            }
         }
     }
 
@@ -531,7 +535,7 @@ public final class ConfigManager {
         String resolved = SOUND_ALIASES.getOrDefault(normalized, normalized);
         try {
             return Optional.of(org.bukkit.Sound.valueOf(resolved));
-        } catch (IllegalArgumentException exception) {
+        } catch (Throwable exception) {
             plugin.getLogger().warning("Invalid sound in config: " + name);
             return Optional.empty();
         }

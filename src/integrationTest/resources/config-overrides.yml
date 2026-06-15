@@ -1,0 +1,7 @@
+settings:
+  sounds:
+    enabled: false
+
+metrics:
+  bstats-enabled: false
+  bstats-plugin-id: 0

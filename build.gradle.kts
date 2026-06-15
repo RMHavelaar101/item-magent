@@ -7,6 +7,13 @@ plugins {
 group = "com.rmh"
 version = property("version") as String
 
+sourceSets {
+    create("integrationTest") {
+        compileClasspath += sourceSets.main.get().output + configurations.testCompileClasspath.get()
+        runtimeClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath.get()
+    }
+}
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
@@ -27,8 +34,17 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.mockito:mockito-core:5.12.0")
     testImplementation("io.papermc.paper:paper-api:${findProperty("paperVersion")}")
+
+    add("integrationTestImplementation", platform("org.junit:junit-bom:5.10.2"))
+    add("integrationTestImplementation", "org.junit.jupiter:junit-jupiter")
+    add("integrationTestRuntimeOnly", "org.junit.platform:junit-platform-launcher")
+    add("integrationTestImplementation", "io.papermc.paper:paper-api:${findProperty("paperVersion")}")
+    add("integrationTestImplementation", "me.clip:placeholderapi:2.11.6")
+    add("integrationTestImplementation", "org.mockbukkit.mockbukkit:mockbukkit-v1.21:4.54.0")
+    add("integrationTestImplementation", files("../theryn-plugin-test-utils/build/libs/theryn-plugin-test-utils-1.0.0.jar"))
 }
 
 tasks {
@@ -47,7 +63,6 @@ tasks {
         archiveBaseName.set("ItemMagnet")
         archiveClassifier.set("")
 
-        // Official bStats Gradle setup: https://bstats.org/getting-started
         configurations.set(listOf(project.configurations.runtimeClasspath.get()))
         dependencies {
             exclude { dependency -> dependency.moduleGroup != "org.bstats" }
@@ -65,6 +80,19 @@ tasks {
 
     test {
         useJUnitPlatform()
+    }
+
+    register<Test>("integrationTest") {
+        description = "Runs MockBukkit integration tests."
+        group = JavaBasePlugin.VERIFICATION_GROUP
+        testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+        classpath = sourceSets["integrationTest"].runtimeClasspath
+        useJUnitPlatform()
+        shouldRunAfter(test)
+    }
+
+    check {
+        dependsOn("integrationTest")
     }
 }
 
