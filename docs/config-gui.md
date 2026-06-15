@@ -1,6 +1,13 @@
 # Config GUI
 
-Open the in-game editor with `/itemmagnet config` (permission: `itemmagnet.config`, default `op`).
+Open the in-game editor with `/itemmagnet config` or `/im config` (permission: `itemmagnet.config`, default `op`).
+
+## Main menu extras
+
+| Control | What it does |
+|---------|----------------|
+| Startup thank-you message | Toggle the console message logged on plugin enable |
+| Reset all to defaults | **Shift-click** to restore `config.yml` from plugin defaults (cannot be undone) |
 
 ## Sections
 

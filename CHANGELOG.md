@@ -4,6 +4,20 @@ All notable changes to ItemMagnet are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.2.5] - 2026-06-15
+
+### Added
+
+- **Startup thank-you message** — logs website and review links to the console when the plugin enables (toggle via `/itemmagnet startup-message` or config GUI)
+- **Config GUI: Reset all to defaults** — shift-click to restore `config.yml` from plugin defaults
+- **`/im` command** — explicit shortcut registered alongside `/itemmagnet`
+
+## [1.2.4] - 2026-06-15
+
+### Fixed
+
+- **Lands & WorldGuard reflection** — updated hook method lookups for current Lands RoleFlag typing and WorldGuard varargs StateFlag queries
+
 ## [1.2.3] - 2026-06-15
 
 ### Fixed

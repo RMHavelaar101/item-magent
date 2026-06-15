@@ -310,6 +310,15 @@ integrations:
     claimed-land: RESPECT_FLAGS
 
 # -----------------------------------------------------------------------------
+# startup-message — console notice when the plugin enables
+# -----------------------------------------------------------------------------
+startup-message:
+  # Log a thank-you with website and review links on server startup.
+  # Toggle in-game: /itemmagnet startup-message off
+  # Default: true
+  enabled: true
+
+# -----------------------------------------------------------------------------
 # commands — command visibility
 # -----------------------------------------------------------------------------
 commands:

@@ -4,7 +4,7 @@
 
 [![Paper 1.21.1+](https://img.shields.io/badge/Paper-1.21.1%2B-blue)](https://papermc.io/)
 [![Java 21+](https://img.shields.io/badge/Java-21%2B-orange)](https://adoptium.net/)
-[![Version](https://img.shields.io/badge/Version-1.2.4-brightgreen)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.2.5-brightgreen)](CHANGELOG.md)
 [![License MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 Pull dropped loot toward you with magnets that feel physical — items slide around corners and stop at walls. Charge them with redstone, respect Lands and WorldGuard claims, and tune everything from an admin GUI or `config.yml`.
@@ -175,7 +175,7 @@ cd item-magnet
 ./gradlew build
 ```
 
-Output: `build/libs/ItemMagnet-1.2.4.jar`
+Output: `build/libs/ItemMagnet-1.2.5.jar`
 
 Requires **Java 21+**. See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and tests.
 

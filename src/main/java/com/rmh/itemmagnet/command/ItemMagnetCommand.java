@@ -12,6 +12,7 @@ import com.rmh.itemmagnet.item.MagnetItemService;
 import com.rmh.itemmagnet.magnet.MagnetLocator;
 import com.rmh.itemmagnet.magnet.MagnetSlot;
 import com.rmh.itemmagnet.magnet.RadiusCalculator;
+import com.rmh.itemmagnet.metrics.StartupMessageService;
 import com.rmh.itemmagnet.protection.ProtectionService;
 import com.rmh.itemmagnet.unlock.UnlockService;
 import com.rmh.itemmagnet.util.PluginCompat;
@@ -48,6 +49,7 @@ public final class ItemMagnetCommand implements CommandExecutor, TabCompleter {
         SUBCOMMAND_PERMISSIONS.put("unlockall", "itemmagnet.unlock");
         SUBCOMMAND_PERMISSIONS.put("debug", "itemmagnet.debug");
         SUBCOMMAND_PERMISSIONS.put("config", "itemmagnet.config");
+        SUBCOMMAND_PERMISSIONS.put("startup-message", "itemmagnet.admin");
         SUBCOMMAND_PERMISSIONS.put("help", null);
     }
 
@@ -59,7 +61,8 @@ public final class ItemMagnetCommand implements CommandExecutor, TabCompleter {
             "unlock", "command.help-unlock",
             "unlockall", "command.help-unlockall",
             "debug", "command.help-debug",
-            "config", "command.help-config"
+            "config", "command.help-config",
+            "startup-message", "command.help-startup-message"
     );
 
     private final ItemMagnetPlugin plugin;
@@ -68,6 +71,7 @@ public final class ItemMagnetCommand implements CommandExecutor, TabCompleter {
     private final ProtectionService protectionService;
     private final MagnetLocator magnetLocator;
     private final ConfigGuiService configGuiService;
+    private final StartupMessageService startupMessageService;
 
     public ItemMagnetCommand(
             ItemMagnetPlugin plugin,
@@ -75,7 +79,8 @@ public final class ItemMagnetCommand implements CommandExecutor, TabCompleter {
             UnlockService unlockService,
             ProtectionService protectionService,
             MagnetLocator magnetLocator,
-            ConfigGuiService configGuiService
+            ConfigGuiService configGuiService,
+            StartupMessageService startupMessageService
     ) {
         this.plugin = plugin;
         this.itemService = itemService;
@@ -83,6 +88,7 @@ public final class ItemMagnetCommand implements CommandExecutor, TabCompleter {
         this.protectionService = protectionService;
         this.magnetLocator = magnetLocator;
         this.configGuiService = configGuiService;
+        this.startupMessageService = startupMessageService;
     }
 
     @Override
@@ -102,6 +108,7 @@ public final class ItemMagnetCommand implements CommandExecutor, TabCompleter {
             case "unlockall" -> handleUnlockAll(sender, args);
             case "debug" -> handleDebug(sender);
             case "config" -> handleConfig(sender);
+            case "startup-message" -> handleStartupMessage(sender, args);
             case "help" -> {
                 sendHelp(sender);
                 yield true;
@@ -139,6 +146,39 @@ public final class ItemMagnetCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         configGuiService.openMain(player);
+        return true;
+    }
+
+    private boolean handleStartupMessage(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("itemmagnet.admin")) {
+            sender.sendMessage(format(sender, "general.no-permission", Map.of()));
+            return true;
+        }
+
+        if (args.length == 1) {
+            sender.sendMessage(format(sender, startupMessageService.isEnabled()
+                    ? "command.startup-message-enabled"
+                    : "command.startup-message-disabled", Map.of()));
+            return true;
+        }
+
+        String mode = args[1].toLowerCase(Locale.ROOT);
+        Boolean enabled = switch (mode) {
+            case "on", "enable", "true" -> true;
+            case "off", "disable", "false" -> false;
+            case "toggle" -> !startupMessageService.isEnabled();
+            default -> null;
+        };
+
+        if (enabled == null) {
+            sender.sendMessage(format(sender, "command.startup-message-usage", Map.of()));
+            return true;
+        }
+
+        startupMessageService.setEnabled(enabled);
+        sender.sendMessage(format(sender, enabled
+                ? "command.startup-message-set-on"
+                : "command.startup-message-set-off", Map.of()));
         return true;
     }
 
@@ -409,6 +449,9 @@ public final class ItemMagnetCommand implements CommandExecutor, TabCompleter {
             List<String> tiers = new ArrayList<>(plugin.getConfigManager().getMagnetConfig().getTiers().keySet());
             tiers.add(ALL_TIERS);
             return filter(tiers, args[2]);
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("startup-message")) {
+            return filter(List.of("on", "off", "toggle"), args[1]);
         }
         return List.of();
     }

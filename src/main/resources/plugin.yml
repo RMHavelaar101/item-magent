@@ -9,8 +9,11 @@ softdepend: [Lands, WorldGuard, CMI, Towny, GriefPrevention, PlaceholderAPI]
 commands:
   itemmagnet:
     description: ItemMagnet admin and info commands
-    usage: /itemmagnet <reload|version|give|giveall|unlock|unlockall|debug|config|help> [args]
-    aliases: [im, magnet]
+    usage: /itemmagnet <reload|version|give|giveall|unlock|unlockall|debug|config|startup-message|help> [args]
+    aliases: [magnet]
+  im:
+    description: ItemMagnet shortcut command
+    usage: /im <reload|version|give|giveall|unlock|unlockall|debug|config|startup-message|help> [args]
 permissions:
   itemmagnet.use:
     description: Allows using item magnets

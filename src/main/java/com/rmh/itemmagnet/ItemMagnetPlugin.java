@@ -18,6 +18,7 @@ import com.rmh.itemmagnet.magnet.MagnetLocator;
 import com.rmh.itemmagnet.magnet.MagnetService;
 import com.rmh.itemmagnet.magnet.ProximityLoreService;
 import com.rmh.itemmagnet.metrics.BStatsService;
+import com.rmh.itemmagnet.metrics.StartupMessageService;
 import com.rmh.itemmagnet.metrics.UpdateChecker;
 import com.rmh.itemmagnet.protection.GriefPreventionHook;
 import com.rmh.itemmagnet.protection.LandsHook;
@@ -53,6 +54,7 @@ public class ItemMagnetPlugin extends JavaPlugin {
     private UnlockService unlockService;
     private RecipeService recipeService;
     private UpdateChecker updateChecker;
+    private StartupMessageService startupMessageService;
 
     @Override
     public void onEnable() {
@@ -80,24 +82,33 @@ public class ItemMagnetPlugin extends JavaPlugin {
         this.magnetService = new MagnetService(this, itemService, protectionService, afkTracker, magnetLocator);
         this.proximityLoreService = new ProximityLoreService(this, magnetLocator);
         this.updateChecker = new UpdateChecker(this);
+        this.startupMessageService = new StartupMessageService(this);
         this.configGuiService = new ConfigGuiService(this, configPersistence);
 
         recipeService.registerRecipes();
         magnetService.start();
         proximityLoreService.start();
 
+        ItemMagnetCommand executor = new ItemMagnetCommand(
+                this,
+                itemService,
+                unlockService,
+                protectionService,
+                magnetLocator,
+                configGuiService,
+                startupMessageService
+        );
+
         PluginCommand command = getCommand("itemmagnet");
         if (command != null) {
-            ItemMagnetCommand executor = new ItemMagnetCommand(
-                    this,
-                    itemService,
-                    unlockService,
-                    protectionService,
-                    magnetLocator,
-                    configGuiService
-            );
             command.setExecutor(executor);
             command.setTabCompleter(executor);
+        }
+
+        PluginCommand imCommand = getCommand("im");
+        if (imCommand != null) {
+            imCommand.setExecutor(executor);
+            imCommand.setTabCompleter(executor);
         }
 
         getServer().getPluginManager().registerEvents(new MagnetListener(this, itemService, unlockService, magnetLocator), this);
@@ -107,6 +118,7 @@ public class ItemMagnetPlugin extends JavaPlugin {
         updateChecker.start();
         ItemMagnetPlaceholderExpansion.tryRegister(this, magnetLocator);
 
+        startupMessageService.logIfEnabled();
         getLogger().info("ItemMagnet enabled with " + configManager.getMagnetConfig().getTiers().size() + " tiers.");
     }
 
@@ -182,6 +194,10 @@ public class ItemMagnetPlugin extends JavaPlugin {
 
     public UpdateChecker getUpdateChecker() {
         return updateChecker;
+    }
+
+    public StartupMessageService getStartupMessageService() {
+        return startupMessageService;
     }
 
     public MagnetLocator getMagnetLocator() {

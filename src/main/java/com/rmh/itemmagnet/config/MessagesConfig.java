@@ -1,7 +1,9 @@
 package com.rmh.itemmagnet.config;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class MessagesConfig {
@@ -30,5 +32,20 @@ public final class MessagesConfig {
             template = template.replace("{" + entry.getKey() + "}", entry.getValue());
         }
         return template;
+    }
+
+    public List<String> getOrderedLines(String keyPrefix) {
+        List<String> lines = new ArrayList<>();
+        for (int index = 1; index <= 10; index++) {
+            String key = keyPrefix + index;
+            if (!messages.containsKey(key)) {
+                break;
+            }
+            String line = messages.get(key);
+            if (line != null && !line.isBlank()) {
+                lines.add(line);
+            }
+        }
+        return lines;
     }
 }

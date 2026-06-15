@@ -20,7 +20,7 @@ craft:
   unlocked: "{prefix}&aYou unlocked the &f{tier}&a resonator recipe."
 
 command:
-  usage: "{prefix}&7Usage: /itemmagnet <reload|version|give|giveall|unlock|unlockall|debug|config|help>"
+  usage: "{prefix}&7Usage: /itemmagnet <reload|version|give|giveall|unlock|unlockall|debug|config|startup-message|help>"
   give-usage: "{prefix}&7Usage: /itemmagnet give <player> <tier|all> [charge]"
   giveall-usage: "{prefix}&7Usage: /itemmagnet giveall <player> [charge]"
   unlock-usage: "{prefix}&7Usage: /itemmagnet unlock <player> <tier|all>"
@@ -46,7 +46,13 @@ command:
   help-unlockall: "&7/unlockall <player> &f— Unlock all tier recipes"
   help-debug: "&7/debug &f— Stats for your active magnet"
   help-config: "&7/config &f— Open in-game config editor"
+  help-startup-message: "&7/startup-message [on|off|toggle] &f— Toggle console thank-you message"
   help-fuel-tip: "&7Fuel tip: &fSneak + right-click with magnet and fuel in either hand."
+  startup-message-enabled: "{prefix}&7Startup thank-you message is &aenabled&7."
+  startup-message-disabled: "{prefix}&7Startup thank-you message is &cdisabled&7."
+  startup-message-set-on: "{prefix}&aStartup thank-you message enabled."
+  startup-message-set-off: "{prefix}&aStartup thank-you message disabled."
+  startup-message-usage: "{prefix}&7Usage: /itemmagnet startup-message <on|off|toggle>"
   debug-header: "{prefix}&7--- Magnet Debug ---"
   debug-tier: "&7Tier: &f{tier}"
   debug-slot: "&7Inventory slot: &f{slot}"
@@ -68,3 +74,12 @@ gui:
   rename-success: "{prefix}&aDisplay name set to: &f{name}"
   rename-cancelled: "{prefix}&7Rename cancelled."
   rename-empty: "{prefix}&cName cannot be empty."
+  reset-confirm: "{prefix}&eShift-click &cReset all to defaults &eto confirm."
+  reset-success: "{prefix}&aConfig reset to plugin defaults and reloaded."
+  reset-failed: "{prefix}&cFailed to reset config.yml to defaults."
+
+startup:
+  line-1: "Thanks for using ItemMagnet v{version}!"
+  line-2: "Website: {website}"
+  line-3: "Enjoying it? Please leave a review on Hangar or SpigotMC."
+  line-4: "Disable this message: /itemmagnet startup-message off"

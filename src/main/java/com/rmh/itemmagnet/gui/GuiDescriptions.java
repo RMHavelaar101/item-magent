@@ -25,4 +25,5 @@ public final class GuiDescriptions {
     public static final String PROXIMITY_COOLDOWN = "Seconds between messages per player per zone.";
     public static final String PROXIMITY_SCAN = "Ticks between proximity checks (separate from pull scan).";
     public static final String PROXIMITY_ZONE_MESSAGES = "Message lines and tier overrides: edit in config.yml.";
+    public static final String STARTUP_MESSAGE = "Log a thank-you with website and review links when the plugin enables.";
 }

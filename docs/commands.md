@@ -1,8 +1,23 @@
 # Commands
 
-Base command: `/itemmagnet` (aliases: `/im`, `/magnet`)
+Base command: `/itemmagnet` (shortcut: `/im`, alias: `/magnet`)
 
-Running `/itemmagnet` with no arguments shows the full help menu.
+Running `/itemmagnet` or `/im` with no arguments shows the full help menu.
+
+## /itemmagnet startup-message [on|off|toggle]
+
+Controls the console thank-you message logged when the plugin enables. The message includes the [ItemMagnet website](https://itemmagnet.theryn.org) and a reminder to leave a review.
+
+- **Permission:** `itemmagnet.admin`
+- **Default:** enabled (`startup-message.enabled` in `config.yml`)
+- Also toggle from the main config GUI
+
+Examples:
+
+```
+/itemmagnet startup-message off
+/im startup-message toggle
+```
 
 ## /itemmagnet reload
 

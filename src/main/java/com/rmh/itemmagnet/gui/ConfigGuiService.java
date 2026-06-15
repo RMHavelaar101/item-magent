@@ -60,6 +60,12 @@ public final class ConfigGuiService {
         inventory.setItem(28, nav(Material.SCULK_SENSOR, "&dProximity Lore", GuiDescriptions.PROXIMITY_LORE));
         inventory.setItem(31, toggle(Material.LEVER, "commands.filter-by-permission",
                 "Filter help/tab by permission", "Hide admin commands from players without perms."));
+        inventory.setItem(40, toggle(Material.WRITABLE_BOOK, "startup-message.enabled",
+                "Startup thank-you message", GuiDescriptions.STARTUP_MESSAGE));
+        inventory.setItem(47, configItem(Material.TNT, "&cReset all to defaults", "action:reset-defaults",
+                "&7Restore config.yml from plugin defaults.",
+                "&cThis cannot be undone.",
+                "&7Shift-click to confirm."));
 
         inventory.setItem(SLOT_SAVE, displayItem(Material.LIME_CONCRETE, "&aSave & Reload", "&7Apply pending GUI edits."));
         inventory.setItem(SLOT_CLOSE, displayItem(Material.BARRIER, "&cClose", "&7Close without saving."));
@@ -445,13 +451,18 @@ public final class ConfigGuiService {
             beginChatEdit(player, holder, path.substring(5));
             return;
         }
+        if ("action:reset-defaults".equals(path)) {
+            handleResetDefaults(player, shiftClick);
+            return;
+        }
 
         FileConfiguration config = plugin.getConfig();
         if (path.endsWith(".enabled") || path.contains("filter-by-permission") || path.contains("sneak-to-disable")
                 || path.contains("pull-experience") || path.contains("pull-arm-swing") || path.contains("show-charge-bar")
                 || path.contains("disable-in") || path.contains("fuel-use-effective") || path.contains("use-y-range")
                 || path.contains("underground.enabled") || path.contains("pull-experience")
-                || path.equals("proximity-lore.enabled") || path.equals("proximity-lore.require-active-magnet")) {
+                || path.equals("proximity-lore.enabled") || path.equals("proximity-lore.require-active-magnet")
+                || path.equals("startup-message.enabled")) {
             boolean current = config.getBoolean(path, false);
             persistence.set(path, !current);
             refreshCurrentMenu(player, holder);
@@ -494,6 +505,26 @@ public final class ConfigGuiService {
             persistence.set(path, Math.max(0, intValue));
         }
         refreshCurrentMenu(player, holder);
+    }
+
+    private void handleResetDefaults(Player player, boolean shiftClick) {
+        if (!shiftClick) {
+            player.sendMessage(TextUtil.color(plugin.getConfigManager().getMessagesConfig()
+                    .format("gui.reset-confirm", java.util.Map.of())));
+            return;
+        }
+
+        ReloadResult result = persistence.resetToDefaults();
+        if (!result.success()) {
+            player.sendMessage(TextUtil.color(plugin.getConfigManager().getMessagesConfig()
+                    .format("gui.reset-failed", java.util.Map.of())));
+            return;
+        }
+
+        player.sendMessage(TextUtil.color(plugin.getConfigManager().getMessagesConfig()
+                .format("gui.reset-success", java.util.Map.of())));
+        sendReloadFeedback(player, result);
+        player.closeInventory();
     }
 
     private void cycleString(String path, List<String> options) {
