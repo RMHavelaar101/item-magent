@@ -73,7 +73,10 @@ hangarPublish {
         version.set(project.version as String)
         id.set("ItemMagnets")
         channel.set("Release")
-        changelog.set("See CHANGELOG.md on GitHub.")
+        changelog.set("""
+            v1.2.2 — Optional proximity lore: coordinate zones whisper ambient messages when holding an active magnet. Config GUI zone editor. Off by default.
+            See CHANGELOG.md on GitHub.
+            """.trim())
         apiKey.set(System.getenv("HANGAR_API_TOKEN") ?: "")
 
         platforms {
