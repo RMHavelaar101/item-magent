@@ -57,6 +57,7 @@ public final class ConfigGuiService {
         inventory.setItem(20, nav(Material.REDSTONE, "&eFuel", "Charge, boost, and sounds per fuel item."));
         inventory.setItem(22, nav(Material.IRON_INGOT, "&eTiers", "Names, radius, drain, and stats per tier."));
         inventory.setItem(24, nav(Material.SHIELD, "&eIntegrations", "Lands, WorldGuard, Towny, GriefPrevention."));
+        inventory.setItem(28, nav(Material.SCULK_SENSOR, "&dProximity Lore", GuiDescriptions.PROXIMITY_LORE));
         inventory.setItem(31, toggle(Material.LEVER, "commands.filter-by-permission",
                 "Filter help/tab by permission", "Hide admin commands from players without perms."));
 
@@ -275,6 +276,106 @@ public final class ConfigGuiService {
         player.openInventory(inventory);
     }
 
+    public void openProximityLore(Player player) {
+        ConfigGuiHolder holder = new ConfigGuiHolder(ConfigGuiType.PROXIMITY_LORE);
+        Inventory inventory = Bukkit.createInventory(holder, 54, TextUtil.color("&8Proximity Lore"));
+        holder.setInventory(inventory);
+
+        ConfigurationSection zones = plugin.getConfig().getConfigurationSection("proximity-lore.zones");
+        int zoneCount = zones != null ? zones.getKeys(false).size() : 0;
+
+        inventory.setItem(4, displayItem(Material.SCULK_SENSOR, "&dProximity Lore",
+                "&7" + GuiDescriptions.PROXIMITY_LORE,
+                "&7Zones configured: &f" + zoneCount,
+                "&e" + GuiDescriptions.PROXIMITY_ZONE_MESSAGES));
+
+        inventory.setItem(10, toggle(Material.LEVER, "proximity-lore.enabled", "Proximity lore enabled", GuiDescriptions.PROXIMITY_LORE));
+        inventory.setItem(12, number(Material.REPEATER, "proximity-lore.scan-interval-ticks", 5, 200, 5, GuiDescriptions.PROXIMITY_SCAN));
+        inventory.setItem(14, toggle(Material.IRON_INGOT, "proximity-lore.require-active-magnet", "Require active magnet", GuiDescriptions.PROXIMITY_REQUIRE_MAGNET));
+        inventory.setItem(16, number(Material.CLOCK, "proximity-lore.cooldown-seconds", 5, 600, 5, GuiDescriptions.PROXIMITY_COOLDOWN));
+        inventory.setItem(22, nav(Material.MAP, "&eZones", "Edit zone coordinates and radius."));
+
+        inventory.setItem(SLOT_BACK, backButton());
+        inventory.setItem(SLOT_SAVE, saveButton());
+        fillBorder(inventory);
+        player.openInventory(inventory);
+    }
+
+    public void openProximityLoreZones(Player player) {
+        ConfigGuiHolder holder = new ConfigGuiHolder(ConfigGuiType.PROXIMITY_LORE_ZONES);
+        Inventory inventory = Bukkit.createInventory(holder, 54, TextUtil.color("&8Proximity Zones"));
+        holder.setInventory(inventory);
+
+        ConfigurationSection zones = plugin.getConfig().getConfigurationSection("proximity-lore.zones");
+        int slot = 10;
+        if (zones != null) {
+            for (String zoneId : zones.getKeys(false)) {
+                if (slot > 34) {
+                    break;
+                }
+                ConfigurationSection zone = zones.getConfigurationSection(zoneId);
+                String world = zone != null ? zone.getString("world", "world") : "world";
+                int x = zone != null ? zone.getInt("x", 0) : 0;
+                int y = zone != null ? zone.getInt("y", 64) : 64;
+                int z = zone != null ? zone.getInt("z", 0) : 0;
+                int radius = zone != null ? zone.getInt("radius", 8) : 8;
+                int messageCount = zone != null ? zone.getStringList("messages").size() : 0;
+                ItemStack zoneItem = displayItem(
+                        Material.ENDER_PEARL,
+                        "&e" + zoneId,
+                        "&7World: &f" + world,
+                        "&7Center: &f" + x + ", " + y + ", " + z,
+                        "&7Radius: &f" + radius,
+                        "&7Messages: &f" + messageCount,
+                        "&7Click to edit coords"
+                );
+                setPath(zoneItem, "open-zone:" + zoneId);
+                inventory.setItem(slot++, zoneItem);
+            }
+        }
+
+        inventory.setItem(40, displayItem(Material.BOOK, "&7Add zones in config.yml",
+                "&7Define new zone IDs under proximity-lore.zones",
+                "&7Then Save & Reload."));
+
+        inventory.setItem(SLOT_BACK, displayItem(Material.ARROW, "&7Back to proximity lore", ""));
+        inventory.setItem(SLOT_SAVE, saveButton());
+        fillBorder(inventory);
+        player.openInventory(inventory);
+    }
+
+    public void openProximityLoreZoneEdit(Player player, String zoneId) {
+        ConfigGuiHolder holder = new ConfigGuiHolder(ConfigGuiType.PROXIMITY_LORE_ZONE_EDIT, zoneId);
+        Inventory inventory = Bukkit.createInventory(holder, 54, TextUtil.color("&8Zone: " + zoneId));
+        holder.setInventory(inventory);
+
+        String base = "proximity-lore.zones." + zoneId + ".";
+        String world = plugin.getConfig().getString(base + "world", "world");
+        int messageCount = plugin.getConfig().getStringList(base + "messages").size();
+        ConfigurationSection tierMessages = plugin.getConfig().getConfigurationSection(base + "tier-messages");
+        int tierOverrideCount = tierMessages != null ? tierMessages.getKeys(false).size() : 0;
+
+        inventory.setItem(4, displayItem(Material.ENDER_PEARL, "&e" + zoneId,
+                "&7Messages: &f" + messageCount,
+                "&7Tier overrides: &f" + tierOverrideCount,
+                "&e" + GuiDescriptions.PROXIMITY_ZONE_MESSAGES));
+
+        inventory.setItem(10, configItem(Material.GRASS_BLOCK, "&fWorld", "chat:" + base + "world",
+                "&7Bukkit world name",
+                "&7Current: &f" + world,
+                "&7Click, then type in chat"));
+        inventory.setItem(12, number(Material.COMPASS, base + "x", -30000000, 30000000, 1, "Zone center X."));
+        inventory.setItem(13, number(Material.LADDER, base + "y", -64, 320, 1, "Zone center Y."));
+        inventory.setItem(14, number(Material.COMPASS, base + "z", -30000000, 30000000, 1, "Zone center Z."));
+        inventory.setItem(16, number(Material.STRING, base + "radius", 1, 128, 1, "Horizontal match radius."));
+        inventory.setItem(17, number(Material.SCAFFOLDING, base + "y-tolerance", 1, 64, 1, "Vertical tolerance from center Y."));
+
+        inventory.setItem(SLOT_BACK, displayItem(Material.ARROW, "&7Back to zone list", ""));
+        inventory.setItem(SLOT_SAVE, saveButton());
+        fillBorder(inventory);
+        player.openInventory(inventory);
+    }
+
     public ReloadResult saveAndReload(Player player) {
         ReloadResult result = persistence.saveAndReload();
         sendReloadFeedback(player, result);
@@ -336,6 +437,10 @@ public final class ConfigGuiService {
             openTierEdit(player, path.substring("open-tier:".length()));
             return;
         }
+        if (path.startsWith("open-zone:")) {
+            openProximityLoreZoneEdit(player, path.substring("open-zone:".length()));
+            return;
+        }
         if (path.startsWith("chat:")) {
             beginChatEdit(player, holder, path.substring(5));
             return;
@@ -345,7 +450,8 @@ public final class ConfigGuiService {
         if (path.endsWith(".enabled") || path.contains("filter-by-permission") || path.contains("sneak-to-disable")
                 || path.contains("pull-experience") || path.contains("pull-arm-swing") || path.contains("show-charge-bar")
                 || path.contains("disable-in") || path.contains("fuel-use-effective") || path.contains("use-y-range")
-                || path.contains("underground.enabled") || path.contains("pull-experience")) {
+                || path.contains("underground.enabled") || path.contains("pull-experience")
+                || path.equals("proximity-lore.enabled") || path.equals("proximity-lore.require-active-magnet")) {
             boolean current = config.getBoolean(path, false);
             persistence.set(path, !current);
             refreshCurrentMenu(player, holder);
@@ -382,7 +488,11 @@ public final class ConfigGuiService {
             intDelta *= 5;
         }
         int intValue = config.getInt(path, 0) + intDelta;
-        persistence.set(path, Math.max(0, intValue));
+        if (path.contains("proximity-lore.zones.") && (path.endsWith(".x") || path.endsWith(".y") || path.endsWith(".z"))) {
+            persistence.set(path, intValue);
+        } else {
+            persistence.set(path, Math.max(0, intValue));
+        }
         refreshCurrentMenu(player, holder);
     }
 
@@ -409,6 +519,8 @@ public final class ConfigGuiService {
         switch (holder.getType()) {
             case FUEL_EDIT -> openFuelList(player);
             case TIER_EDIT -> openTierList(player);
+            case PROXIMITY_LORE_ZONE_EDIT -> openProximityLoreZones(player);
+            case PROXIMITY_LORE_ZONES -> openProximityLore(player);
             default -> openMain(player);
         }
     }
@@ -422,6 +534,8 @@ public final class ConfigGuiService {
             case "fuel" -> openFuelList(player);
             case "tiers" -> openTierList(player);
             case "integrations" -> openIntegrations(player);
+            case "proximity" -> openProximityLore(player);
+            case "proximity-zones" -> openProximityLoreZones(player);
             default -> openMain(player);
         }
     }
@@ -471,6 +585,9 @@ public final class ConfigGuiService {
         switch (session.getReturnMenu()) {
             case TIER_EDIT -> openTierEdit(player, session.getReturnContext());
             case TIER_LIST -> openTierList(player);
+            case PROXIMITY_LORE_ZONE_EDIT -> openProximityLoreZoneEdit(player, session.getReturnContext());
+            case PROXIMITY_LORE_ZONES -> openProximityLoreZones(player);
+            case PROXIMITY_LORE -> openProximityLore(player);
             default -> openMain(player);
         }
     }
@@ -487,6 +604,9 @@ public final class ConfigGuiService {
             case TIER_LIST -> openTierList(player);
             case TIER_EDIT -> openTierEdit(player, holder.getContext());
             case INTEGRATIONS -> openIntegrations(player);
+            case PROXIMITY_LORE -> openProximityLore(player);
+            case PROXIMITY_LORE_ZONES -> openProximityLoreZones(player);
+            case PROXIMITY_LORE_ZONE_EDIT -> openProximityLoreZoneEdit(player, holder.getContext());
         }
     }
 
@@ -499,6 +619,8 @@ public final class ConfigGuiService {
             case "&eFuel" -> "fuel";
             case "&eTiers" -> "tiers";
             case "&eIntegrations" -> "integrations";
+            case "&dProximity Lore" -> "proximity";
+            case "&eZones" -> "proximity-zones";
             default -> "main";
         };
         ItemStack stack = displayItem(material, name, "&7" + description, "&7Click to open");

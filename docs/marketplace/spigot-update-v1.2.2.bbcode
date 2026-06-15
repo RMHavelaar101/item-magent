@@ -1,0 +1,73 @@
+[SIZE=5][B]ItemMagnet v1.2.2 — Proximity Lore[/B][/SIZE]
+
+[CENTER][I]Optional ambient messages near coordinates · Config GUI support · Off by default[/I][/CENTER]
+
+[HR]
+
+[B]What is new[/B]
+
+[LIST]
+[*][B]Proximity lore[/B] — configure coordinate zones that send ambient chat messages when players hold an active magnet nearby. Great for quest hints, dungeon atmosphere, landmarks, or RPG flavor.
+[*][B]Config GUI[/B] — new [B]Proximity Lore[/B] section in [CODE]/itemmagnet config[/CODE]: enable/disable, scan interval, cooldown, require-active-magnet, and a zone editor for world + coords + radius.
+[*][B]Per-tier messages[/B] — optional [CODE]tier-messages[/CODE] overrides per zone (e.g. different whispers for each magnet tier).
+[*][B]Backwards compatible[/B] — absent or [CODE]enabled: false[/CODE] = zero behavior change from v1.2.1.
+[/LIST]
+
+[HR]
+
+[B]Config example[/B]
+
+[CODE]
+proximity-lore:
+  enabled: true
+  scan-interval-ticks: 40
+  require-active-magnet: true
+  cooldown-seconds: 90
+  zones:
+    ancient_ruins:
+      world: world
+      x: 1200
+      y: 64
+      z: -800
+      radius: 12
+      messages:
+        - "&8The resonator hums: &7The silence here is older than the village."
+[/CODE]
+
+Full reference: [URL='https://github.com/RMHavelaar101/item-magnet/blob/main/docs/proximity-lore.md']proximity-lore.md[/URL]
+
+[HR]
+
+[B]Download & links[/B]
+
+[LIST]
+[*][URL='https://github.com/RMHavelaar101/item-magent/releases/tag/v1.2.2']Download v1.2.2[/URL]
+[*][URL='https://itemmagnet.theryn.org/changelog']Changelog[/URL]
+[*][URL='https://itemmagnet.theryn.org']Product website[/URL]
+[*][URL='https://hangar.papermc.io/Alcerious/ItemMagnets']Hangar[/URL]
+[*][URL='https://github.com/RMHavelaar101/item-magent/issues']Report bugs[/URL]
+[/LIST]
+
+[HR]
+
+[B]Requirements[/B] (unchanged)
+
+[LIST]
+[*]Paper [B]1.21.1+[/B]
+[*]Java [B]21+[/B]
+[*]Not supported: Spigot, CraftBukkit, Folia
+[/LIST]
+
+[HR]
+
+[B]Upgrade from v1.2.1[/B]
+
+[LIST]
+[*]Replace [B]ItemMagnet-1.2.2.jar[/B] in [CODE]plugins/[/CODE]
+[*]Restart or [CODE]/itemmagnet reload[/CODE]
+[*]Proximity lore stays [B]disabled[/B] until you enable it — existing servers are unaffected
+[/LIST]
+
+[HR]
+
+[I]Questions? [URL='https://itemmagnet.theryn.org/#support']Support form[/URL] or GitHub issues with Paper version and steps to reproduce.[/I]

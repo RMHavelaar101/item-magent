@@ -16,6 +16,7 @@ import com.rmh.itemmagnet.listener.MagnetListener;
 import com.rmh.itemmagnet.magnet.AfkTracker;
 import com.rmh.itemmagnet.magnet.MagnetLocator;
 import com.rmh.itemmagnet.magnet.MagnetService;
+import com.rmh.itemmagnet.magnet.ProximityLoreService;
 import com.rmh.itemmagnet.metrics.BStatsService;
 import com.rmh.itemmagnet.metrics.UpdateChecker;
 import com.rmh.itemmagnet.protection.GriefPreventionHook;
@@ -47,6 +48,7 @@ public final class ItemMagnetPlugin extends JavaPlugin {
     private AfkTracker afkTracker;
     private MagnetLocator magnetLocator;
     private MagnetService magnetService;
+    private ProximityLoreService proximityLoreService;
     private UnlockStorage unlockStorage;
     private UnlockService unlockService;
     private RecipeService recipeService;
@@ -76,11 +78,13 @@ public final class ItemMagnetPlugin extends JavaPlugin {
         unlockService.load();
         this.recipeService = new RecipeService(this, itemService);
         this.magnetService = new MagnetService(this, itemService, protectionService, afkTracker, magnetLocator);
+        this.proximityLoreService = new ProximityLoreService(this, magnetLocator);
         this.updateChecker = new UpdateChecker(this);
         this.configGuiService = new ConfigGuiService(this, configPersistence);
 
         recipeService.registerRecipes();
         magnetService.start();
+        proximityLoreService.start();
 
         PluginCommand command = getCommand("itemmagnet");
         if (command != null) {
@@ -111,6 +115,9 @@ public final class ItemMagnetPlugin extends JavaPlugin {
         if (magnetService != null) {
             magnetService.cancel();
         }
+        if (proximityLoreService != null) {
+            proximityLoreService.cancel();
+        }
         if (recipeService != null) {
             recipeService.unregisterRecipes();
         }
@@ -125,6 +132,7 @@ public final class ItemMagnetPlugin extends JavaPlugin {
         recipeService.registerRecipes();
         magnetService.refreshSoundService();
         magnetService.restart();
+        proximityLoreService.restart();
         configManager.validateStartup();
         return ReloadResult.success(
                 List.of("settings", "fuel", "tiers", "integrations", "messages"),

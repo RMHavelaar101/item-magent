@@ -4,6 +4,22 @@ All notable changes to ItemMagnet are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.2.2] - 2026-06-14
+
+### Added
+
+- **Proximity lore** — optional `proximity-lore` config section: ambient messages when players with an active magnet enter coordinate zones
+- Per-zone cooldown, Y tolerance, and optional per-tier message overrides
+- Lightweight scan interval separate from item pull ticks
+- Config GUI: **Proximity Lore** menu — toggle, timings, zone list, coordinate editor
+- Unit tests for zone matching logic
+- Documentation: [docs/proximity-lore.md](docs/proximity-lore.md)
+
+### Notes
+
+- **Backwards compatible** — feature is off by default; absent or `enabled: false` = no behavior change
+- No dependencies on lore plugins, WorldGuard, or custom APIs — any SMP can use coordinate zones
+
 ## [1.2.1] - 2026-06-14
 
 ### Added

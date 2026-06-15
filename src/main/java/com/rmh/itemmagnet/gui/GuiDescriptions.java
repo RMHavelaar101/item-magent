@@ -20,4 +20,9 @@ public final class GuiDescriptions {
     public static final String PRESET_WARNING = "Active preset overrides matching keys on reload.";
     public static final String TIER_MATERIAL = "Material for NEW magnets only. Re-give items after change.";
     public static final String DISPLAY_NAME = "Item name shown on magnets. Use & color codes. Re-give items to update existing magnets.";
+    public static final String PROXIMITY_LORE = "Optional ambient messages when holding a magnet in coordinate zones.";
+    public static final String PROXIMITY_REQUIRE_MAGNET = "Player must be using an active magnet tier in the zone.";
+    public static final String PROXIMITY_COOLDOWN = "Seconds between messages per player per zone.";
+    public static final String PROXIMITY_SCAN = "Ticks between proximity checks (separate from pull scan).";
+    public static final String PROXIMITY_ZONE_MESSAGES = "Message lines and tier overrides: edit in config.yml.";
 }

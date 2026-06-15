@@ -4,7 +4,7 @@
 
 [![Paper 1.21.1+](https://img.shields.io/badge/Paper-1.21.1%2B-blue)](https://papermc.io/)
 [![Java 21+](https://img.shields.io/badge/Java-21%2B-orange)](https://adoptium.net/)
-[![Version](https://img.shields.io/badge/Version-1.2.1-brightgreen)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.2.2-brightgreen)](CHANGELOG.md)
 [![License MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ![ItemMagnet banner](branding/banner-1280x640.png)
@@ -49,6 +49,7 @@ Most magnet plugins teleport items through blocks or ignore land claims. ItemMag
 | **World filter** | Disable magnets in hub/spawn worlds |
 | **Anti-AFK** | Optional movement check; one-time notify (no chat spam) |
 | **Unlock gates** | Permission, advancement, CMI stat/rank, or admin command (persisted) |
+| **Proximity lore** | Optional coordinate zones — ambient messages when holding a magnet (default off) |
 
 ### Integrations (all optional)
 
@@ -191,7 +192,7 @@ cd item-magnet
 ./gradlew build
 ```
 
-Output: `build/libs/ItemMagnet-1.2.1.jar`
+Output: `build/libs/ItemMagnet-1.2.2.jar`
 
 Requires **Java 21+**.
 
@@ -201,7 +202,7 @@ Requires **Java 21+**.
 
 Ready to list on Hangar or SpigotMC? See [LAUNCH.md](LAUNCH.md) and [docs/marketplace/PUBLISHING.md](docs/marketplace/PUBLISHING.md).
 
-- **Product site:** https://itemmagnet.theryn.org
+- **Product site:** https://itemmagnet.theryn.org — [changelog](https://itemmagnet.theryn.org/changelog)
 - Spigot listing copy: [spigot-description.bbcode](docs/marketplace/spigot-description.bbcode)
 - Hangar page copy: [hangar-page.md](docs/marketplace/hangar-page.md)
 

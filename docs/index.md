@@ -10,6 +10,7 @@ Welcome to the ItemMagnet documentation.
 ## Configuration
 
 - [Configuration reference](configuration.md)
+- [Proximity lore (optional)](proximity-lore.md)
 - [Recipes and unlocks](recipes-and-unlocks.md)
 - [Permissions](permissions.md)
 - [Commands](commands.md)

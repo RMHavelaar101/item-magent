@@ -133,3 +133,7 @@ Each tier supports:
 | `pull-experience` | bool | Pull XP orbs for this tier (requires global `pull-experience`) |
 | `unlock` | section | See [recipes-and-unlocks.md](recipes-and-unlocks.md) |
 | `recipe` | section | Shaped recipe definition |
+
+## proximity-lore (optional)
+
+Ambient messages when players with an active magnet enter configured zones. **Default off** — see [proximity-lore.md](proximity-lore.md) for examples and zone keys.

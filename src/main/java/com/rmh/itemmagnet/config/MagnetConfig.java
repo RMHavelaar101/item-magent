@@ -37,6 +37,7 @@ public final class MagnetConfig {
     private final GriefPreventionConfig griefPrevention;
     private final Map<String, TierConfig> tiers;
     private final CommandsConfig commands;
+    private final ProximityLoreConfig proximityLore;
 
     public MagnetConfig(
             String preset,
@@ -67,7 +68,8 @@ public final class MagnetConfig {
             TownyConfig towny,
             GriefPreventionConfig griefPrevention,
             Map<String, TierConfig> tiers,
-            CommandsConfig commands
+            CommandsConfig commands,
+            ProximityLoreConfig proximityLore
     ) {
         this.preset = preset;
         this.scanIntervalTicks = scanIntervalTicks;
@@ -98,6 +100,7 @@ public final class MagnetConfig {
         this.griefPrevention = griefPrevention;
         this.tiers = Collections.unmodifiableMap(new LinkedHashMap<>(tiers));
         this.commands = commands;
+        this.proximityLore = proximityLore;
     }
 
     public String getPreset() {
@@ -218,5 +221,9 @@ public final class MagnetConfig {
 
     public CommandsConfig getCommands() {
         return commands;
+    }
+
+    public ProximityLoreConfig getProximityLore() {
+        return proximityLore;
     }
 }

@@ -471,3 +471,13 @@ tiers:
         C: CLOCK
         R: REDSTONE_BLOCK
         G: GOLD_BLOCK
+
+# -----------------------------------------------------------------------------
+# proximity-lore — optional ambient messages near coordinates (default: disabled)
+# -----------------------------------------------------------------------------
+proximity-lore:
+  enabled: false
+  scan-interval-ticks: 40
+  require-active-magnet: true
+  cooldown-seconds: 90
+  zones: {}

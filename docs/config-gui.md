@@ -13,8 +13,18 @@ Open the in-game editor with `/itemmagnet config` (permission: `itemmagnet.confi
 | Fuel | Per-material charge, boost, radius bonus |
 | Tiers | **Display names**, radius, drain, max charge, pull-experience per tier |
 | Integrations | Enable Lands, WorldGuard, Towny, GriefPrevention |
+| Proximity Lore | Enable feature, scan interval, cooldown, require magnet; edit zone coords |
 
 Each button includes a short description of what the setting does.
+
+## Proximity lore
+
+**Proximity Lore** menu (main hub → sculk sensor icon):
+
+- Toggle `enabled` and `require-active-magnet`
+- Adjust scan interval and per-zone cooldown
+- **Zones** — list configured zone IDs; click to edit world (chat), X/Y/Z, radius, and Y tolerance
+- Message text and per-tier overrides remain in `config.yml` (see [proximity-lore.md](proximity-lore.md))
 
 ## Renaming items
 

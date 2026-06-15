@@ -50,3 +50,16 @@ tiers:
 
 # CMI event command example:
 # - "itemmagnet unlock [playerName] fragment"
+
+# Optional proximity-lore example (copy into live config; keep enabled: false in preset merge):
+# proximity-lore:
+#   enabled: true
+#   zones:
+#     wilderness_shrine:
+#       world: Theryn
+#       x: 1200
+#       y: 64
+#       z: -800
+#       radius: 12
+#       messages:
+#         - "&8The resonator hums: &7The silence here is older than spawn."

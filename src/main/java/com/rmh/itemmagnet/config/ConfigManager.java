@@ -106,6 +106,7 @@ public final class ConfigManager {
         GriefPreventionConfig griefPrevention = parseGriefPrevention(config.getConfigurationSection("integrations.griefprevention"));
         Map<String, TierConfig> tiers = parseTiers(config.getConfigurationSection("tiers"));
         CommandsConfig commands = parseCommands(config.getConfigurationSection("commands"));
+        ProximityLoreConfig proximityLore = parseProximityLore(config.getConfigurationSection("proximity-lore"));
 
         return new MagnetConfig(
                 config.getString("preset", "none"),
@@ -136,8 +137,52 @@ public final class ConfigManager {
                 towny,
                 griefPrevention,
                 tiers,
-                commands
+                commands,
+                proximityLore
         );
+    }
+
+    private ProximityLoreConfig parseProximityLore(ConfigurationSection section) {
+        if (section == null || !section.getBoolean("enabled", false)) {
+            return ProximityLoreConfig.disabled();
+        }
+        int scanInterval = section.getInt("scan-interval-ticks", 40);
+        boolean requireMagnet = section.getBoolean("require-active-magnet", true);
+        int cooldownSeconds = section.getInt("cooldown-seconds", 90);
+        ConfigurationSection zonesSection = section.getConfigurationSection("zones");
+        if (zonesSection == null) {
+            return new ProximityLoreConfig(true, scanInterval, requireMagnet, cooldownSeconds, List.of(), Map.of());
+        }
+
+        List<ProximityLoreZone> zones = new ArrayList<>();
+        Map<String, ProximityLoreZone> zonesById = new LinkedHashMap<>();
+        for (String zoneId : zonesSection.getKeys(false)) {
+            ConfigurationSection zoneSection = zonesSection.getConfigurationSection(zoneId);
+            if (zoneSection == null) {
+                continue;
+            }
+            Map<String, List<String>> tierMessages = new LinkedHashMap<>();
+            ConfigurationSection tierSection = zoneSection.getConfigurationSection("tier-messages");
+            if (tierSection != null) {
+                for (String tierId : tierSection.getKeys(false)) {
+                    tierMessages.put(tierId.toLowerCase(Locale.ROOT), tierSection.getStringList(tierId));
+                }
+            }
+            ProximityLoreZone zone = new ProximityLoreZone(
+                    zoneId,
+                    zoneSection.getString("world", "world"),
+                    zoneSection.getDouble("x"),
+                    zoneSection.getDouble("y"),
+                    zoneSection.getDouble("z"),
+                    zoneSection.getDouble("radius", 8),
+                    zoneSection.getDouble("y-tolerance", 8),
+                    zoneSection.getStringList("messages"),
+                    tierMessages
+            );
+            zones.add(zone);
+            zonesById.put(zoneId, zone);
+        }
+        return new ProximityLoreConfig(true, scanInterval, requireMagnet, cooldownSeconds, zones, zonesById);
     }
 
     private CommandsConfig parseCommands(ConfigurationSection section) {
