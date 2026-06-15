@@ -7,8 +7,6 @@
 [![Version](https://img.shields.io/badge/Version-1.2.4-brightgreen)](CHANGELOG.md)
 [![License MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-![ItemMagnet banner](branding/banner-1280x640.png)
-
 Pull dropped loot toward you with magnets that feel physical — items slide around corners and stop at walls. Charge them with redstone, respect Lands and WorldGuard claims, and tune everything from an admin GUI or `config.yml`.
 
 ---
@@ -148,16 +146,6 @@ Key sections:
 Edit via file or `/itemmagnet config`. Most changes hot-reload with `/itemmagnet reload`.
 
 Reference: [docs/configuration.md](docs/configuration.md) · [Config GUI guide](docs/config-gui.md)
-
----
-
-## Screenshots
-
-| | |
-|---|---|
-| ![Three tiers in inventory](media/screenshots/01-items-in-hand.png) | ![Items pulling](media/screenshots/02-items-pulling.png) |
-| ![Redstone fuel](media/screenshots/03-redstone-fuel.png) | ![Claim boundary](media/screenshots/04-lands-boundary.png) |
-| ![Config GUI](media/screenshots/05-config-tiers.png) | ![Demo](media/demo/item-magnet-demo.gif) |
 
 ---
 
