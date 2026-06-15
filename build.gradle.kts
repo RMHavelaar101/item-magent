@@ -31,11 +31,15 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.12.2")
 
     implementation("org.bstats:bstats-bukkit:3.2.1")
-    implementation("org.xerial:sqlite-jdbc:3.49.1.0")
-    implementation("com.mysql:mysql-connector-j:9.2.0")
-    implementation("com.zaxxer:HikariCP:6.2.1")
+    // Loaded at runtime via plugin.yml libraries (Paper); not shaded — keeps the release JAR small.
+    compileOnly("org.xerial:sqlite-jdbc:3.49.1.0")
+    compileOnly("com.mysql:mysql-connector-j:9.2.0")
+    compileOnly("com.zaxxer:HikariCP:6.2.1")
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testImplementation("org.xerial:sqlite-jdbc:3.49.1.0")
+    testImplementation("com.mysql:mysql-connector-j:9.2.0")
+    testImplementation("com.zaxxer:HikariCP:6.2.1")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.mockito:mockito-core:5.12.0")
@@ -68,18 +72,9 @@ tasks {
 
         configurations.set(listOf(project.configurations.runtimeClasspath.get()))
         dependencies {
-            exclude { dependency ->
-                val group = dependency.moduleGroup
-                group != "org.bstats"
-                        && group != "org.xerial"
-                        && group != "com.mysql"
-                        && group != "com.zaxxer"
-            }
+            exclude { dependency -> dependency.moduleGroup != "org.bstats" }
         }
         relocate("org.bstats", "${project.group}.lib.bstats")
-        relocate("org.sqlite", "${project.group}.lib.sqlite")
-        relocate("com.mysql", "${project.group}.lib.mysql")
-        relocate("com.zaxxer.hikari", "${project.group}.lib.hikari")
     }
 
     jar {
@@ -114,8 +109,7 @@ hangarPublish {
         id.set("ItemMagnets")
         channel.set("Release")
         changelog.set("""
-            v1.6.0 — Filter clear, admin tag blacklist GUI, preset merge preview, YAML/SQLite/MySQL player filter storage, bStats blocked-pull charts, Quests/CMI pull-blocked bridges.
-            See CHANGELOG.md and marketing/changelog-v1.6.0.md on GitHub.
+            v1.6.1 — Slim release JAR (~320 KB): JDBC/Hikari loaded via Paper libraries instead of shading. v1.6.0 filter/storage/metrics features unchanged.
             """.trim())
         apiKey.set(System.getenv("HANGAR_API_TOKEN") ?: "")
 

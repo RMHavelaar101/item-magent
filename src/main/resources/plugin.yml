@@ -5,6 +5,10 @@ api-version: '${paperApiVersion}'
 description: Configurable tiered item magnets with redstone fuel, Lands/WorldGuard protection, and visible LOS pull physics.
 author: rmh
 website: https://github.com/RMHavelaar101/item-magent
+libraries:
+  - org.xerial:sqlite-jdbc:3.49.1.0
+  - com.mysql:mysql-connector-j:9.2.0
+  - com.zaxxer:HikariCP:6.2.1
 softdepend: [Lands, WorldGuard, CMI, Towny, GriefPrevention, PlaceholderAPI, LuckPerms, mcMMO, Residence, PlotSquared, SuperiorSkyblock2, Quests]
 commands:
   itemmagnet:

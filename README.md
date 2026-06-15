@@ -4,7 +4,7 @@
 
 [![Paper 1.21.1+](https://img.shields.io/badge/Paper-1.21.1%2B-blue)](https://papermc.io/)
 [![Java 21+](https://img.shields.io/badge/Java-21%2B-orange)](https://adoptium.net/)
-[![Version](https://img.shields.io/badge/Version-1.6.0-brightgreen)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.6.1-brightgreen)](CHANGELOG.md)
 [![License MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 Pull dropped loot toward you with magnets that feel physical — items slide around corners and stop at walls. Charge them with redstone, respect Lands and WorldGuard claims, filter what you collect, and tune everything from an admin GUI or `config.yml`.
@@ -94,7 +94,7 @@ Full matrix: [docs/compatibility.md](docs/compatibility.md)
 
 Get the latest JAR from [GitHub Releases](https://github.com/RMHavelaar101/item-magent/releases) or [Hangar](https://hangar.papermc.io/Alcerious/ItemMagnets).
 
-1. Place `ItemMagnet-1.6.0.jar` in your server's `plugins/` folder
+1. Place `ItemMagnet-1.6.1.jar` in your server's `plugins/` folder
 2. Restart the server
 3. Give yourself a magnet:
 
@@ -196,7 +196,7 @@ cd item-magnet
 ./gradlew build
 ```
 
-Output: `build/libs/ItemMagnet-1.6.0.jar`
+Output: `build/libs/ItemMagnet-1.6.1.jar` (~250 KB; SQLite/MySQL drivers loaded by Paper at runtime when using SQL storage)
 
 Requires **Java 21+**. See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and tests.
 

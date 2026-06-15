@@ -9,15 +9,16 @@ In `build.gradle.kts`:
 ```kotlin
 dependencies {
     implementation("org.bstats:bstats-bukkit:3.2.1")
-    implementation("org.xerial:sqlite-jdbc:…")
-    implementation("com.mysql:mysql-connector-j:…")
-    implementation("com.zaxxer:HikariCP:…")
+    // SQLite/MySQL/Hikari: compileOnly + plugin.yml libraries (Paper downloads at runtime)
 }
 
 tasks.shadowJar {
-    // bStats, SQLite JDBC, MySQL connector, HikariCP — relocated under com.rmh.lib.*
+    // Only bStats is shaded — keeps the Hangar/upload JAR under ~300 KB
+    relocate("org.bstats", "com.rmh.lib.bstats")
 }
 ```
+
+SQLite JDBC, MySQL connector, and HikariCP are declared under `libraries:` in `plugin.yml`. Paper downloads them on first load (cached locally). This avoids bundling multi-platform native SQLite binaries in the release JAR.
 
 Build the release JAR:
 

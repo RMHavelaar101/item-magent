@@ -4,6 +4,12 @@ All notable changes to ItemMagnet are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.6.1] - 2026-06-15
+
+### Changed
+
+- **Release JAR size** — SQLite JDBC, MySQL connector, and HikariCP are loaded via Paper's `plugin.yml` `libraries` at runtime instead of being bundled in the shadow JAR (~250 KB vs ~17 MB). SQLite/MySQL filter storage behavior is unchanged on Paper 1.21.1+.
+
 ## [1.6.0] - 2026-06-15
 
 ### Added

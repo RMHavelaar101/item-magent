@@ -153,6 +153,8 @@ Each tier supports:
 
 When `storage` is `SQLITE` or `MYSQL` and the SQL tables are empty but `player-filters.yml` exists, ItemMagnet imports all entries once and renames the YAML file to `player-filters.yml.bak`.
 
+SQLite and MySQL drivers are **not** bundled in the plugin JAR. Paper loads them from Maven via `libraries:` in `plugin.yml` (requires outbound network on first run, then cached). Default `YAML` storage needs no extra downloads.
+
 Changing the storage backend type requires a restart for a clean swap (flush memory → new repository).
 
 Built-in presets ship in the jar under `filter-presets/`. Override or add presets in `plugins/ItemMagnet/filter-presets/*.yml`.
