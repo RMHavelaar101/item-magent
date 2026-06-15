@@ -17,7 +17,6 @@ public final class LandsHook implements ProtectionHook {
     private Object landsIntegration;
     private Object itemPickupFlag;
     private Method getAreaMethod;
-    private Method getLandPlayerMethod;
     private Method hasRoleFlagMethod;
     private Method getOwnerUidMethod;
     private Method isTrustedMethod;
@@ -39,10 +38,10 @@ public final class LandsHook implements ProtectionHook {
             itemPickupFlag = flagsClass.getField("ITEM_PICKUP").get(null);
 
             getAreaMethod = integrationClass.getMethod("getArea", Location.class);
-            getLandPlayerMethod = integrationClass.getMethod("getLandPlayer", UUID.class);
 
             Class<?> areaClass = Class.forName("me.angeschossen.lands.api.land.Area");
-            hasRoleFlagMethod = areaClass.getMethod("hasRoleFlag", UUID.class, itemPickupFlag.getClass());
+            Class<?> roleFlagClass = Class.forName("me.angeschossen.lands.api.flags.type.RoleFlag");
+            hasRoleFlagMethod = areaClass.getMethod("hasRoleFlag", UUID.class, roleFlagClass);
             getOwnerUidMethod = areaClass.getMethod("getOwnerUID");
             isTrustedMethod = areaClass.getMethod("isTrusted", UUID.class);
         } catch (ReflectiveOperationException exception) {

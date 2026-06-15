@@ -6,6 +6,7 @@ Welcome to the ItemMagnet documentation.
 
 - [Installation](installation.md)
 - [Quick start](quick-start.md)
+- [Version compatibility](compatibility.md)
 
 ## Configuration
 
@@ -27,19 +28,9 @@ Welcome to the ItemMagnet documentation.
 ## Help
 
 - [FAQ](faq.md)
-- [bStats setup](bstats.md)
 - [Troubleshooting](troubleshooting.md)
 
 ## Admin
 
 - [Config GUI](config-gui.md)
-
-## Marketplace
-
-- [Publishing checklist](marketplace/PUBLISHING.md)
-- [Version compatibility](marketplace/compatibility.md)
-- [Hangar page copy](marketplace/hangar-page.md)
-- [SpigotMC listing copy](marketplace/spigot-description.bbcode)
-- [SpigotMC documentation copy](marketplace/spigot-documentation.bbcode)
-- [SpigotMC revival update post](marketplace/spigot-update-post.bbcode)
-- [SpigotMC form fields](marketplace/spigot-metadata.md)
+- [bStats setup](bstats.md)

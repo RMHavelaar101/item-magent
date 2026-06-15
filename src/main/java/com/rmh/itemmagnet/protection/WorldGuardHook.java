@@ -55,11 +55,12 @@ public final class WorldGuardHook implements ProtectionHook {
 
             Class<?> localPlayerClass = Class.forName("com.sk89q.worldguard.LocalPlayer");
             Class<?> stateFlagClass = Class.forName("com.sk89q.worldguard.protection.flags.StateFlag");
+            Class<?> stateFlagArrayClass = java.lang.reflect.Array.newInstance(stateFlagClass, 0).getClass();
             testStateOnQueryMethod = regionQueryClass.getMethod(
                     "testState",
                     weLocationClass,
                     localPlayerClass,
-                    stateFlagClass
+                    stateFlagArrayClass
             );
 
             Class<?> protectedRegionClass = Class.forName("com.sk89q.worldguard.protection.regions.ProtectedRegion");
@@ -94,7 +95,12 @@ public final class WorldGuardHook implements ProtectionHook {
             Object wgLocation = adaptMethod.invoke(null, location);
 
             if (config.isRespectItemPickupFlag()
-                    && !(boolean) testStateOnQueryMethod.invoke(regionQuery, wgLocation, localPlayer, itemPickupFlag)) {
+                    && !(boolean) testStateOnQueryMethod.invoke(
+                            regionQuery,
+                            wgLocation,
+                            localPlayer,
+                            new Object[] { itemPickupFlag }
+                    )) {
                 return false;
             }
 
