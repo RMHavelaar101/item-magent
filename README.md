@@ -4,7 +4,7 @@
 
 [![Paper 1.21.1+](https://img.shields.io/badge/Paper-1.21.1%2B-blue)](https://papermc.io/)
 [![Java 21+](https://img.shields.io/badge/Java-21%2B-orange)](https://adoptium.net/)
-[![Version](https://img.shields.io/badge/Version-1.2.2-brightgreen)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.2.4-brightgreen)](CHANGELOG.md)
 [![License MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ![ItemMagnet banner](branding/banner-1280x640.png)
@@ -73,14 +73,16 @@ Most magnet plugins teleport items through blocks or ignore land claims. ItemMag
 
 Paper is required — the plugin targets the Paper API and modern event handling (e.g. fuel transfer on 1.21+).
 
-Full matrix: [docs/marketplace/compatibility.md](docs/marketplace/compatibility.md)
+Full matrix: [docs/compatibility.md](docs/compatibility.md)
 
 ---
 
-## Quick start
+## Download
 
-1. Download `ItemMagnet-1.2.1.jar` from [Releases](https://github.com/RMHavelaar101/item-magent/releases) or [Hangar](https://hangar.papermc.io/Alcerious/ItemMagnets)
-2. Place in `plugins/` and restart the server
+Get the latest JAR from [GitHub Releases](https://github.com/RMHavelaar101/item-magent/releases) or [Hangar](https://hangar.papermc.io/Alcerious/ItemMagnets).
+
+1. Place `ItemMagnet-x.y.z.jar` in your server's `plugins/` folder
+2. Restart the server
 3. Give yourself a magnet:
 
    ```
@@ -149,20 +151,13 @@ Reference: [docs/configuration.md](docs/configuration.md) · [Config GUI guide](
 
 ---
 
-## Screenshots & media
+## Screenshots
 
-Marketplace assets to capture before publishing — see [media/README.md](media/README.md):
-
-| Asset | What to show |
-|-------|----------------|
-| `screenshots/01-tiers-inventory.png` | Three tiers with lore (charge, range, boost) |
-| `screenshots/02-items-pulling.gif` | Items sliding around a corner |
-| `screenshots/03-fuel-transfer.png` | Sneak + right-click fuel / boost message |
-| `screenshots/04-claim-boundary.png` | Pull stopping at a Lands/WG border |
-| `screenshots/05-config-gui.png` | `/itemmagnet config` main menu |
-| `demo/item-magnet-demo.gif` | 15–30s hero loop for Hangar/Spigot |
-
-Icons: `branding/icon-128.png`, `branding/icon-256.png` · Banner: `branding/banner-1280x640.png`
+| | |
+|---|---|
+| ![Three tiers in inventory](media/screenshots/01-items-in-hand.png) | ![Items pulling](media/screenshots/02-items-pulling.png) |
+| ![Redstone fuel](media/screenshots/03-redstone-fuel.png) | ![Claim boundary](media/screenshots/04-lands-boundary.png) |
+| ![Config GUI](media/screenshots/05-config-tiers.png) | ![Demo](media/demo/item-magnet-demo.gif) |
 
 ---
 
@@ -172,13 +167,13 @@ Icons: `branding/icon-128.png`, `branding/icon-256.png` · Banner: `branding/ban
 |-------|------|
 | Install & requirements | [installation.md](docs/installation.md) |
 | Quick start | [quick-start.md](docs/quick-start.md) |
+| Version compatibility | [compatibility.md](docs/compatibility.md) |
 | Configuration | [configuration.md](docs/configuration.md) |
 | Config GUI | [config-gui.md](docs/config-gui.md) |
 | Commands | [commands.md](docs/commands.md) |
 | Permissions | [permissions.md](docs/permissions.md) |
 | Developer API | [api.md](docs/api.md) |
 | FAQ | [faq.md](docs/faq.md) |
-| Publishing checklist | [marketplace/PUBLISHING.md](docs/marketplace/PUBLISHING.md) |
 
 Integration guides: [Lands](docs/integrations/lands.md) · [WorldGuard](docs/integrations/worldguard.md) · [Towny](docs/integrations/towny.md) · [GriefPrevention](docs/integrations/griefprevention.md)
 
@@ -192,25 +187,9 @@ cd item-magnet
 ./gradlew build
 ```
 
-Output: `build/libs/ItemMagnet-1.2.2.jar`
+Output: `build/libs/ItemMagnet-1.2.4.jar`
 
-Requires **Java 21+**.
-
-### Testing
-
-MockBukkit integration tests live in a separate `integrationTest` source set so Mockito unit tests keep a clean classpath.
-
-```bash
-cd ~/dev/theryn-plugin-test-utils && ./gradlew build
-./gradlew test              # Mockito unit tests
-./gradlew integrationTest   # MockBukkit plugin load, PDC, listeners, commands
-```
-
-**What tests cover:** plugin enable, magnet PDC round-trip, join AFK tracker seeding, staff give flow.
-
-**Not covered:** full magnet pull E2E (spawned items + scheduler ticks + line-of-sight), live claim hooks, config GUI.
-
-For live-server QA, use your staging smoke checklist or [ItemMagnet docs](docs/faq.md).
+Requires **Java 21+**. See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and tests.
 
 ---
 
