@@ -21,6 +21,10 @@ import java.util.Optional;
 
 public final class ConfigManager {
 
+    private static final Map<String, String> SOUND_ALIASES = Map.of(
+            "BLOCK_REDSTONE_BLOCK_CLICK", "BLOCK_NOTE_BLOCK_BIT"
+    );
+
     private final ItemMagnetPlugin plugin;
     private MagnetConfig magnetConfig;
     private MessagesConfig messagesConfig;
@@ -523,8 +527,10 @@ public final class ConfigManager {
         if (name == null || name.isBlank()) {
             return Optional.empty();
         }
+        String normalized = name.toUpperCase(Locale.ROOT);
+        String resolved = SOUND_ALIASES.getOrDefault(normalized, normalized);
         try {
-            return Optional.of(org.bukkit.Sound.valueOf(name.toUpperCase(Locale.ROOT)));
+            return Optional.of(org.bukkit.Sound.valueOf(resolved));
         } catch (IllegalArgumentException exception) {
             plugin.getLogger().warning("Invalid sound in config: " + name);
             return Optional.empty();

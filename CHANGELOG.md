@@ -4,6 +4,16 @@ All notable changes to ItemMagnet are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.2.3] - 2026-06-15
+
+### Fixed
+
+- **Paper 26.x recipe compatibility** — skip durability-style charge bar on stackable tier materials (e.g. recovery compass) so crafted recipe results stay valid and no longer break other plugins that scan recipes at startup
+- **Lands 7.26 hook** — use `getArea(Location)` API instead of removed `getLand(Location)`
+- **WorldGuard 7.0.17 hook** — use `RegionQuery.testState(Location, …)` instead of removed `ApplicableRegionSet.testState(LocalPlayer, …)`
+- **AFK notify-once spam on login** — `markAfkNotified` now persists when no movement record exists; fresh logins are seeded and not treated as idle before tracking starts
+- **Invalid fuel sound** — default fuel sound updated; legacy `BLOCK_REDSTONE_BLOCK_CLICK` aliases to `BLOCK_NOTE_BLOCK_BIT`
+
 ## [1.2.2] - 2026-06-14
 
 ### Added

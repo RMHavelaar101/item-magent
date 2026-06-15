@@ -17,7 +17,6 @@ public final class LandsHook implements ProtectionHook {
     private Object landsIntegration;
     private Object itemPickupFlag;
     private Method getAreaMethod;
-    private Method getLandMethod;
     private Method getLandPlayerMethod;
     private Method hasRoleFlagMethod;
     private Method getOwnerUidMethod;
@@ -40,17 +39,12 @@ public final class LandsHook implements ProtectionHook {
             itemPickupFlag = flagsClass.getField("ITEM_PICKUP").get(null);
 
             getAreaMethod = integrationClass.getMethod("getArea", Location.class);
-            getLandMethod = integrationClass.getMethod("getLand", Location.class);
             getLandPlayerMethod = integrationClass.getMethod("getLandPlayer", UUID.class);
 
             Class<?> areaClass = Class.forName("me.angeschossen.lands.api.land.Area");
             hasRoleFlagMethod = areaClass.getMethod("hasRoleFlag", UUID.class, itemPickupFlag.getClass());
-
-            Class<?> landClass = Class.forName("me.angeschossen.lands.api.land.Land");
-            getOwnerUidMethod = landClass.getMethod("getOwnerUID");
-
-            Class<?> landPlayerClass = Class.forName("me.angeschossen.lands.api.player.LandPlayer");
-            isTrustedMethod = landPlayerClass.getMethod("isTrusted", landClass);
+            getOwnerUidMethod = areaClass.getMethod("getOwnerUID");
+            isTrustedMethod = areaClass.getMethod("isTrusted", UUID.class);
         } catch (ReflectiveOperationException exception) {
             plugin.getLogger().warning("Failed to initialize Lands hook: " + exception.getMessage());
             landsIntegration = null;
@@ -88,22 +82,8 @@ public final class LandsHook implements ProtectionHook {
 
             return switch (config.getClaimedLand()) {
                 case DENY -> false;
-                case OWNER_ONLY -> {
-                    Object land = getLandMethod.invoke(landsIntegration, location);
-                    if (land == null) {
-                        yield false;
-                    }
-                    UUID owner = (UUID) getOwnerUidMethod.invoke(land);
-                    yield player.getUniqueId().equals(owner);
-                }
-                case MEMBER_ONLY -> {
-                    Object land = getLandMethod.invoke(landsIntegration, location);
-                    Object landPlayer = getLandPlayerMethod.invoke(landsIntegration, player.getUniqueId());
-                    if (land == null || landPlayer == null) {
-                        yield false;
-                    }
-                    yield (boolean) isTrustedMethod.invoke(landPlayer, land);
-                }
+                case OWNER_ONLY -> player.getUniqueId().equals(getOwnerUidMethod.invoke(area));
+                case MEMBER_ONLY -> (boolean) isTrustedMethod.invoke(area, player.getUniqueId());
                 case RESPECT_FLAGS -> (boolean) hasRoleFlagMethod.invoke(area, player.getUniqueId(), itemPickupFlag);
             };
         } catch (ReflectiveOperationException exception) {

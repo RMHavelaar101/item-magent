@@ -11,6 +11,15 @@ public final class AfkTracker {
 
     private final Map<UUID, MovementRecord> records = new ConcurrentHashMap<>();
 
+    public void seed(Player player, double requiredBlocksMoved) {
+        Location location = player.getLocation();
+        records.computeIfAbsent(player.getUniqueId(), ignored -> {
+            MovementRecord record = new MovementRecord(location, System.currentTimeMillis());
+            record.addDistance(requiredBlocksMoved);
+            return record;
+        });
+    }
+
     public void recordMovement(Player player) {
         Location location = player.getLocation();
         MovementRecord record = records.computeIfAbsent(player.getUniqueId(), ignored -> new MovementRecord(location, System.currentTimeMillis()));
@@ -26,7 +35,7 @@ public final class AfkTracker {
     public boolean isAfk(Player player, double requiredBlocksMoved, int windowSeconds) {
         MovementRecord record = records.get(player.getUniqueId());
         if (record == null) {
-            return true;
+            return false;
         }
         long windowMillis = windowSeconds * 1000L;
         if (System.currentTimeMillis() - record.getLastMovedAt() > windowMillis) {
@@ -42,16 +51,18 @@ public final class AfkTracker {
         }
         MovementRecord record = records.get(player.getUniqueId());
         if (record == null) {
-            return true;
+            return false;
         }
         return !record.isAfkNotified();
     }
 
     public void markAfkNotified(Player player) {
-        MovementRecord record = records.get(player.getUniqueId());
-        if (record != null) {
-            record.setAfkNotified(true);
-        }
+        Location location = player.getLocation();
+        MovementRecord record = records.computeIfAbsent(
+                player.getUniqueId(),
+                ignored -> new MovementRecord(location, System.currentTimeMillis())
+        );
+        record.setAfkNotified(true);
     }
 
     public void clear(Player player) {

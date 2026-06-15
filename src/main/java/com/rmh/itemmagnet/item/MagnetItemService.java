@@ -98,7 +98,10 @@ public final class MagnetItemService {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
 
-        if (config.isShowChargeBar() && data.getTier().getMaxCharge() > 0 && meta instanceof Damageable damageable) {
+        if (config.isShowChargeBar()
+                && data.getTier().getMaxCharge() > 0
+                && data.getTier().getMaterial().getMaxDurability() > 0
+                && meta instanceof Damageable damageable) {
             int max = data.getTier().getMaxCharge();
             int remaining = Math.max(0, data.getCharge());
             damageable.setMaxDamage(max);

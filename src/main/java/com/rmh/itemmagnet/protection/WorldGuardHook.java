@@ -20,7 +20,7 @@ public final class WorldGuardHook implements ProtectionHook {
     private Method getApplicableRegionsMethod;
     private Method adaptMethod;
     private Method wrapPlayerMethod;
-    private Method testStateMethod;
+    private Method testStateOnQueryMethod;
     private Method getIdMethod;
 
     public WorldGuardHook(ItemMagnetPlugin plugin) {
@@ -50,12 +50,17 @@ public final class WorldGuardHook implements ProtectionHook {
             wrapPlayerMethod = wgPluginClass.getMethod("wrapPlayer", Player.class);
 
             Class<?> regionQueryClass = Class.forName("com.sk89q.worldguard.protection.regions.RegionQuery");
-            getApplicableRegionsMethod = regionQueryClass.getMethod("getApplicableRegions", Class.forName("com.sk89q.worldedit.util.Location"));
+            Class<?> weLocationClass = Class.forName("com.sk89q.worldedit.util.Location");
+            getApplicableRegionsMethod = regionQueryClass.getMethod("getApplicableRegions", weLocationClass);
 
-            Class<?> regionSetClass = Class.forName("com.sk89q.worldguard.protection.ApplicableRegionSet");
             Class<?> localPlayerClass = Class.forName("com.sk89q.worldguard.LocalPlayer");
-            Class<?> flagClass = Class.forName("com.sk89q.worldguard.protection.flags.Flag");
-            testStateMethod = regionSetClass.getMethod("testState", localPlayerClass, flagClass);
+            Class<?> stateFlagClass = Class.forName("com.sk89q.worldguard.protection.flags.StateFlag");
+            testStateOnQueryMethod = regionQueryClass.getMethod(
+                    "testState",
+                    weLocationClass,
+                    localPlayerClass,
+                    stateFlagClass
+            );
 
             Class<?> protectedRegionClass = Class.forName("com.sk89q.worldguard.protection.regions.ProtectedRegion");
             getIdMethod = protectedRegionClass.getMethod("getId");
@@ -87,11 +92,13 @@ public final class WorldGuardHook implements ProtectionHook {
         try {
             Object localPlayer = wrapPlayerMethod.invoke(worldGuardPlugin, player);
             Object wgLocation = adaptMethod.invoke(null, location);
-            Object regions = getApplicableRegionsMethod.invoke(regionQuery, wgLocation);
 
-            if (config.isRespectItemPickupFlag() && !(boolean) testStateMethod.invoke(regions, localPlayer, itemPickupFlag)) {
+            if (config.isRespectItemPickupFlag()
+                    && !(boolean) testStateOnQueryMethod.invoke(regionQuery, wgLocation, localPlayer, itemPickupFlag)) {
                 return false;
             }
+
+            Object regions = getApplicableRegionsMethod.invoke(regionQuery, wgLocation);
 
             RegionMode mode = config.getRegionMode();
             List<String> regionList = config.getRegions();

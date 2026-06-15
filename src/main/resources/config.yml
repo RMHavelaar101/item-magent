@@ -111,7 +111,7 @@ settings:
   sounds:
     enabled: false
     pull: ENTITY_ITEM_PICKUP
-    fuel: BLOCK_REDSTONE_BLOCK_CLICK
+    fuel: BLOCK_NOTE_BLOCK_BIT
     depleted: BLOCK_BEACON_DEACTIVATE
     denied: BLOCK_NOTE_BLOCK_BASS
 

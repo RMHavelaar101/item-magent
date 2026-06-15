@@ -52,6 +52,13 @@ public final class MagnetListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        var antiAfk = plugin.getConfigManager().getMagnetConfig().getAntiAfk();
+        if (antiAfk.isEnabled()) {
+            plugin.getMagnetService().getAfkTracker().seed(
+                    event.getPlayer(),
+                    antiAfk.getRequiredBlocksMoved()
+            );
+        }
         unlockService.discoverRecipesOnJoin(event.getPlayer());
         plugin.getUpdateChecker().notifyPlayer(event.getPlayer());
     }
