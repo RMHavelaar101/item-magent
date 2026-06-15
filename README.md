@@ -198,16 +198,6 @@ Requires **Java 21+**.
 
 ---
 
-## Publishing
-
-Ready to list on Hangar or SpigotMC? See [LAUNCH.md](LAUNCH.md) and [docs/marketplace/PUBLISHING.md](docs/marketplace/PUBLISHING.md).
-
-- **Product site:** https://itemmagnet.theryn.org — [changelog](https://itemmagnet.theryn.org/changelog)
-- Spigot listing copy: [spigot-description.bbcode](docs/marketplace/spigot-description.bbcode)
-- Hangar page copy: [hangar-page.md](docs/marketplace/hangar-page.md)
-
----
-
 ## Support
 
 - [Report a bug](https://github.com/RMHavelaar101/item-magent/issues/new?template=bug_report.yml)
