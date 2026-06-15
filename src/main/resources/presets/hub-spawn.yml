@@ -1,0 +1,15 @@
+settings:
+  scan-interval-ticks: 40
+  max-items-per-tick: 1
+  pull-step-blocks: 0.1
+  item-blacklist: []
+  world-filter:
+    mode: BLACKLIST
+    worlds:
+      - hub
+      - spawn
+      - lobby
+
+player-filter:
+  default-preset: none
+  show-preset-hint: false

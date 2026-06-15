@@ -8,10 +8,18 @@ public final class QuestsIntegrationConfig {
 
     private final boolean enabled;
     private final Map<String, String> unlockOnComplete;
+    private final QuestsProgressOnBlockedConfig progressOnBlocked;
 
-    public QuestsIntegrationConfig(boolean enabled, Map<String, String> unlockOnComplete) {
+    public QuestsIntegrationConfig(
+            boolean enabled,
+            Map<String, String> unlockOnComplete,
+            QuestsProgressOnBlockedConfig progressOnBlocked
+    ) {
         this.enabled = enabled;
         this.unlockOnComplete = Collections.unmodifiableMap(new LinkedHashMap<>(unlockOnComplete));
+        this.progressOnBlocked = progressOnBlocked == null
+                ? QuestsProgressOnBlockedConfig.disabled()
+                : progressOnBlocked;
     }
 
     public boolean isEnabled() {
@@ -20,5 +28,9 @@ public final class QuestsIntegrationConfig {
 
     public Map<String, String> getUnlockOnComplete() {
         return unlockOnComplete;
+    }
+
+    public QuestsProgressOnBlockedConfig getProgressOnBlocked() {
+        return progressOnBlocked;
     }
 }

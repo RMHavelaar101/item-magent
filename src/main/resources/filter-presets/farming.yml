@@ -1,0 +1,22 @@
+materials:
+  - WHEAT_SEEDS
+  - BEETROOT_SEEDS
+  - MELON_SEEDS
+  - PUMPKIN_SEEDS
+  - POTATO
+  - CARROT
+  - BEETROOT
+  - WHEAT
+  - MELON_SLICE
+  - PUMPKIN
+  - SUGAR_CANE
+  - CACTUS
+  - KELP
+  - BAMBOO
+  - SWEET_BERRIES
+  - GLOW_BERRIES
+  - NETHER_WART
+  - COCOA_BEANS
+tags:
+  - minecraft:crops
+  - minecraft:seeds

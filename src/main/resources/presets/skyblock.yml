@@ -1,0 +1,33 @@
+settings:
+  scan-interval-ticks: 3
+  max-items-per-tick: 8
+  fuel-radius: 2
+  item-blacklist:
+    - BEDROCK
+  item-blacklist-tags:
+    - minecraft:shulker_boxes
+
+height:
+  use-y-range: true
+  underground:
+    enabled: true
+    threshold-y: 0
+    radius-modifier: -1
+    drain-multiplier: 1.1
+
+integrations:
+  superiorskyblock:
+    enabled: true
+    check-at: BOTH
+    island-only: true
+
+tiers:
+  fragment:
+    radius: 5
+    max-charge: 800
+  survey:
+    radius: 7
+    max-charge: 1200
+  anchor:
+    radius: 9
+    max-charge: 1600

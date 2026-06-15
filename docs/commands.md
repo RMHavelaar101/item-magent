@@ -32,6 +32,42 @@ Opens the in-game config editor (see [config-gui.md](config-gui.md)). Edit tier 
 - **Permission:** `itemmagnet.config`
 - **Player only**
 
+## /itemmagnet filter
+
+Opens your personal item blacklist GUI. Server rules appear read-only at the top; your choices and tag rules are editable below. Use the preset button to merge built-in filter presets — you'll see a preview/confirm screen before rules are applied.
+
+- **Permission:** `itemmagnet.filter` (default: all players with `itemmagnet.use`)
+- **Player only**
+- **Help:** `/itemmagnet filter help` or `/itemmagnet help filter`
+
+### /itemmagnet filter clear
+
+Removes all of your personal filter materials and tags. Server blacklist rules and tier filters are unchanged. Your “first filter hint” flag is preserved.
+
+- **Permission:** `itemmagnet.filter`
+
+```
+/itemmagnet filter clear
+```
+
+## /itemmagnet import \<blacklist|filter|filter-preset\> …
+
+Bulk-merge materials or presets.
+
+| Subcommand | Permission | Description |
+|------------|------------|-------------|
+| `blacklist <mat1,mat2,…>` | `itemmagnet.import` | Merge into server `settings.item-blacklist` |
+| `filter <mat1,mat2,…>` | `itemmagnet.filter` | Merge into your personal filter |
+| `filter-preset <name>` | `itemmagnet.filter` | Merge a named preset (`mining`, `farming`, …) |
+
+Examples:
+
+```
+/itemmagnet import blacklist DIRT,COBBLESTONE
+/itemmagnet import filter WHEAT_SEEDS,CARROT
+/itemmagnet import filter-preset mining
+```
+
 ## /itemmagnet version
 
 Shows plugin version, Paper version, and hook availability.
@@ -83,9 +119,11 @@ Unlocks every configured tier recipe for a player.
 
 - **Permission:** `itemmagnet.unlock`
 
-## /itemmagnet debug
+## /itemmagnet debug [nearby]
 
-Shows debug info for your **active** magnet (respects `hold-mode`): tier, slot, charge, boost, base vs effective radius, protection, AFK, world filter, and game mode.
+Shows debug info for your **active** magnet (respects `hold-mode`): tier, slot, charge, boost, base vs effective radius, protection, AFK, world filter, game mode, and filter state (server/personal rule counts, tier filter mode).
+
+Add `nearby` to scan up to 5 nearest dropped items and print each material with pull status (`OK` or a `PullBlockReason` name).
 
 - **Permission:** `itemmagnet.debug`
 - **Player only**

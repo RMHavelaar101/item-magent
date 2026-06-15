@@ -9,21 +9,15 @@ In `build.gradle.kts`:
 ```kotlin
 dependencies {
     implementation("org.bstats:bstats-bukkit:3.2.1")
+    implementation("org.xerial:sqlite-jdbc:…")
+    implementation("com.mysql:mysql-connector-j:…")
+    implementation("com.zaxxer:HikariCP:…")
 }
 
 tasks.shadowJar {
-    configurations.set(listOf(project.configurations.runtimeClasspath.get()))
-    dependencies {
-        exclude { dependency -> dependency.moduleGroup != "org.bstats" }
-    }
-    relocate("org.bstats", project.group.toString()) // -> com.rmh
+    // bStats, SQLite JDBC, MySQL connector, HikariCP — relocated under com.rmh.lib.*
 }
 ```
-
-This:
-
-1. Merges **only** bStats into the release JAR (Paper API stays `compileOnly`)
-2. Relocates `org.bstats` → `com.rmh` to avoid conflicts with other plugins
 
 Build the release JAR:
 
@@ -45,6 +39,7 @@ After first run, edit `plugins/ItemMagnet/config.yml`:
 metrics:
   bstats-enabled: true
   bstats-plugin-id: YOUR_ID_HERE
+  bstats-block-reasons: true
 ```
 
 Then `/itemmagnet reload` or restart.
@@ -53,13 +48,24 @@ Until you set a valid ID, the plugin logs a reminder and skips metrics — every
 
 ## Custom charts
 
-ItemMagnet reports:
+ItemMagnet reports session aggregates (reset on restart):
 
-- `lands_enabled`
-- `worldguard_enabled`
-- `anti_afk_enabled`
-- `underground_modifier_enabled`
-- `tier_count`
+| Chart | Description |
+|-------|-------------|
+| `lands_enabled` | Lands integration active |
+| `worldguard_enabled` | WorldGuard integration active |
+| `anti_afk_enabled` | Anti-AFK enabled |
+| `underground_modifier_enabled` | Underground radius modifier enabled |
+| `tier_count` | Number of configured tiers |
+| `player_filter_storage` | `YAML`, `SQLITE`, or `MYSQL` |
+| `inventory_full_behavior` | Config value |
+| `default_filter_preset` | `player-filter.default-preset` |
+| `hold_mode` | Config value |
+| `pull_experience` | Global XP pull toggle |
+| `top_block_reason` | Most common `PullBlockReason` this session |
+| `block_reason_*` | `active` / `inactive` per major reason (when `bstats-block-reasons` is true) |
+
+Blocked-pull charts use an in-memory collector hooked to `ItemMagnetPullBlockedEvent` — no per-tick or per-item overhead.
 
 ## Disable bStats
 
@@ -68,4 +74,11 @@ Server owners can disable globally in `plugins/bStats/config.yml`, or per-plugin
 ```yaml
 metrics:
   bstats-enabled: false
+```
+
+Disable only block-reason charts:
+
+```yaml
+metrics:
+  bstats-block-reasons: false
 ```

@@ -15,6 +15,10 @@ integrations:
 
 When a player completes `my_first_quest`, ItemMagnet runs `grantUnlock` for tier `fragment`.
 
+## Progress on blocked pulls
+
+Optional rules that increment Quest progress when pulls are blocked — see [pull-blocked-bridges.md](pull-blocked-bridges.md).
+
 ## Requirements
 
 - [Quests](https://modrinth.com/plugin/quests.classic) (PikaMug) installed

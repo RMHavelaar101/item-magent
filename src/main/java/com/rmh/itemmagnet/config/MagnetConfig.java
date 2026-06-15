@@ -1,9 +1,12 @@
 package com.rmh.itemmagnet.config;
 
+import com.rmh.itemmagnet.filter.MaterialFilterRule;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class MagnetConfig {
@@ -25,6 +28,7 @@ public final class MagnetConfig {
     private final MultiMagnetPolicy multiMagnetPolicy;
     private final boolean disableInCreative;
     private final boolean disableInSpectator;
+    private final InventoryFullBehavior inventoryFullBehavior;
     private final WorldFilterConfig worldFilter;
     private final SoundsConfig sounds;
     private final MetricsConfig metrics;
@@ -39,9 +43,12 @@ public final class MagnetConfig {
     private final SimpleClaimIntegrationConfig plotSquared;
     private final SuperiorSkyblockConfig superiorSkyblock;
     private final QuestsIntegrationConfig quests;
+    private final CmiIntegrationConfig cmi;
     private final Map<String, TierConfig> tiers;
     private final CommandsConfig commands;
     private final ProximityLoreConfig proximityLore;
+    private final MaterialFilterRule serverItemFilter;
+    private final PlayerFilterConfig playerFilterConfig;
 
     public MagnetConfig(
             String preset,
@@ -61,6 +68,7 @@ public final class MagnetConfig {
             MultiMagnetPolicy multiMagnetPolicy,
             boolean disableInCreative,
             boolean disableInSpectator,
+            InventoryFullBehavior inventoryFullBehavior,
             WorldFilterConfig worldFilter,
             SoundsConfig sounds,
             MetricsConfig metrics,
@@ -75,9 +83,12 @@ public final class MagnetConfig {
             SimpleClaimIntegrationConfig plotSquared,
             SuperiorSkyblockConfig superiorSkyblock,
             QuestsIntegrationConfig quests,
+            CmiIntegrationConfig cmi,
             Map<String, TierConfig> tiers,
             CommandsConfig commands,
-            ProximityLoreConfig proximityLore
+            ProximityLoreConfig proximityLore,
+            MaterialFilterRule serverItemFilter,
+            PlayerFilterConfig playerFilterConfig
     ) {
         this.preset = preset;
         this.scanIntervalTicks = scanIntervalTicks;
@@ -96,6 +107,7 @@ public final class MagnetConfig {
         this.multiMagnetPolicy = multiMagnetPolicy;
         this.disableInCreative = disableInCreative;
         this.disableInSpectator = disableInSpectator;
+        this.inventoryFullBehavior = inventoryFullBehavior;
         this.worldFilter = worldFilter;
         this.sounds = sounds;
         this.metrics = metrics;
@@ -110,9 +122,12 @@ public final class MagnetConfig {
         this.plotSquared = plotSquared;
         this.superiorSkyblock = superiorSkyblock;
         this.quests = quests;
+        this.cmi = cmi;
         this.tiers = Collections.unmodifiableMap(new LinkedHashMap<>(tiers));
         this.commands = commands;
         this.proximityLore = proximityLore;
+        this.serverItemFilter = serverItemFilter;
+        this.playerFilterConfig = playerFilterConfig;
     }
 
     public String getPreset() {
@@ -183,6 +198,10 @@ public final class MagnetConfig {
         return disableInSpectator;
     }
 
+    public InventoryFullBehavior getInventoryFullBehavior() {
+        return inventoryFullBehavior;
+    }
+
     public WorldFilterConfig getWorldFilter() {
         return worldFilter;
     }
@@ -239,6 +258,10 @@ public final class MagnetConfig {
         return quests;
     }
 
+    public CmiIntegrationConfig getCmi() {
+        return cmi;
+    }
+
     public Map<String, TierConfig> getTiers() {
         return tiers;
     }
@@ -253,5 +276,21 @@ public final class MagnetConfig {
 
     public ProximityLoreConfig getProximityLore() {
         return proximityLore;
+    }
+
+    public MaterialFilterRule getServerItemFilter() {
+        return serverItemFilter;
+    }
+
+    public PlayerFilterConfig getPlayerFilterConfig() {
+        return playerFilterConfig;
+    }
+
+    public boolean canPullMaterial(Material material) {
+        return !serverItemFilter.blocks(material);
+    }
+
+    public List<Material> getItemBlacklist() {
+        return serverItemFilter.getMaterials();
     }
 }

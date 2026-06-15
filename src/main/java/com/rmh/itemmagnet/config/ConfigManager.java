@@ -1,6 +1,9 @@
 package com.rmh.itemmagnet.config;
 
 import com.rmh.itemmagnet.ItemMagnetPlugin;
+import com.rmh.itemmagnet.filter.MaterialFilterResolver;
+import com.rmh.itemmagnet.filter.MaterialFilterRule;
+import com.rmh.itemmagnet.filter.storage.PlayerFilterBackend;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
@@ -111,6 +114,15 @@ public final class ConfigManager {
         boolean disableInCreative = settings == null || settings.getBoolean("disable-in-creative", true);
         boolean disableInSpectator = settings == null || settings.getBoolean("disable-in-spectator", true);
         WorldFilterConfig worldFilter = parseWorldFilter(settings != null ? settings.getConfigurationSection("world-filter") : null);
+        MaterialFilterRule serverItemFilter = MaterialFilterResolver.resolve(
+                settings != null ? settings.getStringList("item-blacklist") : List.of(),
+                settings != null ? settings.getStringList("item-blacklist-tags") : List.of(),
+                plugin.getLogger()
+        );
+        InventoryFullBehavior inventoryFullBehavior = InventoryFullBehavior.parse(
+                settings != null ? settings.getString("inventory-full-behavior", "CONTINUE") : "CONTINUE"
+        );
+        PlayerFilterConfig playerFilterConfig = parsePlayerFilterConfig(config.getConfigurationSection("player-filter"));
         SoundsConfig sounds = parseSounds(settings != null ? settings.getConfigurationSection("sounds") : null);
 
         MetricsConfig metrics = parseMetrics(config.getConfigurationSection("metrics"));
@@ -131,6 +143,7 @@ public final class ConfigManager {
                 config.getConfigurationSection("integrations.superiorskyblock")
         );
         QuestsIntegrationConfig quests = parseQuests(config.getConfigurationSection("integrations.quests"));
+        CmiIntegrationConfig cmi = parseCmi(config.getConfigurationSection("integrations.cmi"));
         Map<String, TierConfig> tiers = parseTiers(config.getConfigurationSection("tiers"));
         CommandsConfig commands = parseCommands(config.getConfigurationSection("commands"));
         ProximityLoreConfig proximityLore = parseProximityLore(config.getConfigurationSection("proximity-lore"));
@@ -153,6 +166,7 @@ public final class ConfigManager {
                 multiMagnetPolicy,
                 disableInCreative,
                 disableInSpectator,
+                inventoryFullBehavior,
                 worldFilter,
                 sounds,
                 metrics,
@@ -167,9 +181,44 @@ public final class ConfigManager {
                 plotSquared,
                 superiorSkyblock,
                 quests,
+                cmi,
                 tiers,
                 commands,
-                proximityLore
+                proximityLore,
+                serverItemFilter,
+                playerFilterConfig
+        );
+    }
+
+    private PlayerFilterConfig parsePlayerFilterConfig(ConfigurationSection section) {
+        if (section == null) {
+            return new PlayerFilterConfig("none", true, PlayerFilterBackend.YAML, "player-filters.db", null);
+        }
+        PlayerFilterBackend storage = PlayerFilterBackend.YAML;
+        try {
+            storage = PlayerFilterBackend.valueOf(section.getString("storage", "YAML").toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ignored) {
+        }
+        ConfigurationSection mysqlSection = section.getConfigurationSection("mysql");
+        PlayerFilterMysqlConfig mysql = mysqlSection == null
+                ? new PlayerFilterMysqlConfig(null, 3306, null, null, null, 5, null)
+                : new PlayerFilterMysqlConfig(
+                        mysqlSection.getString("host", "localhost"),
+                        mysqlSection.getInt("port", 3306),
+                        mysqlSection.getString("database", "itemmagnet"),
+                        mysqlSection.getString("username", "itemmagnet"),
+                        mysqlSection.getString("password", ""),
+                        mysqlSection.getInt("pool-size", 5),
+                        mysqlSection.getString("table-prefix", "im_")
+                );
+        return new PlayerFilterConfig(
+                section.getString("default-preset", "none"),
+                section.getBoolean("show-preset-hint", true),
+                storage,
+                section.getConfigurationSection("sqlite") != null
+                        ? section.getConfigurationSection("sqlite").getString("file", "player-filters.db")
+                        : section.getString("sqlite.file", "player-filters.db"),
+                mysql
         );
     }
 
@@ -225,7 +274,7 @@ public final class ConfigManager {
 
     private MetricsConfig parseMetrics(ConfigurationSection section) {
         if (section == null) {
-            return new MetricsConfig(true, 0, UpdateCheckMode.ON_STARTUP);
+            return new MetricsConfig(true, 0, UpdateCheckMode.ON_STARTUP, true);
         }
         UpdateCheckMode mode = UpdateCheckMode.ON_STARTUP;
         try {
@@ -235,7 +284,8 @@ public final class ConfigManager {
         return new MetricsConfig(
                 section.getBoolean("bstats-enabled", true),
                 section.getInt("bstats-plugin-id", 0),
-                mode
+                mode,
+                section.getBoolean("bstats-block-reasons", true)
         );
     }
 
@@ -351,21 +401,17 @@ public final class ConfigManager {
                 plugin.getLogger().warning("Invalid material for tier " + tierId);
                 continue;
             }
-            List<Material> blacklist = new ArrayList<>();
-            for (String entry : tierSection.getStringList("blacklist")) {
-                Material blacklisted = Material.matchMaterial(entry);
-                if (blacklisted != null) {
-                    blacklist.add(blacklisted);
-                }
-            }
+            MaterialFilterRule blacklistRule = MaterialFilterResolver.resolve(
+                    tierSection.getStringList("blacklist"),
+                    tierSection.getStringList("blacklist-tags"),
+                    plugin.getLogger()
+            );
             boolean whitelistEnabled = tierSection.getBoolean("whitelist-enabled", false);
-            List<Material> whitelist = new ArrayList<>();
-            for (String entry : tierSection.getStringList("whitelist")) {
-                Material allowed = Material.matchMaterial(entry);
-                if (allowed != null) {
-                    whitelist.add(allowed);
-                }
-            }
+            MaterialFilterRule whitelistRule = MaterialFilterResolver.resolve(
+                    tierSection.getStringList("whitelist"),
+                    tierSection.getStringList("whitelist-tags"),
+                    plugin.getLogger()
+            );
             UnlockConfig unlock = parseUnlock(tierSection.getConfigurationSection("unlock"));
             RecipeConfig recipe = parseRecipe(tierSection.getConfigurationSection("recipe"));
             tiers.put(tierId.toLowerCase(Locale.ROOT), new TierConfig(
@@ -374,6 +420,7 @@ public final class ConfigManager {
                     tierSection.getString("display-name", tierId),
                     tierSection.getStringList("lore"),
                     tierSection.getBoolean("enchant-glint", true),
+                    tierSection.getInt("custom-model-data", 0),
                     tierSection.getDouble("radius", 6),
                     tierSection.getInt("max-charge", 1000),
                     tierSection.getDouble("base-drain-per-second", 1),
@@ -381,9 +428,9 @@ public final class ConfigManager {
                     tierSection.getDouble("boost-drain-multiplier", 1.15),
                     tierSection.getDouble("min-radius", 1),
                     tierSection.getDouble("max-radius", 16),
-                    blacklist,
+                    blacklistRule,
                     whitelistEnabled,
-                    whitelist,
+                    whitelistRule,
                     tierSection.getBoolean("pull-experience", true),
                     unlock,
                     recipe
@@ -630,7 +677,7 @@ public final class ConfigManager {
 
     private QuestsIntegrationConfig parseQuests(ConfigurationSection section) {
         if (section == null) {
-            return new QuestsIntegrationConfig(false, Map.of());
+            return new QuestsIntegrationConfig(false, Map.of(), QuestsProgressOnBlockedConfig.disabled());
         }
         Map<String, String> unlockOnComplete = new LinkedHashMap<>();
         ConfigurationSection mapping = section.getConfigurationSection("unlock-on-complete");
@@ -639,7 +686,71 @@ public final class ConfigManager {
                 unlockOnComplete.put(questId, mapping.getString(questId, ""));
             }
         }
-        return new QuestsIntegrationConfig(section.getBoolean("enabled", false), unlockOnComplete);
+        QuestsProgressOnBlockedConfig progressOnBlocked = parseQuestsProgressOnBlocked(
+                section.getConfigurationSection("progress-on-blocked")
+        );
+        return new QuestsIntegrationConfig(section.getBoolean("enabled", false), unlockOnComplete, progressOnBlocked);
+    }
+
+    private CmiIntegrationConfig parseCmi(ConfigurationSection section) {
+        if (section == null) {
+            return CmiIntegrationConfig.disabled();
+        }
+        CmiProgressOnBlockedConfig progressOnBlocked = parseCmiProgressOnBlocked(
+                section.getConfigurationSection("progress-on-blocked")
+        );
+        return new CmiIntegrationConfig(progressOnBlocked);
+    }
+
+    private QuestsProgressOnBlockedConfig parseQuestsProgressOnBlocked(ConfigurationSection section) {
+        if (section == null || !section.getBoolean("enabled", false)) {
+            return QuestsProgressOnBlockedConfig.disabled();
+        }
+        return new QuestsProgressOnBlockedConfig(true, parseBlockedProgressRules(section.getConfigurationSection("rules"), true));
+    }
+
+    private CmiProgressOnBlockedConfig parseCmiProgressOnBlocked(ConfigurationSection section) {
+        if (section == null || !section.getBoolean("enabled", false)) {
+            return CmiProgressOnBlockedConfig.disabled();
+        }
+        return new CmiProgressOnBlockedConfig(true, parseBlockedProgressRules(section.getConfigurationSection("rules"), false));
+    }
+
+    private Map<String, BlockedProgressRule> parseBlockedProgressRules(ConfigurationSection section, boolean questsRules) {
+        Map<String, BlockedProgressRule> rules = new LinkedHashMap<>();
+        if (section == null) {
+            return rules;
+        }
+        for (String ruleId : section.getKeys(false)) {
+            ConfigurationSection ruleSection = section.getConfigurationSection(ruleId);
+            if (ruleSection == null) {
+                continue;
+            }
+            List<String> reasons = ruleSection.getStringList("reasons");
+            List<String> materials = ruleSection.getStringList("materials");
+            if (questsRules) {
+                rules.put(ruleId, new BlockedProgressRule(
+                        ruleId,
+                        ruleSection.getString("quest-id", ""),
+                        null,
+                        null,
+                        ruleSection.getInt("amount", 1),
+                        reasons,
+                        materials
+                ));
+            } else {
+                rules.put(ruleId, new BlockedProgressRule(
+                        ruleId,
+                        null,
+                        ruleSection.getString("stat", "blocksmined"),
+                        ruleSection.getString("sub-stat", "unknown"),
+                        ruleSection.getInt("amount", 1),
+                        reasons,
+                        materials
+                ));
+            }
+        }
+        return rules;
     }
 
     public void validateStartup() {

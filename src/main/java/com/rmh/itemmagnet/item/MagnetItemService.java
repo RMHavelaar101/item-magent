@@ -98,6 +98,10 @@ public final class MagnetItemService {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
 
+        if (data.getTier().getCustomModelData() > 0) {
+            meta.setCustomModelData(data.getTier().getCustomModelData());
+        }
+
         if (config.isShowChargeBar()
                 && data.getTier().getMaxCharge() > 0
                 && data.getTier().getMaterial().getMaxDurability() > 0

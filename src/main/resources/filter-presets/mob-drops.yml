@@ -1,0 +1,17 @@
+materials:
+  - ROTTEN_FLESH
+  - BONE
+  - STRING
+  - SPIDER_EYE
+  - GUNPOWDER
+  - SLIME_BALL
+  - ENDER_PEARL
+  - BLAZE_ROD
+  - GHAST_TEAR
+  - MAGMA_CREAM
+  - PHANTOM_MEMBRANE
+  - LEATHER
+  - FEATHER
+  - ARROW
+tags:
+  - minecraft:arrows

@@ -21,8 +21,33 @@ Open the in-game editor with `/itemmagnet config` or `/im config` (permission: `
 | Tiers | **Display names**, radius, drain, max charge, pull-experience per tier |
 | Integrations | Enable Lands, WorldGuard, Towny, GriefPrevention |
 | Proximity Lore | Enable feature, scan interval, cooldown, require magnet; edit zone coords |
+| Item Filter | Server-wide material and tag blacklist (`settings.item-blacklist`, `settings.item-blacklist-tags`) |
 
 Each button includes a short description of what the setting does.
+
+## Item filter (server)
+
+**Item Filter** menu (main hub → hopper icon):
+
+- **Materials** view — lists materials in `settings.item-blacklist`
+- **Tags** view — toggle with the navigation buttons; lists tag rules in `settings.item-blacklist-tags`
+- **Add item in hand** / **Add tag** (chat) — add a material or tag rule
+- Click a listed material or tag to remove it
+- **Save & Reload** to apply
+
+Players manage their own opt-out list via `/itemmagnet filter` (see [commands.md](commands.md)).
+
+## Granular permissions
+
+| Action | Permission |
+|--------|------------|
+| Open admin GUI | `itemmagnet.config` |
+| Save & Reload | `itemmagnet.config.save` |
+| Reset to defaults | `itemmagnet.config.reset` |
+| Section menu | `itemmagnet.config.section.<id>` |
+| Single control | `itemmagnet.config.field.<path_with_underscores>` |
+
+Controls you cannot edit appear as **gray locked** items with “No permission to edit” lore instead of empty slots. Config and filter changes are appended to `plugins/ItemMagnet/config-audit.log`.
 
 ## Proximity lore
 

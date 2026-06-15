@@ -1,0 +1,19 @@
+# Preset that blacklists common junk so magnets focus on valuables.
+# Merge into your personal filter — server-blocked items are still skipped.
+materials:
+  - COBBLESTONE
+  - DEEPSLATE
+  - DIRT
+  - GRAVEL
+  - SAND
+  - RED_SAND
+  - NETHERRACK
+  - STONE
+  - ANDESITE
+  - DIORITE
+  - GRANITE
+  - TUFF
+  - DEEPSLATE_COBBLESTONE
+tags:
+  - minecraft:logs
+  - minecraft:planks

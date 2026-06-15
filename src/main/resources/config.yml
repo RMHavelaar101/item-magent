@@ -20,7 +20,7 @@
 # Optional server preset merged on top of this file at load time.
 # Built-in presets live in the plugin jar under presets/ (e.g. presets/theryn.yml).
 # Values from the preset override matching keys here. Set to "none" to disable.
-# Available: none, theryn, testing
+# Available: none, theryn, testing, skyblock, vanilla-survival, hub-spawn
 preset: none
 
 # -----------------------------------------------------------------------------
@@ -99,6 +99,18 @@ settings:
   # Default: true
   disable-in-spectator: true
 
+  # Materials never pulled for any player or tier (server-wide blacklist).
+  # Example: [BEDROCK, BARRIER]
+  # Default: []
+  item-blacklist: []
+
+  # Tag-based server blacklist (e.g. minecraft:shulker_boxes, minecraft:tools).
+  # Default: []
+  item-blacklist-tags: []
+
+  # When inventory has no space for an item: CONTINUE (default), PAUSE, or NOTIFY_ONCE.
+  inventory-full-behavior: CONTINUE
+
   # Restrict magnet use to/from specific worlds.
   world-filter:
     # Options: NONE | WHITELIST | BLACKLIST
@@ -131,6 +143,10 @@ metrics:
   # Options: ALWAYS | ON_STARTUP | DISABLED
   # Default: ON_STARTUP
   update-check: ON_STARTUP
+
+  # Include blocked-pull reason charts (session totals only).
+  # Default: true
+  bstats-block-reasons: true
 
 # -----------------------------------------------------------------------------
 # anti-afk — optional movement requirement
@@ -331,6 +347,14 @@ integrations:
   quests:
     enabled: false
     unlock-on-complete: {}
+    progress-on-blocked:
+      enabled: false
+      rules: {}
+
+  cmi:
+    progress-on-blocked:
+      enabled: false
+      rules: {}
 
 # -----------------------------------------------------------------------------
 # startup-message — console notice when the plugin enables
@@ -515,3 +539,24 @@ proximity-lore:
   require-active-magnet: true
   cooldown-seconds: 90
   zones: {}
+
+# -----------------------------------------------------------------------------
+# player-filter — defaults for personal /itemmagnet filter GUI
+# -----------------------------------------------------------------------------
+player-filter:
+  # Storage backend for personal filter rules: YAML | SQLITE | MYSQL
+  storage: YAML
+  sqlite:
+    file: player-filters.db
+  mysql:
+    host: localhost
+    port: 3306
+    database: itemmagnet
+    username: itemmagnet
+    password: ""
+    pool-size: 5
+    table-prefix: im_
+  # Built-in preset merged for new players with no personal rules: none, mining, farming, mob-drops, keep-valuables
+  default-preset: none
+  # Show one-time hint when a player receives their first magnet
+  show-preset-hint: true

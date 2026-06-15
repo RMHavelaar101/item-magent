@@ -1,0 +1,27 @@
+settings:
+  item-blacklist: []
+  item-blacklist-tags: []
+
+integrations:
+  lands:
+    enabled: false
+  worldguard:
+    enabled: false
+  towny:
+    enabled: false
+  griefprevention:
+    enabled: false
+  residence:
+    enabled: false
+  plotsquared:
+    enabled: false
+  superiorskyblock:
+    enabled: false
+  quests:
+    enabled: false
+
+anti-afk:
+  enabled: false
+
+proximity-lore:
+  enabled: false

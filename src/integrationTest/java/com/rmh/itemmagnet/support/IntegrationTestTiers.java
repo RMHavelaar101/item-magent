@@ -4,6 +4,7 @@ import com.rmh.itemmagnet.config.RecipeConfig;
 import com.rmh.itemmagnet.config.TierConfig;
 import com.rmh.itemmagnet.config.UnlockConfig;
 import com.rmh.itemmagnet.config.UnlockType;
+import com.rmh.itemmagnet.filter.MaterialFilterRule;
 import org.bukkit.Material;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public final class IntegrationTestTiers {
                 "Test Fragment Magnet",
                 List.of("&7Test tier"),
                 false,
+                0,
                 8.0,
                 100,
                 0.5,
@@ -36,9 +38,9 @@ public final class IntegrationTestTiers {
                 1.5,
                 4.0,
                 16.0,
-                List.of(),
+                MaterialFilterRule.empty(),
                 false,
-                List.of(),
+                MaterialFilterRule.empty(),
                 true,
                 new UnlockConfig(unlockType, null, null, null, null, 0L, null, null, null),
                 new RecipeConfig(false, true, List.of("XXX"), Map.of('X', Material.STONE))

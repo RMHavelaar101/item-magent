@@ -31,6 +31,9 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.12.2")
 
     implementation("org.bstats:bstats-bukkit:3.2.1")
+    implementation("org.xerial:sqlite-jdbc:3.49.1.0")
+    implementation("com.mysql:mysql-connector-j:9.2.0")
+    implementation("com.zaxxer:HikariCP:6.2.1")
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -65,9 +68,18 @@ tasks {
 
         configurations.set(listOf(project.configurations.runtimeClasspath.get()))
         dependencies {
-            exclude { dependency -> dependency.moduleGroup != "org.bstats" }
+            exclude { dependency ->
+                val group = dependency.moduleGroup
+                group != "org.bstats"
+                        && group != "org.xerial"
+                        && group != "com.mysql"
+                        && group != "com.zaxxer"
+            }
         }
-        relocate("org.bstats", project.group.toString())
+        relocate("org.bstats", "${project.group}.lib.bstats")
+        relocate("org.sqlite", "${project.group}.lib.sqlite")
+        relocate("com.mysql", "${project.group}.lib.mysql")
+        relocate("com.zaxxer.hikari", "${project.group}.lib.hikari")
     }
 
     jar {
@@ -102,8 +114,8 @@ hangarPublish {
         id.set("ItemMagnets")
         channel.set("Release")
         changelog.set("""
-            v1.3.0 — Expanded soft dependencies: Residence, PlotSquared, SuperiorSkyblock2, LuckPerms LP_GROUP unlocks, mcMMO skill gates, Quests unlock bridge, public API for unlock/give, IntegrationStatusService.
-            See CHANGELOG.md on GitHub.
+            v1.6.0 — Filter clear, admin tag blacklist GUI, preset merge preview, YAML/SQLite/MySQL player filter storage, bStats blocked-pull charts, Quests/CMI pull-blocked bridges.
+            See CHANGELOG.md and marketing/changelog-v1.6.0.md on GitHub.
             """.trim())
         apiKey.set(System.getenv("HANGAR_API_TOKEN") ?: "")
 

@@ -9,11 +9,11 @@ softdepend: [Lands, WorldGuard, CMI, Towny, GriefPrevention, PlaceholderAPI, Luc
 commands:
   itemmagnet:
     description: ItemMagnet admin and info commands
-    usage: /itemmagnet <reload|version|give|giveall|unlock|unlockall|debug|config|startup-message|help> [args]
+    usage: /itemmagnet <reload|version|give|giveall|unlock|unlockall|debug|config|filter|import|startup-message|help> [args]
     aliases: [magnet]
   im:
     description: ItemMagnet shortcut command
-    usage: /im <reload|version|give|giveall|unlock|unlockall|debug|config|startup-message|help> [args]
+    usage: /im <reload|version|give|giveall|unlock|unlockall|debug|config|filter|import|startup-message|help> [args]
 permissions:
   itemmagnet.use:
     description: Allows using item magnets
@@ -22,6 +22,7 @@ permissions:
       itemmagnet.use.fragment: true
       itemmagnet.use.survey: true
       itemmagnet.use.anchor: true
+      itemmagnet.filter: true
   itemmagnet.use.fragment:
     description: Allows using the fragment tier magnet
     default: true
@@ -64,6 +65,9 @@ permissions:
   itemmagnet.bypass.superiorskyblock:
     description: Bypasses SuperiorSkyblock2 protection checks
     default: false
+  itemmagnet.filter:
+    description: Open personal item filter GUI to blacklist materials from magnet pull
+    default: true
   itemmagnet.admin:
     description: Access to admin commands
     default: op
@@ -73,8 +77,32 @@ permissions:
       itemmagnet.unlock: true
       itemmagnet.debug: true
       itemmagnet.config: true
+      itemmagnet.import: true
+  itemmagnet.import:
+    description: Import materials into the server item blacklist
+    default: op
   itemmagnet.config:
     description: Open the in-game config editor
+    default: op
+    children:
+      itemmagnet.config.save: true
+      itemmagnet.config.reset: true
+      itemmagnet.config.section.settings: true
+      itemmagnet.config.section.sounds: true
+      itemmagnet.config.section.anti-afk: true
+      itemmagnet.config.section.height: true
+      itemmagnet.config.section.fuel: true
+      itemmagnet.config.section.tiers: true
+      itemmagnet.config.section.integrations: true
+      itemmagnet.config.section.proximity-lore: true
+      itemmagnet.config.section.item-filter: true
+      itemmagnet.config.section.commands: true
+      itemmagnet.config.section.startup-message: true
+  itemmagnet.config.save:
+    description: Save and reload config from the in-game editor
+    default: op
+  itemmagnet.config.reset:
+    description: Reset config to plugin defaults from the in-game editor
     default: op
   itemmagnet.reload:
     description: Reload plugin configuration

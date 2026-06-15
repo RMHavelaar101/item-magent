@@ -33,6 +33,9 @@ Declare `softdepend: [ItemMagnet]` in your `plugin.yml`. Use `compileOnly` again
 | `ItemMagnetExperiencePullEvent` | Before an XP orb is pulled or collected | Yes |
 | `ItemMagnetDepleteEvent` | When charge reaches zero | No |
 | `MagnetTierUnlockedEvent` | When a tier is granted via unlock command/API | No |
+| `ItemMagnetPullBlockedEvent` | When an item is skipped (blacklist, protection, inventory full, …) | No (informational) |
+
+Listen at `MONITOR` for analytics or bridge integrations. Built-in Quests/CMI bridges use config under `integrations.*.progress-on-blocked` — see [integrations/pull-blocked-bridges.md](integrations/pull-blocked-bridges.md).
 
 ### Example: react to tier unlocks
 
@@ -55,3 +58,6 @@ When PlaceholderAPI 2.12.2+ is installed:
 | `%itemmagnet_max_charge%` | Max charge |
 | `%itemmagnet_radius%` | Effective pull radius |
 | `%itemmagnet_boost%` | Boost level |
+| `%itemmagnet_boost_active%` | `true` / `false` |
+| `%itemmagnet_filter_count%` | Personal filter rule count (materials + tags) |
+| `%itemmagnet_server_blacklist_count%` | Server blacklist rule count |

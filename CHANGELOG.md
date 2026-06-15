@@ -4,6 +4,57 @@ All notable changes to ItemMagnet are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.6.0] - 2026-06-15
+
+### Added
+
+- **`/itemmagnet filter clear`** — removes all personal filter materials and tags (preserves first-hint metadata)
+- **Admin tag blacklist GUI** — edit `settings.item-blacklist-tags` from the Item Filter config menu (Materials | Tags toggle, chat add)
+- **Preset preview + confirm** — preset picker shows merge preview (new materials/tags, server-skipped count) before applying
+- **Player filter storage backends** — `player-filter.storage`: `YAML` (default), `SQLITE`, or `MYSQL`; one-time YAML → SQL import on first enable
+- **bStats session charts** — top block reason, per-reason activity flags, storage backend, inventory-full behavior, default preset, hold mode, pull experience
+- **Pull-blocked bridges** — config-driven Quests and CMI progress rules on `ItemMagnetPullBlockedEvent` (`integrations.quests.progress-on-blocked`, `integrations.cmi.progress-on-blocked`)
+
+### Changed
+
+- Personal filter data can be stored in SQLite (`player-filters.db`) or MySQL (HikariCP pool) instead of `player-filters.yml`
+- Shadow JAR bundles and relocates SQLite JDBC, MySQL connector, and HikariCP alongside bStats
+
+## [1.5.0] - 2026-06-15
+
+### Added
+
+- **Shared filter core** — `MaterialFilterResolver`, `PullEligibilityService`, tag-based rules (`settings.item-blacklist-tags`, tier `blacklist-tags` / `whitelist-tags`)
+- **Player filter GUI** — read-only server rules section, personal materials + tags, preset picker (merge)
+- **Filter presets** — jar presets (`mining`, `farming`, `mob-drops`, `keep-valuables`) + `plugins/ItemMagnet/filter-presets/` overrides; `player-filter.default-preset`
+- **PlaceholderAPI** — `%itemmagnet_filter_count%`, `%itemmagnet_server_blacklist_count%`, `%itemmagnet_boost_active%`
+- **API event** — `ItemMagnetPullBlockedEvent` (informational, deduped per tick)
+- **Import commands** — `/itemmagnet import blacklist|filter|filter-preset` (`itemmagnet.import` for server blacklist)
+- **Server presets** — `skyblock`, `vanilla-survival`, `hub-spawn`
+- **Config audit log** — `plugins/ItemMagnet/config-audit.log` on config/filter changes
+- **Inventory-full behavior** — `settings.inventory-full-behavior`: `CONTINUE`, `PAUSE`, `NOTIFY_ONCE`
+- **Tier custom model data** — optional `custom-model-data` per tier (applied when > 0)
+- **Debug** — filter state section; `/itemmagnet debug nearby` (5 nearest items + block reason)
+- **Help & hints** — `/itemmagnet help filter`, `/itemmagnet filter help`, first-magnet filter hint
+
+### Changed
+
+- Config GUI shows gray locked controls (instead of empty slots) when view-only access is granted
+- Pull eligibility checks consolidated through `PullEligibilityService` (server → tier → player → protection)
+
+## [1.4.0] - 2026-06-15
+
+### Added
+
+- **Player item filter** — `/itemmagnet filter` opens a personal GUI to blacklist materials your magnet will ignore (`itemmagnet.filter`, default `true`)
+- **Server item blacklist** — `settings.item-blacklist` in `config.yml` plus **Item Filter** section in the admin config GUI
+- **Granular config GUI permissions** — per-section and per-field nodes under `itemmagnet.config.*` (save, reset, section, field)
+
+### Changed
+
+- Config GUI controls are hidden unless the player has the matching section or field permission
+- Save & Reload and Reset require `itemmagnet.config.save` and `itemmagnet.config.reset` respectively
+
 ## [1.3.0] - 2026-06-15
 
 ### Added

@@ -41,6 +41,7 @@ public final class ItemMagnetApi {
         int effectiveCharge = charge >= 0 ? charge : tier.getMaxCharge() / 2;
         ItemStack item = plugin.getItemService().create(tier, effectiveCharge);
         player.getInventory().addItem(item);
+        plugin.onPlayerReceivedMagnet(player);
     }
 
     public static boolean isTierUnlocked(Player player, String tierId) {

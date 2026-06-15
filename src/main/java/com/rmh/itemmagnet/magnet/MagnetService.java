@@ -1,15 +1,20 @@
 package com.rmh.itemmagnet.magnet;
 
 import com.rmh.itemmagnet.ItemMagnetPlugin;
+import com.rmh.itemmagnet.api.event.ItemMagnetPullBlockedEvent;
 import com.rmh.itemmagnet.api.event.ItemMagnetDepleteEvent;
 import com.rmh.itemmagnet.api.event.ItemMagnetExperiencePullEvent;
 import com.rmh.itemmagnet.api.event.ItemMagnetFuelAbsorbEvent;
 import com.rmh.itemmagnet.api.event.ItemMagnetPullEvent;
 import com.rmh.itemmagnet.config.AntiAfkConfig;
 import com.rmh.itemmagnet.config.FuelConfig;
+import com.rmh.itemmagnet.config.InventoryFullBehavior;
 import com.rmh.itemmagnet.config.MagnetConfig;
 import com.rmh.itemmagnet.config.MessagesConfig;
 import com.rmh.itemmagnet.config.TierConfig;
+import com.rmh.itemmagnet.filter.PlayerFilterStorage;
+import com.rmh.itemmagnet.filter.PullBlockReason;
+import com.rmh.itemmagnet.filter.PullEligibilityService;
 import com.rmh.itemmagnet.item.LoreContext;
 import com.rmh.itemmagnet.item.MagnetData;
 import com.rmh.itemmagnet.item.MagnetItemService;
@@ -40,7 +45,10 @@ public final class MagnetService extends BukkitRunnable {
     private final ProtectionService protectionService;
     private final AfkTracker afkTracker;
     private final MagnetLocator magnetLocator;
+    private final PlayerFilterStorage playerFilterStorage;
+    private PullEligibilityService pullEligibilityService;
     private SoundService soundService;
+    private final Map<String, Long> blockedEventDedupe = new HashMap<>();
     private final Map<UUID, Long> denyCooldowns = new HashMap<>();
     private final Map<UUID, Long> afkMessageCooldowns = new HashMap<>();
     private final Map<UUID, Double> drainAccumulator = new HashMap<>();
@@ -50,14 +58,26 @@ public final class MagnetService extends BukkitRunnable {
             MagnetItemService itemService,
             ProtectionService protectionService,
             AfkTracker afkTracker,
-            MagnetLocator magnetLocator
+            MagnetLocator magnetLocator,
+            PlayerFilterStorage playerFilterStorage,
+            PullEligibilityService pullEligibilityService
     ) {
         this.plugin = plugin;
         this.itemService = itemService;
         this.protectionService = protectionService;
         this.afkTracker = afkTracker;
         this.magnetLocator = magnetLocator;
+        this.playerFilterStorage = playerFilterStorage;
+        this.pullEligibilityService = pullEligibilityService;
         refreshSoundService();
+    }
+
+    public void updatePullEligibilityService(PullEligibilityService pullEligibilityService) {
+        this.pullEligibilityService = pullEligibilityService;
+    }
+
+    public PullEligibilityService getPullEligibilityService() {
+        return pullEligibilityService;
     }
 
     public void refreshSoundService() {
@@ -172,17 +192,27 @@ public final class MagnetService extends BukkitRunnable {
             if (isFuelItem(config, stack.getType())) {
                 continue;
             }
-            if (!tier.canPullMaterial(stack.getType())) {
+
+            Optional<PullBlockReason> blockReason = pullEligibilityService.evaluateItemPull(
+                    player, stack, tier, entity.getLocation()
+            );
+            if (blockReason.isPresent()) {
+                fireBlockedEvent(player, entity, stack, blockReason.get(), currentTick);
+                if (blockReason.get() == PullBlockReason.PROTECTION) {
+                    sendDenyMessage(player, config);
+                }
                 continue;
             }
-            if (!protectionService.canPull(player, entity.getLocation())) {
-                sendDenyMessage(player, config);
+
+            if (shouldPauseForInventory(player, config, stack)) {
+                fireBlockedEvent(player, entity, stack, PullBlockReason.INVENTORY_FULL, currentTick);
                 continue;
             }
 
             ItemMagnetPullEvent pullEvent = new ItemMagnetPullEvent(player, entity, stack);
             Bukkit.getPluginManager().callEvent(pullEvent);
             if (pullEvent.isCancelled()) {
+                fireBlockedEvent(player, entity, stack, PullBlockReason.EVENT_CANCELLED, currentTick);
                 continue;
             }
 
@@ -252,6 +282,32 @@ public final class MagnetService extends BukkitRunnable {
             drainForItemPull(player, magnet, config);
         }
         return processed;
+    }
+
+    private boolean shouldPauseForInventory(Player player, MagnetConfig config, ItemStack stack) {
+        InventoryFullBehavior behavior = config.getInventoryFullBehavior();
+        if (behavior == InventoryFullBehavior.CONTINUE) {
+            return false;
+        }
+        if (pullEligibilityService.hasInventorySpace(player, stack)) {
+            return false;
+        }
+        if (behavior == InventoryFullBehavior.NOTIFY_ONCE) {
+            sendThrottledMessage(player, denyCooldowns, config.getDenyMessageCooldownTicks(), "magnet.inventory-full", Map.of());
+        }
+        return true;
+    }
+
+    private void fireBlockedEvent(Player player, Item entity, ItemStack stack, PullBlockReason reason, long currentTick) {
+        String dedupeKey = player.getUniqueId() + ":" + entity.getEntityId() + ":" + reason.name() + ":" + currentTick;
+        if (blockedEventDedupe.containsKey(dedupeKey)) {
+            return;
+        }
+        blockedEventDedupe.put(dedupeKey, currentTick);
+        if (blockedEventDedupe.size() > 500) {
+            blockedEventDedupe.clear();
+        }
+        Bukkit.getPluginManager().callEvent(new ItemMagnetPullBlockedEvent(player, entity, stack, reason));
     }
 
     private int absorbFuel(

@@ -2,6 +2,7 @@ package com.rmh.itemmagnet.config;
 
 import com.rmh.itemmagnet.ItemMagnetPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,10 +14,15 @@ public final class ConfigPersistence {
 
     private final ItemMagnetPlugin plugin;
     private final ConfigChangeTracker changeTracker;
+    private ConfigAuditLog auditLog;
 
     public ConfigPersistence(ItemMagnetPlugin plugin, ConfigChangeTracker changeTracker) {
         this.plugin = plugin;
         this.changeTracker = changeTracker;
+    }
+
+    public void setAuditLog(ConfigAuditLog auditLog) {
+        this.auditLog = auditLog;
     }
 
     public FileConfiguration getConfig() {
@@ -24,8 +30,16 @@ public final class ConfigPersistence {
     }
 
     public void set(String path, Object value) {
+        set(null, path, value);
+    }
+
+    public void set(Player player, String path, Object value) {
+        Object oldValue = plugin.getConfig().get(path);
         plugin.getConfig().set(path, value);
         changeTracker.record(path);
+        if (auditLog != null && player != null) {
+            auditLog.logConfigChange(player.getName(), player.getUniqueId(), path, oldValue, value);
+        }
     }
 
     public void save() {
@@ -50,6 +64,9 @@ public final class ConfigPersistence {
                 in.transferTo(out);
             }
             changeTracker.clear();
+            if (auditLog != null) {
+                auditLog.logSystemChange("reset-defaults", "config.yml");
+            }
             return plugin.reloadPlugin();
         } catch (IOException exception) {
             plugin.getLogger().log(Level.WARNING, "Failed to reset config.yml to defaults", exception);

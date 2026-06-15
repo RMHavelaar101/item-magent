@@ -6,7 +6,7 @@ All settings live in `plugins/ItemMagnet/config.yml`.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `preset` | string | `none` | Merge a preset from `presets/` (e.g. `theryn`) |
+| `preset` | string | `none` | Merge a preset from `presets/` (`theryn`, `skyblock`, `vanilla-survival`, `hub-spawn`, …) |
 
 ## settings
 
@@ -26,6 +26,9 @@ All settings live in `plugins/ItemMagnet/config.yml`.
 | `multi-magnet-policy` | enum | `BEST_TIER` | `BEST_TIER`, `FIRST_FOUND` |
 | `disable-in-creative` | bool | `true` | Disable for creative players |
 | `disable-in-spectator` | bool | `true` | Disable for spectators |
+| `item-blacklist` | list | `[]` | Materials never pulled for any player/tier (server-wide) |
+| `item-blacklist-tags` | list | `[]` | Bukkit material tags (e.g. `minecraft:shulker_boxes`) |
+| `inventory-full-behavior` | enum | `CONTINUE` | `CONTINUE`, `PAUSE`, or `NOTIFY_ONCE` when inventory cannot fit an item |
 | `world-filter.mode` | enum | `NONE` | `NONE`, `WHITELIST`, `BLACKLIST` |
 | `world-filter.worlds` | list | `[]` | World names for filter |
 | `sounds.enabled` | bool | `false` | Play magnet sound effects |
@@ -37,6 +40,7 @@ All settings live in `plugins/ItemMagnet/config.yml`.
 |-----|------|---------|-------------|
 | `bstats-enabled` | bool | `true` | Enable bStats |
 | `bstats-plugin-id` | int | `31998` | Your bStats plugin ID |
+| `bstats-block-reasons` | bool | `true` | Session charts for blocked-pull reasons |
 | `update-check` | enum | `ON_STARTUP` | `ALWAYS`, `ON_STARTUP`, `DISABLED` |
 
 ## anti-afk
@@ -128,11 +132,34 @@ Each tier supports:
 | `boost-drain-multiplier` | double | Drain multiplier during boost |
 | `min-radius` / `max-radius` | double | Radius clamps |
 | `blacklist` | list | Materials never pulled |
+| `blacklist-tags` | list | Tag-based tier blacklist |
 | `whitelist-enabled` | bool | Enable whitelist filtering |
 | `whitelist` | list | Allowed materials when whitelist enabled |
+| `whitelist-tags` | list | Tag-based tier whitelist |
+| `custom-model-data` | int | Optional CustomModelData (> 0 applies to new items) |
 | `pull-experience` | bool | Pull XP orbs for this tier (requires global `pull-experience`) |
 | `unlock` | section | See [recipes-and-unlocks.md](recipes-and-unlocks.md) |
 | `recipe` | section | Shaped recipe definition |
+
+## player-filter
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `storage` | enum | `YAML` | `YAML`, `SQLITE`, or `MYSQL` |
+| `sqlite.file` | string | `player-filters.db` | SQLite database file under the plugin data folder |
+| `mysql.*` | section | — | Host, port, database, credentials, pool size, table prefix |
+| `default-preset` | string | `none` | Apply a built-in preset when a player has no personal rules (`mining`, `farming`, …) |
+| `show-preset-hint` | bool | `true` | One-time `/itemmagnet filter` hint on first magnet received |
+
+When `storage` is `SQLITE` or `MYSQL` and the SQL tables are empty but `player-filters.yml` exists, ItemMagnet imports all entries once and renames the YAML file to `player-filters.yml.bak`.
+
+Changing the storage backend type requires a restart for a clean swap (flush memory → new repository).
+
+Built-in presets ship in the jar under `filter-presets/`. Override or add presets in `plugins/ItemMagnet/filter-presets/*.yml`.
+
+## integrations.quests / integrations.cmi (pull-blocked)
+
+See [integrations/pull-blocked-bridges.md](integrations/pull-blocked-bridges.md) for `progress-on-blocked` rules on `ItemMagnetPullBlockedEvent`.
 
 ## proximity-lore (optional)
 

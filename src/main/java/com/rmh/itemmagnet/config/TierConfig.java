@@ -1,9 +1,12 @@
 package com.rmh.itemmagnet.config;
 
+import com.rmh.itemmagnet.filter.MaterialFilterRule;
+import com.rmh.itemmagnet.filter.PullBlockReason;
 import org.bukkit.Material;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public final class TierConfig {
 
@@ -12,6 +15,7 @@ public final class TierConfig {
     private final String displayName;
     private final List<String> lore;
     private final boolean enchantGlint;
+    private final int customModelData;
     private final double radius;
     private final int maxCharge;
     private final double baseDrainPerSecond;
@@ -19,9 +23,9 @@ public final class TierConfig {
     private final double boostDrainMultiplier;
     private final double minRadius;
     private final double maxRadius;
-    private final List<Material> blacklist;
+    private final MaterialFilterRule blacklistRule;
     private final boolean whitelistEnabled;
-    private final List<Material> whitelist;
+    private final MaterialFilterRule whitelistRule;
     private final boolean pullExperience;
     private final UnlockConfig unlock;
     private final RecipeConfig recipe;
@@ -32,6 +36,7 @@ public final class TierConfig {
             String displayName,
             List<String> lore,
             boolean enchantGlint,
+            int customModelData,
             double radius,
             int maxCharge,
             double baseDrainPerSecond,
@@ -39,9 +44,9 @@ public final class TierConfig {
             double boostDrainMultiplier,
             double minRadius,
             double maxRadius,
-            List<Material> blacklist,
+            MaterialFilterRule blacklistRule,
             boolean whitelistEnabled,
-            List<Material> whitelist,
+            MaterialFilterRule whitelistRule,
             boolean pullExperience,
             UnlockConfig unlock,
             RecipeConfig recipe
@@ -51,6 +56,7 @@ public final class TierConfig {
         this.displayName = displayName;
         this.lore = Collections.unmodifiableList(lore);
         this.enchantGlint = enchantGlint;
+        this.customModelData = customModelData;
         this.radius = radius;
         this.maxCharge = maxCharge;
         this.baseDrainPerSecond = baseDrainPerSecond;
@@ -58,9 +64,9 @@ public final class TierConfig {
         this.boostDrainMultiplier = boostDrainMultiplier;
         this.minRadius = minRadius;
         this.maxRadius = maxRadius;
-        this.blacklist = Collections.unmodifiableList(blacklist);
+        this.blacklistRule = blacklistRule;
         this.whitelistEnabled = whitelistEnabled;
-        this.whitelist = Collections.unmodifiableList(whitelist);
+        this.whitelistRule = whitelistRule;
         this.pullExperience = pullExperience;
         this.unlock = unlock;
         this.recipe = recipe;
@@ -84,6 +90,10 @@ public final class TierConfig {
 
     public boolean isEnchantGlint() {
         return enchantGlint;
+    }
+
+    public int getCustomModelData() {
+        return customModelData;
     }
 
     public double getRadius() {
@@ -114,16 +124,16 @@ public final class TierConfig {
         return maxRadius;
     }
 
-    public List<Material> getBlacklist() {
-        return blacklist;
+    public MaterialFilterRule getBlacklistRule() {
+        return blacklistRule;
     }
 
     public boolean isWhitelistEnabled() {
         return whitelistEnabled;
     }
 
-    public List<Material> getWhitelist() {
-        return whitelist;
+    public MaterialFilterRule getWhitelistRule() {
+        return whitelistRule;
     }
 
     public boolean isPullExperience() {
@@ -131,13 +141,18 @@ public final class TierConfig {
     }
 
     public boolean canPullMaterial(Material material) {
-        if (blacklist.contains(material)) {
-            return false;
+        return getBlockReason(material).isEmpty();
+    }
+
+    public Optional<PullBlockReason> getBlockReason(Material material) {
+        if (blacklistRule.blocks(material)) {
+            return Optional.of(PullBlockReason.TIER_BLACKLIST);
         }
-        if (!whitelistEnabled || whitelist.isEmpty()) {
-            return true;
+        if (whitelistEnabled && !whitelistRule.getExpandedMaterials().isEmpty()
+                && !whitelistRule.getExpandedMaterials().contains(material)) {
+            return Optional.of(PullBlockReason.TIER_WHITELIST);
         }
-        return whitelist.contains(material);
+        return Optional.empty();
     }
 
     public UnlockConfig getUnlock() {
