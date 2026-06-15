@@ -275,6 +275,10 @@ public final class ConfigGuiService {
         inventory.setItem(11, toggle(Material.BARRIER, "integrations.worldguard.enabled", "WorldGuard enabled", "Respect WG regions."));
         inventory.setItem(12, toggle(Material.MAP, "integrations.towny.enabled", "Towny enabled", "Check Towny plots."));
         inventory.setItem(13, toggle(Material.GOLDEN_SHOVEL, "integrations.griefprevention.enabled", "GriefPrevention enabled", "Check GP claims."));
+        inventory.setItem(19, toggle(Material.BRICKS, "integrations.residence.enabled", "Residence enabled", "Check Residence claims."));
+        inventory.setItem(20, toggle(Material.GRASS_BLOCK, "integrations.plotsquared.enabled", "PlotSquared enabled", "Check plot membership."));
+        inventory.setItem(21, toggle(Material.ENDER_PEARL, "integrations.superiorskyblock.enabled", "SuperiorSkyblock enabled", "Check island permissions."));
+        inventory.setItem(22, toggle(Material.BOOK, "integrations.quests.enabled", "Quests unlock bridge", "Grant tiers on quest complete."));
 
         inventory.setItem(SLOT_BACK, backButton());
         inventory.setItem(SLOT_SAVE, saveButton());

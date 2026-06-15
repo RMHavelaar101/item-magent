@@ -35,6 +35,10 @@ public final class MagnetConfig {
     private final WorldGuardConfig worldGuard;
     private final TownyConfig towny;
     private final GriefPreventionConfig griefPrevention;
+    private final SimpleClaimIntegrationConfig residence;
+    private final SimpleClaimIntegrationConfig plotSquared;
+    private final SuperiorSkyblockConfig superiorSkyblock;
+    private final QuestsIntegrationConfig quests;
     private final Map<String, TierConfig> tiers;
     private final CommandsConfig commands;
     private final ProximityLoreConfig proximityLore;
@@ -67,6 +71,10 @@ public final class MagnetConfig {
             WorldGuardConfig worldGuard,
             TownyConfig towny,
             GriefPreventionConfig griefPrevention,
+            SimpleClaimIntegrationConfig residence,
+            SimpleClaimIntegrationConfig plotSquared,
+            SuperiorSkyblockConfig superiorSkyblock,
+            QuestsIntegrationConfig quests,
             Map<String, TierConfig> tiers,
             CommandsConfig commands,
             ProximityLoreConfig proximityLore
@@ -98,6 +106,10 @@ public final class MagnetConfig {
         this.worldGuard = worldGuard;
         this.towny = towny;
         this.griefPrevention = griefPrevention;
+        this.residence = residence;
+        this.plotSquared = plotSquared;
+        this.superiorSkyblock = superiorSkyblock;
+        this.quests = quests;
         this.tiers = Collections.unmodifiableMap(new LinkedHashMap<>(tiers));
         this.commands = commands;
         this.proximityLore = proximityLore;
@@ -209,6 +221,22 @@ public final class MagnetConfig {
 
     public GriefPreventionConfig getGriefPrevention() {
         return griefPrevention;
+    }
+
+    public SimpleClaimIntegrationConfig getResidence() {
+        return residence;
+    }
+
+    public SimpleClaimIntegrationConfig getPlotSquared() {
+        return plotSquared;
+    }
+
+    public SuperiorSkyblockConfig getSuperiorSkyblock() {
+        return superiorSkyblock;
+    }
+
+    public QuestsIntegrationConfig getQuests() {
+        return quests;
     }
 
     public Map<String, TierConfig> getTiers() {

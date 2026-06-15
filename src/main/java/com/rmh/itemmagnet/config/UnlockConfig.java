@@ -12,6 +12,8 @@ public final class UnlockConfig {
     private final String sub;
     private final long amount;
     private final String rank;
+    private final String group;
+    private final String skill;
 
     public UnlockConfig(
             UnlockType type,
@@ -20,7 +22,9 @@ public final class UnlockConfig {
             String stat,
             String sub,
             long amount,
-            String rank
+            String rank,
+            String group,
+            String skill
     ) {
         this.type = type;
         this.permission = permission;
@@ -29,6 +33,8 @@ public final class UnlockConfig {
         this.sub = sub;
         this.amount = amount;
         this.rank = rank;
+        this.group = group;
+        this.skill = skill;
     }
 
     public UnlockType getType() {
@@ -57,5 +63,13 @@ public final class UnlockConfig {
 
     public String getRank() {
         return rank;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public String getSkill() {
+        return skill;
     }
 }

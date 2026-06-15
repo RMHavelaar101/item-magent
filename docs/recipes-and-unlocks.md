@@ -48,7 +48,17 @@ tiers:
 
 ## Unlock gates
 
-See [CMI unlocks](integrations/cmi-unlocks.md) for all unlock types.
+| Type | Use case |
+|------|----------|
+| `NONE` | Always craftable (default tier 1 on public servers) |
+| `PERMISSION` | LuckPerms or any permission plugin |
+| `ADVANCEMENT` | Datapack or plugin advancement |
+| `CMI_STAT` / `CMI_RANK` | CMI progression ([cmi-unlocks.md](integrations/cmi-unlocks.md)) |
+| `LP_GROUP` | LuckPerms group gate ([luckperms.md](integrations/luckperms.md)) |
+| `MCMMO_SKILL` | mcMMO skill level ([mcmmo.md](integrations/mcmmo.md)) |
+| `COMMAND` | Hidden until `/itemmagnet unlock` or API `grantUnlock` |
+
+Full examples: [CMI unlocks](integrations/cmi-unlocks.md).
 
 Recipes are hidden until unlocked. Players who meet the condition receive recipe discovery on join.
 

@@ -13,8 +13,18 @@ class EnumParsingTest {
         assertEquals(UnlockType.NONE, UnlockType.valueOf("NONE"));
     }
 
-    @Test
-    void regionModeParsesBlacklist() {
+  @Test
+  void unlockTypeParsesLpGroup() {
+    assertEquals(UnlockType.LP_GROUP, UnlockType.valueOf("LP_GROUP"));
+  }
+
+  @Test
+  void unlockTypeParsesMcmmoSkill() {
+    assertEquals(UnlockType.MCMMO_SKILL, UnlockType.valueOf("MCMMO_SKILL"));
+  }
+
+  @Test
+  void regionModeParsesBlacklist() {
         assertEquals(RegionMode.BLACKLIST, RegionMode.valueOf("BLACKLIST"));
     }
 

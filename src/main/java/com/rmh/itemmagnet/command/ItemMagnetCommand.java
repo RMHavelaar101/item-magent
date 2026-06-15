@@ -7,6 +7,7 @@ import com.rmh.itemmagnet.config.MessagesConfig;
 import com.rmh.itemmagnet.config.ReloadResult;
 import com.rmh.itemmagnet.config.TierConfig;
 import com.rmh.itemmagnet.gui.ConfigGuiService;
+import com.rmh.itemmagnet.integration.IntegrationStatusService;
 import com.rmh.itemmagnet.item.MagnetData;
 import com.rmh.itemmagnet.item.MagnetItemService;
 import com.rmh.itemmagnet.magnet.MagnetLocator;
@@ -72,6 +73,7 @@ public final class ItemMagnetCommand implements CommandExecutor, TabCompleter {
     private final MagnetLocator magnetLocator;
     private final ConfigGuiService configGuiService;
     private final StartupMessageService startupMessageService;
+    private final IntegrationStatusService integrationStatusService;
 
     public ItemMagnetCommand(
             ItemMagnetPlugin plugin,
@@ -80,7 +82,8 @@ public final class ItemMagnetCommand implements CommandExecutor, TabCompleter {
             ProtectionService protectionService,
             MagnetLocator magnetLocator,
             ConfigGuiService configGuiService,
-            StartupMessageService startupMessageService
+            StartupMessageService startupMessageService,
+            IntegrationStatusService integrationStatusService
     ) {
         this.plugin = plugin;
         this.itemService = itemService;
@@ -89,6 +92,7 @@ public final class ItemMagnetCommand implements CommandExecutor, TabCompleter {
         this.magnetLocator = magnetLocator;
         this.configGuiService = configGuiService;
         this.startupMessageService = startupMessageService;
+        this.integrationStatusService = integrationStatusService;
     }
 
     @Override
@@ -190,12 +194,9 @@ public final class ItemMagnetCommand implements CommandExecutor, TabCompleter {
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("version", PluginCompat.getVersion(plugin));
         placeholders.put("paper", Bukkit.getVersion());
-        placeholders.put("lands", String.valueOf(protectionService.getLandsHook().isAvailable()));
-        placeholders.put("worldguard", String.valueOf(protectionService.getWorldGuardHook().isAvailable()));
-        placeholders.put("towny", String.valueOf(protectionService.getTownyHook().isAvailable()));
-        placeholders.put("griefprevention", String.valueOf(protectionService.getGriefPreventionHook().isAvailable()));
-        placeholders.put("cmi", String.valueOf(Bukkit.getPluginManager().getPlugin("CMI") != null));
+        placeholders.put("hooks", integrationStatusService.formatHookStatusLine());
         sender.sendMessage(format(sender, "command.version", placeholders));
+        sender.sendMessage(format(sender, "command.version-hooks", placeholders));
         return true;
     }
 

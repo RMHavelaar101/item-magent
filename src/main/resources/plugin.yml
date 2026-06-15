@@ -5,7 +5,7 @@ api-version: '${paperApiVersion}'
 description: Configurable tiered item magnets with redstone fuel, Lands/WorldGuard protection, and visible LOS pull physics.
 author: rmh
 website: https://github.com/RMHavelaar101/item-magent
-softdepend: [Lands, WorldGuard, CMI, Towny, GriefPrevention, PlaceholderAPI]
+softdepend: [Lands, WorldGuard, CMI, Towny, GriefPrevention, PlaceholderAPI, LuckPerms, mcMMO, Residence, PlotSquared, SuperiorSkyblock2, Quests]
 commands:
   itemmagnet:
     description: ItemMagnet admin and info commands
@@ -54,6 +54,15 @@ permissions:
     default: false
   itemmagnet.bypass.griefprevention:
     description: Bypasses GriefPrevention protection checks
+    default: false
+  itemmagnet.bypass.residence:
+    description: Bypasses Residence protection checks
+    default: false
+  itemmagnet.bypass.plotsquared:
+    description: Bypasses PlotSquared protection checks
+    default: false
+  itemmagnet.bypass.superiorskyblock:
+    description: Bypasses SuperiorSkyblock2 protection checks
     default: false
   itemmagnet.admin:
     description: Access to admin commands

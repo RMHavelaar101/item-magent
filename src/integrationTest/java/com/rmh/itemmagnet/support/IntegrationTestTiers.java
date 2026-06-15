@@ -15,8 +15,16 @@ public final class IntegrationTestTiers {
     }
 
     public static TierConfig fragmentTier() {
+        return tier("fragment", UnlockType.NONE);
+    }
+
+    public static TierConfig commandGatedTier() {
+        return tier("fragment", UnlockType.COMMAND);
+    }
+
+    private static TierConfig tier(String id, UnlockType unlockType) {
         return new TierConfig(
-                "fragment",
+                id,
                 Material.STONE,
                 "Test Fragment Magnet",
                 List.of("&7Test tier"),
@@ -32,7 +40,7 @@ public final class IntegrationTestTiers {
                 false,
                 List.of(),
                 true,
-                new UnlockConfig(UnlockType.NONE, null, null, null, null, 0L, null),
+                new UnlockConfig(unlockType, null, null, null, null, 0L, null, null, null),
                 new RecipeConfig(false, true, List.of("XXX"), Map.of('X', Material.STONE))
         );
     }

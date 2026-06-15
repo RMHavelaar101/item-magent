@@ -6,5 +6,7 @@ public enum UnlockType {
     ADVANCEMENT,
     CMI_STAT,
     CMI_RANK,
+    LP_GROUP,
+    MCMMO_SKILL,
     COMMAND
 }

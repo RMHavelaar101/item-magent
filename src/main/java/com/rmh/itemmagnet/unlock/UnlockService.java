@@ -1,6 +1,7 @@
 package com.rmh.itemmagnet.unlock;
 
 import com.rmh.itemmagnet.ItemMagnetPlugin;
+import com.rmh.itemmagnet.api.event.MagnetTierUnlockedEvent;
 import com.rmh.itemmagnet.config.TierConfig;
 import com.rmh.itemmagnet.config.UnlockConfig;
 import com.rmh.itemmagnet.config.UnlockType;
@@ -34,14 +35,21 @@ public final class UnlockService {
             case ADVANCEMENT -> hasAdvancement(player, unlock.getAdvancement());
             case CMI_STAT -> checkCmiStat(player, unlock);
             case CMI_RANK -> checkCmiRank(player, unlock);
+            case LP_GROUP -> checkLuckPermsGroup(player, unlock);
+            case MCMMO_SKILL -> checkMcmmoSkill(player, unlock);
             case COMMAND -> storage.has(player.getUniqueId(), tier.getId())
                     || player.hasPermission("itemmagnet.unlock." + tier.getId());
         };
     }
 
     public void grantUnlock(Player player, TierConfig tier) {
+        if (storage.has(player.getUniqueId(), tier.getId())) {
+            discoverRecipe(player, tier);
+            return;
+        }
         storage.grant(player.getUniqueId(), tier.getId());
         discoverRecipe(player, tier);
+        Bukkit.getPluginManager().callEvent(new MagnetTierUnlockedEvent(player, tier.getId()));
     }
 
     public void discoverRecipesOnJoin(Player player) {
@@ -102,5 +110,32 @@ public final class UnlockService {
             return false;
         }
         return player.hasPermission("cmi.rank." + unlock.getRank());
+    }
+
+    private boolean checkLuckPermsGroup(Player player, UnlockConfig unlock) {
+        if (unlock.getGroup() == null || unlock.getGroup().isBlank()) {
+            return false;
+        }
+        return player.hasPermission("group." + unlock.getGroup());
+    }
+
+    private boolean checkMcmmoSkill(Player player, UnlockConfig unlock) {
+        if (Bukkit.getPluginManager().getPlugin("mcMMO") == null) {
+            return false;
+        }
+        if (unlock.getSkill() == null || unlock.getSkill().isBlank()) {
+            return false;
+        }
+        try {
+            Class<?> experienceApiClass = Class.forName("com.gmail.nossr50.api.ExperienceAPI");
+            Class<?> skillClass = Class.forName("com.gmail.nossr50.datatypes.skills.PrimarySkillType");
+            Object skill = Enum.valueOf(skillClass.asSubclass(Enum.class), unlock.getSkill().toUpperCase(Locale.ROOT));
+            int level = (int) experienceApiClass.getMethod("getLevel", Player.class, skillClass)
+                    .invoke(null, player, skill);
+            return level >= unlock.getAmount();
+        } catch (ReflectiveOperationException exception) {
+            plugin.getLogger().warning("mcMMO skill unlock check failed: " + exception.getMessage());
+            return false;
+        }
     }
 }

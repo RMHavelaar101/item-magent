@@ -309,6 +309,29 @@ integrations:
     # Default: RESPECT_FLAGS
     claimed-land: RESPECT_FLAGS
 
+  residence:
+    enabled: false
+    wilderness: ALLOW
+    wilderness-permission: itemmagnet.wilderness
+    claimed-land: RESPECT_FLAGS
+
+  plotsquared:
+    enabled: false
+    wilderness: ALLOW
+    wilderness-permission: itemmagnet.wilderness
+    claimed-land: RESPECT_FLAGS
+
+  superiorskyblock:
+    enabled: false
+    wilderness: ALLOW
+    wilderness-permission: itemmagnet.wilderness
+    claimed-land: RESPECT_FLAGS
+    island-permission: PICKUP_ITEMS
+
+  quests:
+    enabled: false
+    unlock-on-complete: {}
+
 # -----------------------------------------------------------------------------
 # startup-message — console notice when the plugin enables
 # -----------------------------------------------------------------------------
@@ -356,6 +379,8 @@ commands:
 #   type: ADVANCEMENT — requires advancement: <namespace:key>
 #   type: CMI_STAT    — requires CMI stat/sub/amount (CMI plugin)
 #   type: CMI_RANK    — requires rank: <CMI rank name>
+#   type: LP_GROUP    — requires group: <LuckPerms group name>
+#   type: MCMMO_SKILL  — requires skill: <skill> and amount: <level>
 #   type: COMMAND     — hidden until /itemmagnet unlock <player> <tier>
 #
 # recipe — shaped crafting recipe

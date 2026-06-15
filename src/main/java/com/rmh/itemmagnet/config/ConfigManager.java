@@ -43,6 +43,19 @@ public final class ConfigManager {
         this.messagesConfig = loadMessages();
     }
 
+    public void reloadParsedConfig() {
+        FileConfiguration config = plugin.getConfig();
+        applyPresetIfConfigured(config);
+        this.magnetConfig = parseMagnetConfig(config);
+        this.messagesConfig = loadMessages();
+    }
+
+    public void reloadParsedConfig(FileConfiguration config) {
+        applyPresetIfConfigured(config);
+        this.magnetConfig = parseMagnetConfig(config);
+        this.messagesConfig = loadMessages();
+    }
+
     public MagnetConfig getMagnetConfig() {
         return magnetConfig;
     }
@@ -108,6 +121,16 @@ public final class ConfigManager {
         WorldGuardConfig worldGuard = parseWorldGuard(config.getConfigurationSection("integrations.worldguard"));
         TownyConfig towny = parseTowny(config.getConfigurationSection("integrations.towny"));
         GriefPreventionConfig griefPrevention = parseGriefPrevention(config.getConfigurationSection("integrations.griefprevention"));
+        SimpleClaimIntegrationConfig residence = parseSimpleClaimIntegration(
+                config.getConfigurationSection("integrations.residence")
+        );
+        SimpleClaimIntegrationConfig plotSquared = parseSimpleClaimIntegration(
+                config.getConfigurationSection("integrations.plotsquared")
+        );
+        SuperiorSkyblockConfig superiorSkyblock = parseSuperiorSkyblock(
+                config.getConfigurationSection("integrations.superiorskyblock")
+        );
+        QuestsIntegrationConfig quests = parseQuests(config.getConfigurationSection("integrations.quests"));
         Map<String, TierConfig> tiers = parseTiers(config.getConfigurationSection("tiers"));
         CommandsConfig commands = parseCommands(config.getConfigurationSection("commands"));
         ProximityLoreConfig proximityLore = parseProximityLore(config.getConfigurationSection("proximity-lore"));
@@ -140,6 +163,10 @@ public final class ConfigManager {
                 worldGuard,
                 towny,
                 griefPrevention,
+                residence,
+                plotSquared,
+                superiorSkyblock,
+                quests,
                 tiers,
                 commands,
                 proximityLore
@@ -367,7 +394,7 @@ public final class ConfigManager {
 
     private UnlockConfig parseUnlock(ConfigurationSection section) {
         if (section == null) {
-            return new UnlockConfig(UnlockType.NONE, null, null, null, null, 0, null);
+            return new UnlockConfig(UnlockType.NONE, null, null, null, null, 0, null, null, null);
         }
         UnlockType type = UnlockType.NONE;
         try {
@@ -381,7 +408,9 @@ public final class ConfigManager {
                 section.getString("stat"),
                 section.getString("sub"),
                 section.getLong("amount", 0),
-                section.getString("rank")
+                section.getString("rank"),
+                section.getString("group"),
+                section.getString("skill")
         );
     }
 
@@ -561,6 +590,56 @@ public final class ConfigManager {
                 section.getBoolean("enabled", false),
                 parseClaimedLand(section.getString("claimed-land", "RESPECT_FLAGS"))
         );
+    }
+
+    private SimpleClaimIntegrationConfig parseSimpleClaimIntegration(ConfigurationSection section) {
+        if (section == null) {
+            return new SimpleClaimIntegrationConfig(
+                    false,
+                    WildernessPolicy.ALLOW,
+                    "itemmagnet.wilderness",
+                    ClaimedLandPolicy.RESPECT_FLAGS
+            );
+        }
+        return new SimpleClaimIntegrationConfig(
+                section.getBoolean("enabled", false),
+                parseWilderness(section.getString("wilderness", "ALLOW")),
+                section.getString("wilderness-permission", "itemmagnet.wilderness"),
+                parseClaimedLand(section.getString("claimed-land", "RESPECT_FLAGS"))
+        );
+    }
+
+    private SuperiorSkyblockConfig parseSuperiorSkyblock(ConfigurationSection section) {
+        if (section == null) {
+            return new SuperiorSkyblockConfig(
+                    false,
+                    WildernessPolicy.ALLOW,
+                    "itemmagnet.wilderness",
+                    ClaimedLandPolicy.RESPECT_FLAGS,
+                    "PICKUP_ITEMS"
+            );
+        }
+        return new SuperiorSkyblockConfig(
+                section.getBoolean("enabled", false),
+                parseWilderness(section.getString("wilderness", "ALLOW")),
+                section.getString("wilderness-permission", "itemmagnet.wilderness"),
+                parseClaimedLand(section.getString("claimed-land", "RESPECT_FLAGS")),
+                section.getString("island-permission", "PICKUP_ITEMS")
+        );
+    }
+
+    private QuestsIntegrationConfig parseQuests(ConfigurationSection section) {
+        if (section == null) {
+            return new QuestsIntegrationConfig(false, Map.of());
+        }
+        Map<String, String> unlockOnComplete = new LinkedHashMap<>();
+        ConfigurationSection mapping = section.getConfigurationSection("unlock-on-complete");
+        if (mapping != null) {
+            for (String questId : mapping.getKeys(false)) {
+                unlockOnComplete.put(questId, mapping.getString(questId, ""));
+            }
+        }
+        return new QuestsIntegrationConfig(section.getBoolean("enabled", false), unlockOnComplete);
     }
 
     public void validateStartup() {

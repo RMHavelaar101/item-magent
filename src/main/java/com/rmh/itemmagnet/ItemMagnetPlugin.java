@@ -8,7 +8,9 @@ import com.rmh.itemmagnet.config.ConfigPersistence;
 import com.rmh.itemmagnet.config.ReloadResult;
 import com.rmh.itemmagnet.gui.ConfigGuiListener;
 import com.rmh.itemmagnet.gui.ConfigGuiService;
+import com.rmh.itemmagnet.integration.IntegrationStatusService;
 import com.rmh.itemmagnet.integration.ItemMagnetPlaceholderExpansion;
+import com.rmh.itemmagnet.integration.QuestsUnlockListener;
 import com.rmh.itemmagnet.item.MagnetItemService;
 import com.rmh.itemmagnet.item.PdcKeys;
 import com.rmh.itemmagnet.listener.CraftListener;
@@ -22,7 +24,10 @@ import com.rmh.itemmagnet.metrics.StartupMessageService;
 import com.rmh.itemmagnet.metrics.UpdateChecker;
 import com.rmh.itemmagnet.protection.GriefPreventionHook;
 import com.rmh.itemmagnet.protection.LandsHook;
+import com.rmh.itemmagnet.protection.PlotSquaredHook;
 import com.rmh.itemmagnet.protection.ProtectionService;
+import com.rmh.itemmagnet.protection.ResidenceHook;
+import com.rmh.itemmagnet.protection.SuperiorSkyblockHook;
 import com.rmh.itemmagnet.protection.TownyHook;
 import com.rmh.itemmagnet.protection.WorldGuardHook;
 import com.rmh.itemmagnet.recipe.RecipeService;
@@ -45,7 +50,12 @@ public class ItemMagnetPlugin extends JavaPlugin {
     private WorldGuardHook worldGuardHook;
     private TownyHook townyHook;
     private GriefPreventionHook griefPreventionHook;
+    private ResidenceHook residenceHook;
+    private PlotSquaredHook plotSquaredHook;
+    private SuperiorSkyblockHook superiorSkyblockHook;
     private ProtectionService protectionService;
+    private IntegrationStatusService integrationStatusService;
+    private QuestsUnlockListener questsUnlockListener;
     private AfkTracker afkTracker;
     private MagnetLocator magnetLocator;
     private MagnetService magnetService;
@@ -72,7 +82,29 @@ public class ItemMagnetPlugin extends JavaPlugin {
         this.worldGuardHook = new WorldGuardHook(this);
         this.townyHook = new TownyHook(this);
         this.griefPreventionHook = new GriefPreventionHook(this);
-        this.protectionService = new ProtectionService(this, landsHook, worldGuardHook, townyHook, griefPreventionHook);
+        this.residenceHook = new ResidenceHook(this);
+        this.plotSquaredHook = new PlotSquaredHook(this);
+        this.superiorSkyblockHook = new SuperiorSkyblockHook(this);
+        this.protectionService = new ProtectionService(
+                this,
+                landsHook,
+                worldGuardHook,
+                townyHook,
+                griefPreventionHook,
+                residenceHook,
+                plotSquaredHook,
+                superiorSkyblockHook
+        );
+        this.integrationStatusService = new IntegrationStatusService(
+                this,
+                landsHook,
+                worldGuardHook,
+                townyHook,
+                griefPreventionHook,
+                residenceHook,
+                plotSquaredHook,
+                superiorSkyblockHook
+        );
         this.afkTracker = new AfkTracker();
         this.magnetLocator = new MagnetLocator(itemService);
         this.unlockStorage = new UnlockStorage(this);
@@ -84,10 +116,12 @@ public class ItemMagnetPlugin extends JavaPlugin {
         this.updateChecker = new UpdateChecker(this);
         this.startupMessageService = new StartupMessageService(this);
         this.configGuiService = new ConfigGuiService(this, configPersistence);
+        this.questsUnlockListener = new QuestsUnlockListener(this, unlockService);
 
         recipeService.registerRecipes();
         magnetService.start();
         proximityLoreService.start();
+        questsUnlockListener.register();
 
         ItemMagnetCommand executor = new ItemMagnetCommand(
                 this,
@@ -96,7 +130,8 @@ public class ItemMagnetPlugin extends JavaPlugin {
                 protectionService,
                 magnetLocator,
                 configGuiService,
-                startupMessageService
+                startupMessageService,
+                integrationStatusService
         );
 
         PluginCommand command = getCommand("itemmagnet");
@@ -120,6 +155,7 @@ public class ItemMagnetPlugin extends JavaPlugin {
 
         startupMessageService.logIfEnabled();
         getLogger().info("ItemMagnet enabled with " + configManager.getMagnetConfig().getTiers().size() + " tiers.");
+        getLogger().info("Integration hooks: " + integrationStatusService.formatHookStatusLine());
     }
 
     @Override
@@ -149,6 +185,9 @@ public class ItemMagnetPlugin extends JavaPlugin {
         worldGuardHook.reload();
         townyHook.reload();
         griefPreventionHook.reload();
+        residenceHook.reload();
+        plotSquaredHook.reload();
+        superiorSkyblockHook.reload();
         recipeService.registerRecipes();
         magnetService.refreshSoundService();
         magnetService.restart();
@@ -182,6 +221,10 @@ public class ItemMagnetPlugin extends JavaPlugin {
 
     public ProtectionService getProtectionService() {
         return protectionService;
+    }
+
+    public IntegrationStatusService getIntegrationStatusService() {
+        return integrationStatusService;
     }
 
     public MagnetService getMagnetService() {

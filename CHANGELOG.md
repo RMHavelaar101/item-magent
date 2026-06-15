@@ -4,6 +4,28 @@ All notable changes to ItemMagnet are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.3.0] - 2026-06-15
+
+### Added
+
+- **Public API** — `ItemMagnetApi.grantUnlock`, `giveMagnet`, `isTierUnlocked`, `getHookStatus`
+- **`MagnetTierUnlockedEvent`** — fires when a tier is granted via command or API
+- **IntegrationStatusService** — unified hook detection for `/itemmagnet version` and startup log
+- **New protection hooks** — Residence 6.0.0.1, PlotSquared 6.11.1, SuperiorSkyblock2 (reflection)
+- **New unlock types** — `LP_GROUP` (LuckPerms), `MCMMO_SKILL` (mcMMO skill level)
+- **Quests bridge** — optional `integrations.quests.unlock-on-complete` mapping (PikaMug Quests 5.2.9)
+- **Config GUI** — toggles for Residence, PlotSquared, SuperiorSkyblock, Quests bridge
+- Integration docs for all soft dependencies with tested version numbers
+
+### Changed
+
+- PlaceholderAPI compile dependency bumped to **2.12.2**
+- `/itemmagnet version` prints two lines: version + full hook status map
+
+### Fixed
+
+- **`config.yml` YAML indentation** under `integrations` (GriefPrevention, Residence, PlotSquared, SuperiorSkyblock, Quests) — fixes reload/parse failures on strict YAML loaders
+
 ## [1.2.5] - 2026-06-15
 
 ### Added

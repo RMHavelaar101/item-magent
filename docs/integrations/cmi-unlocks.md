@@ -2,6 +2,8 @@
 
 ItemMagnet supports CMI-based unlock conditions via reflection. CMI is optional.
 
+**Tested against:** CMI **9.8.7.x** + CMILib **1.5.9.3** on Paper 26.x (see [compatibility.md](../compatibility.md)).
+
 ## Unlock types
 
 Configure per tier under `tiers.<id>.unlock`:
@@ -71,6 +73,40 @@ Grant via:
 ```
 /itemmagnet unlock PlayerName fragment
 ```
+
+Or from another plugin (ItemMagnet **v1.3.0+**):
+
+```java
+ItemMagnetApi.grantUnlock(player, "fragment");
+ItemMagnetApi.giveMagnet(player, "fragment", -1); // -1 = half max charge
+```
+
+## LP_GROUP
+
+Requires LuckPerms (or any plugin that exposes `group.<name>` permissions):
+
+```yaml
+unlock:
+  type: LP_GROUP
+  group: seeker
+```
+
+Checks `player.hasPermission("group.seeker")`.
+
+See [luckperms.md](luckperms.md).
+
+## MCMMO_SKILL
+
+Requires mcMMO:
+
+```yaml
+unlock:
+  type: MCMMO_SKILL
+  skill: MINING
+  level: 100
+```
+
+See [mcmmo.md](mcmmo.md).
 
 ## CMI event command example
 

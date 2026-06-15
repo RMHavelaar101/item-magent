@@ -28,7 +28,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${findProperty("paperVersion")}")
-    compileOnly("me.clip:placeholderapi:2.11.6")
+    compileOnly("me.clip:placeholderapi:2.12.2")
 
     implementation("org.bstats:bstats-bukkit:3.2.1")
 
@@ -42,7 +42,7 @@ dependencies {
     add("integrationTestImplementation", "org.junit.jupiter:junit-jupiter")
     add("integrationTestRuntimeOnly", "org.junit.platform:junit-platform-launcher")
     add("integrationTestImplementation", "io.papermc.paper:paper-api:${findProperty("paperVersion")}")
-    add("integrationTestImplementation", "me.clip:placeholderapi:2.11.6")
+    add("integrationTestImplementation", "me.clip:placeholderapi:2.12.2")
     add("integrationTestImplementation", "org.mockbukkit.mockbukkit:mockbukkit-v1.21:4.54.0")
     add("integrationTestImplementation", files("../theryn-plugin-test-utils/build/libs/theryn-plugin-test-utils-1.0.0.jar"))
 }
@@ -102,7 +102,7 @@ hangarPublish {
         id.set("ItemMagnets")
         channel.set("Release")
         changelog.set("""
-            v1.2.2 — Optional proximity lore: coordinate zones whisper ambient messages when holding an active magnet. Config GUI zone editor. Off by default.
+            v1.3.0 — Expanded soft dependencies: Residence, PlotSquared, SuperiorSkyblock2, LuckPerms LP_GROUP unlocks, mcMMO skill gates, Quests unlock bridge, public API for unlock/give, IntegrationStatusService.
             See CHANGELOG.md on GitHub.
             """.trim())
         apiKey.set(System.getenv("HANGAR_API_TOKEN") ?: "")
@@ -118,6 +118,12 @@ hangarPublish {
                     hangar("Towny") { required = false }
                     hangar("GriefPrevention") { required = false }
                     hangar("PlaceholderAPI") { required = false }
+                    hangar("LuckPerms") { required = false }
+                    hangar("mcMMO") { required = false }
+                    hangar("Residence") { required = false }
+                    hangar("PlotSquared") { required = false }
+                    hangar("SuperiorSkyblock2") { required = false }
+                    hangar("Quests") { required = false }
                 }
             }
         }
