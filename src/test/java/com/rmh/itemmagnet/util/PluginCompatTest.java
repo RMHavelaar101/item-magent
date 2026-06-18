@@ -19,4 +19,15 @@ class PluginCompatTest {
         assertFalse(PluginCompat.isNewerVersion("v1.1.0", "1.1.0"));
         assertTrue(PluginCompat.isNewerVersion("v1.2.0", "1.1.0"));
     }
+
+    @Test
+    void isNewerVersionRejectsOlderRemote() {
+        assertFalse(PluginCompat.isNewerVersion("1.1.0", "1.2.0"));
+    }
+
+    @Test
+    void compareVersionsHandlesDoubleDigitPatches() {
+        assertTrue(PluginCompat.isNewerVersion("1.6.10", "1.6.9"));
+        assertFalse(PluginCompat.isNewerVersion("1.6.9", "1.6.10"));
+    }
 }

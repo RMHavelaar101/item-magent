@@ -1,6 +1,8 @@
 package com.rmh.itemmagnet.util;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.ChatColor;
 
@@ -24,6 +26,14 @@ public final class TextUtil {
 
     public static Component component(String input) {
         return LEGACY.deserialize(input == null ? "" : input);
+    }
+
+    public static Component clickableLink(String label, String url) {
+        String safeLabel = label == null || label.isBlank() ? url : label;
+        String safeUrl = url == null ? "" : url;
+        return LEGACY.deserialize(color(safeLabel))
+                .clickEvent(ClickEvent.openUrl(safeUrl))
+                .hoverEvent(HoverEvent.showText(Component.text(safeUrl)));
     }
 
     public static List<String> colorList(List<String> lines) {

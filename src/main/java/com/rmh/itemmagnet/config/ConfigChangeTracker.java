@@ -9,8 +9,7 @@ public final class ConfigChangeTracker {
 
     private static final List<String> RESTART_REQUIRED_PREFIXES = List.of(
             "metrics.bstats-enabled",
-            "metrics.bstats-plugin-id",
-            "metrics.update-check"
+            "metrics.bstats-plugin-id"
     );
 
     private final Set<String> changedPaths = new LinkedHashSet<>();

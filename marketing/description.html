@@ -1,58 +1,71 @@
-<h2>ItemMagnet</h2>
+<h1>ItemMagnet</h1>
 <p><strong>Tiered item magnets with redstone fuel, smart filters, visible pull physics, and claim-aware protection.</strong></p>
+<p>Pull dropped loot toward you with magnets that feel physical — items slide around corners and stop at walls. Charge them with redstone, respect Lands and WorldGuard claims, filter what you collect, and tune everything from an admin GUI or <code>config.yml</code>.</p>
+<p><strong>Website:</strong> <a href="https://www.theryn.org/itemmagnet">theryn.org/itemmagnet</a> · <strong>GitHub:</strong> <a href="https://github.com/MCTheryn/item-magent">MCTheryn/item-magent</a></p>
 
-<p>ItemMagnet is a Paper plugin built for survival SMPs. Pull dropped loot with line-of-sight physics — items slide around corners and stop at walls instead of phasing through blocks. Fuel resonators with redstone, respect land claims, and tune everything from an in-game config GUI or YAML.</p>
-
-<h3>Why ItemMagnet?</h3>
+<h2>Why ItemMagnet?</h2>
+<p>Most magnet plugins teleport items through blocks or ignore land claims. ItemMagnet is built for <strong>survival SMPs</strong> that care about fairness and polish:</p>
 <ul>
-  <li><strong>Visible physics</strong> — step-based pull with line-of-sight; no wall clipping</li>
+  <li><strong>Visible physics</strong> — step-based pull with line-of-sight; no phasing through walls</li>
   <li><strong>Claim-aware</strong> — Lands, WorldGuard, Towny, GriefPrevention, Residence, PlotSquared, SuperiorSkyblock2</li>
   <li><strong>Smart filters</strong> — server + personal blacklists, Minecraft tag rules, tier whitelists, presets with preview/confirm</li>
-  <li><strong>Redstone fuel loop</strong> — dust and blocks recharge the magnet; redstone blocks trigger a radius boost</li>
-  <li><strong>Admin-friendly</strong> — <code>/itemmagnet config</code> GUI, hot reload, presets, granular LuckPerms permissions</li>
+  <li><strong>Redstone fuel loop</strong> — dust and blocks recharge the magnet; blocks trigger a radius boost</li>
+  <li><strong>Admin-friendly</strong> — <code>/itemmagnet config</code> GUI, presets, hot reload, LuckPerms-ready permissions, audit log</li>
   <li><strong>Production storage</strong> — player filters in YAML, SQLite, or MySQL</li>
 </ul>
 
-<h3>Gameplay</h3>
+<h2>Gameplay</h2>
 <ul>
-  <li>Three configurable tiers (Fragment, Survey, Anchor) with recipes and unlock gates</li>
-  <li>Hold modes: main hand, hotbar, or inventory</li>
-  <li>Optional XP orb pulling</li>
-  <li>Live lore: charge, boost, and current pull radius</li>
-  <li>Sneak + right-click fuel or auto-absorb redstone drops</li>
+  <li>Three tiers — <strong>Fragment</strong>, <strong>Survey</strong>, <strong>Anchor</strong></li>
+  <li>Hold modes — main hand, hotbar, or anywhere in inventory</li>
+  <li>XP orb pulling at the same radius (optional)</li>
+  <li>Sneak + right-click fuel (either hand) or auto-absorb redstone drops</li>
+  <li>Power surge from redstone blocks — charge + temporary radius boost</li>
+  <li>Live item lore — charge, boost timer, and current pull radius</li>
+  <li>Vertical reach — pull items above/below you within tier radius</li>
 </ul>
 
-<h3>Filters</h3>
+<h2>Filters</h2>
 <ul>
-  <li>Server material + tag blacklist (config + admin GUI)</li>
+  <li>Server material + tag blacklist — config and admin GUI</li>
   <li>Personal filter GUI — <code>/itemmagnet filter</code></li>
-  <li>Built-in presets (mining, farming, mob-drops, keep-valuables) with merge preview</li>
-  <li><code>/itemmagnet filter clear</code> and import commands</li>
-  <li>YAML, SQLite, or MySQL storage for player filter data</li>
+  <li>Built-in presets with merge preview/confirm</li>
+  <li>YAML, SQLite, or MySQL player filter storage</li>
 </ul>
 
-<h3>Integrations (optional)</h3>
-<p>Lands · WorldGuard · Towny · GriefPrevention · Residence · PlotSquared · SuperiorSkyblock2 · CMI · LuckPerms · mcMMO · Quests · PlaceholderAPI · Developer API</p>
-
-<h3>Requirements</h3>
+<h2>For server owners</h2>
 <ul>
-  <li>Paper <strong>1.21.1+</strong> (Java <strong>21+</strong>)</li>
-  <li>Tested on Paper 1.21.1, 1.21.4, 26.1</li>
+  <li><code>/itemmagnet config</code> — in-game editor</li>
+  <li>Server presets — theryn, skyblock, vanilla-survival, hub-spawn, testing</li>
+  <li>Anti-AFK, unlock gates, proximity lore, config audit log</li>
+  <li>Update checker — console banner on boot + clickable in-game download link</li>
 </ul>
 
-<h3>Quick start</h3>
+<h2>Integrations (all optional)</h2>
+<p>Lands, WorldGuard, Towny, GriefPrevention, Residence, PlotSquared, SuperiorSkyblock2, CMI, LuckPerms, mcMMO, Quests, PlaceholderAPI. Developer API included.</p>
+
+<h2>Compatibility</h2>
+<table>
+  <tr><td><strong>Server</strong></td><td>Paper 1.21.1 or newer (required)</td></tr>
+  <tr><td><strong>Java</strong></td><td>21 or newer</td></tr>
+  <tr><td><strong>Tested on</strong></td><td>Paper 1.21.1, 1.21.4, 26.1</td></tr>
+  <tr><td><strong>Not supported</strong></td><td>Spigot, CraftBukkit, Folia</td></tr>
+</table>
+
+<h2>Quick start</h2>
 <ol>
-  <li>Drop the JAR in <code>plugins/</code> and restart</li>
-  <li><code>/itemmagnet give &lt;player&gt; fragment 500</code></li>
-  <li>Hold the magnet, sneak + right-click with redstone dust to fuel</li>
+  <li>Download <code>ItemMagnet-1.6.6.jar</code> from GitHub Releases</li>
+  <li>Place the JAR in <code>plugins/</code> and restart</li>
+  <li><code>/itemmagnet give YourName fragment 500</code></li>
+  <li>Hold the magnet; sneak + right-click with redstone to fuel</li>
   <li>Drop items nearby — they pull toward you with visible motion</li>
 </ol>
 
-<h3>Links</h3>
+<h2>Links</h2>
 <ul>
-  <li><a href="https://itemmagnet.theryn.org">Website</a></li>
-  <li><a href="https://github.com/RMHavelaar101/item-magent">GitHub &amp; docs</a></li>
-  <li><a href="https://hangar.papermc.io/Alcerious/ItemMagnets">Hangar</a></li>
+  <li><a href="https://www.theryn.org/itemmagnet">Product page</a></li>
+  <li><a href="https://github.com/MCTheryn/item-magent/releases/latest">GitHub Releases</a></li>
+  <li><a href="https://github.com/MCTheryn/item-magent/tree/main/docs">Documentation</a></li>
+  <li><a href="https://github.com/MCTheryn/item-magent/issues">Report a bug</a></li>
 </ul>
-
-<p>License: MIT</p>
+<p>MIT License.</p>

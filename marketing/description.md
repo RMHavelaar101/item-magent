@@ -1,63 +1,133 @@
-# ItemMagnet — product description (source)
+# ItemMagnet
 
-Use this file as the canonical homepage / listing copy. Derived formats live alongside it:
+**Tiered item magnets with redstone fuel, smart filters, visible pull physics, and claim-aware protection.**
 
-- `description.html` — Hangar, Spigot resource HTML
-- `description.bbcode` — Spigot BBCode
-- `modrinth.md` — Modrinth project page
-- `changelog-v1.6.0.md` — release notes for v1.6.0
+Pull dropped loot toward you with magnets that feel physical — items slide around corners and stop at walls. Charge them with redstone, respect Lands and WorldGuard claims, filter what you collect, and tune everything from an admin GUI or `config.yml`.
+
+**Website:** [theryn.org/itemmagnet](https://www.theryn.org/itemmagnet) · **GitHub:** [MCTheryn/item-magent](https://github.com/MCTheryn/item-magent)
 
 ---
 
-## Tagline
-
-Tiered item magnets with redstone fuel, smart filters, visible pull physics, and claim-aware protection.
-
-## Short (one paragraph)
-
-ItemMagnet is a Paper plugin built for survival SMPs. Pull dropped loot with line-of-sight physics — items slide around corners and stop at walls instead of phasing through blocks. Fuel resonators with redstone dust and blocks, respect Lands and WorldGuard claims, and tune everything from an in-game config GUI or YAML. Personal and server-wide item filters (including Minecraft tag rules), tier progression with recipe unlock gates, and optional hooks for PlaceholderAPI, Quests, CMI, and more.
-
 ## Why ItemMagnet?
 
-Most magnet plugins teleport items through walls or ignore land claims. ItemMagnet focuses on **fairness, polish, and operator control**:
+Most magnet plugins teleport items through blocks or ignore land claims. ItemMagnet is built for **survival SMPs** that care about fairness and polish:
 
-- **Visible physics** — step-based pull with line-of-sight; no wall clipping
+- **Visible physics** — step-based pull with line-of-sight; no phasing through walls
 - **Claim-aware** — Lands, WorldGuard, Towny, GriefPrevention, Residence, PlotSquared, SuperiorSkyblock2
-- **Smart filters** — server blacklist, per-player GUI, tag rules (`minecraft:logs`), tier whitelists/blacklists, presets with preview/confirm
+- **Smart filters** — server + personal blacklists, Minecraft tag rules, tier whitelists, presets with preview/confirm
 - **Redstone fuel loop** — dust and blocks recharge the magnet; blocks trigger a radius boost
-- **Admin-friendly** — `/itemmagnet config` GUI, hot reload, presets, LuckPerms-ready permissions, audit log
-- **Production-ready storage** — player filters in YAML, SQLite, or MySQL (with one-time YAML migration)
+- **Admin-friendly** — `/itemmagnet config` GUI, presets, hot reload, LuckPerms-ready permissions, audit log
+- **Production storage** — player filters in YAML, SQLite, or MySQL
 
-## Core gameplay
+---
 
-- Three default tiers (Fragment, Survey, Anchor) — fully configurable materials, lore, radius, drain, recipes
-- Hold modes: main hand, hotbar, or anywhere in inventory
-- XP orb pulling (optional)
-- Sneak + right-click fuel transfer or auto-absorb redstone drops
-- Power surge from redstone blocks — extra charge + temporary radius boost
-- Live item lore: charge, boost timer, current pull radius
+## Gameplay
 
-## Filters (v1.4–v1.6)
+- Three tiers — **Fragment**, **Survey**, **Anchor** (materials, names, radius, drain, recipes all configurable)
+- Hold modes — main hand, hotbar, or anywhere in inventory
+- XP orb pulling at the same radius (optional)
+- Sneak + right-click fuel (either hand) or auto-absorb redstone drops
+- Power surge from redstone blocks — charge + temporary radius boost
+- Live item lore — charge, boost timer, and current pull radius
+- Vertical reach — pull items above/below you within tier radius (`vertical-reach-blocks`, `vertical-pull-mode`)
+- Per-fuel recharge sounds; pull, depleted, and denied cues
 
-- **Server rules** — material + tag blacklist in config and admin GUI
-- **Personal GUI** — `/itemmagnet filter` with server rules read-only at the top
-- **Presets** — mining, farming, mob-drops, keep-valuables; merge preview before apply
-- **Clear command** — `/itemmagnet filter clear`
-- **Import** — bulk merge via `/itemmagnet import`
-- **Storage backends** — YAML (default), SQLite, or MySQL for large networks
+---
+
+## Filters
+
+- Server material + tag blacklist — config and admin GUI (Materials | Tags views)
+- Personal filter GUI — `/itemmagnet filter` with server rules read-only at the top
+- Built-in presets — mining, farming, mob-drops, keep-valuables with merge preview/confirm
+- `/itemmagnet filter clear` — wipe personal rules; `/itemmagnet import` for bulk merge
+- Player filter storage — YAML (default), SQLite, or MySQL with one-time YAML migration
+- Tier whitelist/blacklist and tag rules per magnet tier
+
+---
+
+## For server owners
+
+- `/itemmagnet config` — in-game editor for settings, tiers, fuel, integrations, item filter, and proximity lore
+- Rename tier display names from the GUI (chat input, `&` color codes)
+- Server presets — theryn, skyblock, vanilla-survival, hub-spawn, testing, or custom
+- World blacklist/whitelist filter for hub and spawn worlds
+- Anti-AFK movement check with one-time notify
+- Unlock gates — permission, advancement, CMI stat/rank, LuckPerms group, mcMMO skill, Quests, or admin command
+- Proximity lore — optional coordinate zones with ambient messages (default off)
+- Config audit log — `plugins/ItemMagnet/config-audit.log`
+- Update checker — console banner on boot, clickable in-game download link for admins
+
+---
 
 ## Integrations (all optional)
 
-Lands · WorldGuard · Towny · GriefPrevention · Residence · PlotSquared · SuperiorSkyblock2 · CMI · LuckPerms · mcMMO · Quests · PlaceholderAPI · Developer API (`ItemMagnetPullBlockedEvent`, pull/fuel/deplete events)
+| Plugin | Purpose |
+|--------|---------|
+| Lands | Wilderness, owner, member, and flag-based modes |
+| WorldGuard | Region whitelist/blacklist and item-pickup flag |
+| Towny | Town plot protection |
+| GriefPrevention | Claim respect |
+| Residence | Residence claim and itempickup flags |
+| PlotSquared | Plot membership checks |
+| SuperiorSkyblock2 | Island permission hook |
+| CMI | Stat/rank unlock gates; optional progress on blocked pulls |
+| LuckPerms | LP_GROUP unlock type for tier recipes |
+| mcMMO | MCMMO_SKILL level unlock gates |
+| Quests | Quest-complete tier unlocks; optional progress on blocked pulls |
+| PlaceholderAPI | Charge, radius, tier, boost, and filter count placeholders |
 
-## Requirements
+Developer API — `grantUnlock`, `giveMagnet`, pull/blocked events, hook status.
 
-- **Paper** 1.21.1 or newer (not Spigot/CraftBukkit/Folia)
-- **Java** 21+
+---
+
+## Compatibility
+
+| | Requirement |
+|---|-------------|
+| **Server** | Paper **1.21.1 or newer** (required) |
+| **Java** | **21 or newer** |
+| **Tested on** | Paper 1.21.1, 1.21.4, 26.1 |
+| **Not supported** | Spigot, CraftBukkit, Folia |
+
+Paper is required — the plugin uses the Paper API and modern interact handling for fuel transfer.
+
+---
+
+## Quick start
+
+1. Download `ItemMagnet-1.6.6.jar` from GitHub Releases
+2. Place the JAR in your server's `plugins/` folder and restart
+3. Give yourself a magnet: `/itemmagnet give YourName fragment 500`
+4. Hold the magnet; put redstone dust in your other hand; sneak + right-click to fuel
+5. Drop items nearby — they pull toward you with visible motion
+
+Optional: `/itemmagnet filter` for personal filters, `/itemmagnet config` for admin tuning.
+
+---
+
+## Commands
+
+| Command | Permission | Description |
+|---------|------------|-------------|
+| `/itemmagnet` | — | Show help (filtered by permission) |
+| `/itemmagnet reload` | `itemmagnet.reload` | Hot-reload config and messages |
+| `/itemmagnet config` | `itemmagnet.config` | Open in-game config editor |
+| `/itemmagnet filter` | `itemmagnet.filter` | Personal item filter GUI |
+| `/itemmagnet filter clear` | `itemmagnet.filter` | Clear personal filter rules |
+| `/itemmagnet give <player> <tier\|all> [charge]` | `itemmagnet.give` | Give a resonator |
+| `/itemmagnet unlock <player> <tier\|all>` | `itemmagnet.unlock` | Unlock a tier recipe |
+| `/itemmagnet debug` | `itemmagnet.debug` | Stats for your active magnet |
+| `/itemmagnet version` | `itemmagnet.admin` | Version, hook status, and update info |
+
+Aliases: `/im`, `/magnet`
+
+---
 
 ## Links
 
-- Website: https://itemmagnet.theryn.org
-- GitHub: https://github.com/RMHavelaar101/item-magent
-- Hangar: https://hangar.papermc.io/Alcerious/ItemMagnets
-- Docs: https://github.com/RMHavelaar101/item-magent/tree/main/docs
+- [Product page](https://www.theryn.org/itemmagnet)
+- [GitHub Releases](https://github.com/MCTheryn/item-magent/releases/latest)
+- [Documentation](https://github.com/MCTheryn/item-magent/tree/main/docs)
+- [Report a bug](https://github.com/MCTheryn/item-magent/issues)
+
+MIT License.

@@ -15,8 +15,9 @@ class ConfigChangeTrackerTest {
         tracker.record("metrics.bstats-enabled");
         tracker.record("metrics.update-check");
 
-        assertEquals(2, tracker.getRestartRequiredKeys().size());
+        assertEquals(1, tracker.getRestartRequiredKeys().size());
         assertTrue(tracker.requiresRestart("metrics.bstats-enabled"));
+        assertFalse(tracker.requiresRestart("metrics.update-check"));
         assertFalse(tracker.requiresRestart("settings.sounds.enabled"));
     }
 }

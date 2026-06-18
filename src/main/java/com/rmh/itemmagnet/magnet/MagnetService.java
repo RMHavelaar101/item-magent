@@ -30,7 +30,8 @@ import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,9 +39,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-public final class MagnetService extends BukkitRunnable {
+public final class MagnetService {
 
     private final ItemMagnetPlugin plugin;
+    private BukkitTask task;
     private final MagnetItemService itemService;
     private final ProtectionService protectionService;
     private final AfkTracker afkTracker;
@@ -85,17 +87,24 @@ public final class MagnetService extends BukkitRunnable {
     }
 
     public void start() {
+        stop();
         int interval = plugin.getConfigManager().getMagnetConfig().getScanIntervalTicks();
-        runTaskTimer(plugin, interval, interval);
+        task = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, interval, interval);
     }
 
     public void restart() {
-        cancel();
+        stop();
         start();
     }
 
-    @Override
-    public void run() {
+    public void stop() {
+        if (task != null) {
+            task.cancel();
+            task = null;
+        }
+    }
+
+    private void tick() {
         MagnetConfig config = plugin.getConfigManager().getMagnetConfig();
         long currentTick = plugin.getServer().getCurrentTick();
 
@@ -182,7 +191,7 @@ public final class MagnetService extends BukkitRunnable {
             processed += absorbFuel(player, magnetSlot, magnet, config, currentTick, radius);
         }
 
-        List<Item> nearbyItems = NearbyItemScanner.findItems(player, radius);
+        List<Item> nearbyItems = NearbyItemScanner.findItems(player, radius, config.getVerticalReachBlocks());
         for (Item entity : nearbyItems) {
             if (processed >= config.getMaxItemsPerTick()) {
                 break;
@@ -216,12 +225,26 @@ public final class MagnetService extends BukkitRunnable {
                 continue;
             }
 
-            Location next = PullPhysics.stepToward(entity.getLocation(), player.getLocation(), config.getPullStepBlocks());
+            Location pullTarget = PullPhysics.pullTargetFromPlayer(player);
+            if (tryCollectPulledItem(player, entity, stack, config)) {
+                soundService.playPull(player);
+                maybeSwingArm(player, magnetSlot, config);
+                processed++;
+                drainForItemPull(player, magnet, config);
+                continue;
+            }
+
+            Location next = PullPhysics.stepToward(
+                    entity.getLocation(),
+                    pullTarget,
+                    config.getPullStepBlocks(),
+                    config.getVerticalPullMode()
+            );
             if (next.equals(entity.getLocation())) {
                 continue;
             }
 
-            entity.teleport(next);
+            movePulledEntity(entity, next);
             spawnTrail(config, next);
             soundService.playPull(player);
             maybeSwingArm(player, magnetSlot, config);
@@ -243,7 +266,9 @@ public final class MagnetService extends BukkitRunnable {
             double radius,
             int processed
     ) {
-        List<ExperienceOrb> experienceOrbs = NearbyExperienceScanner.findExperienceOrbs(player, radius);
+        List<ExperienceOrb> experienceOrbs = NearbyExperienceScanner.findExperienceOrbs(
+                player, radius, config.getVerticalReachBlocks()
+        );
         for (ExperienceOrb orb : experienceOrbs) {
             if (processed >= config.getMaxItemsPerTick()) {
                 break;
@@ -260,7 +285,12 @@ public final class MagnetService extends BukkitRunnable {
                 continue;
             }
 
-            if (PullPhysics.distance(orb.getLocation(), player.getLocation()) <= config.getPickupDistance()) {
+            if (MagnetReach.isWithinPickupRange(
+                    player.getLocation(),
+                    orb.getLocation(),
+                    config.getPickupDistance(),
+                    config.getVerticalReachBlocks()
+            )) {
                 orb.remove();
                 player.giveExp(experience);
                 spawnTrail(config, player.getLocation());
@@ -270,7 +300,13 @@ public final class MagnetService extends BukkitRunnable {
                 continue;
             }
 
-            Location next = PullPhysics.stepToward(orb.getLocation(), player.getLocation(), config.getPullStepBlocks());
+            Location pullTarget = PullPhysics.pullTargetFromPlayer(player);
+            Location next = PullPhysics.stepToward(
+                    orb.getLocation(),
+                    pullTarget,
+                    config.getPullStepBlocks(),
+                    config.getVerticalPullMode()
+            );
             if (next.equals(orb.getLocation())) {
                 continue;
             }
@@ -322,7 +358,7 @@ public final class MagnetService extends BukkitRunnable {
         double scanRadius = config.isFuelUseEffectiveRadius()
                 ? Math.max(config.getFuelRadius(), effectiveRadius)
                 : config.getFuelRadius();
-        List<Item> fuelItems = NearbyItemScanner.findItems(player, scanRadius);
+        List<Item> fuelItems = NearbyItemScanner.findItems(player, scanRadius, config.getVerticalReachBlocks());
         for (Item entity : fuelItems) {
             Material type = entity.getItemStack().getType();
             if (!isFuelItem(config, type)) {
@@ -343,13 +379,24 @@ public final class MagnetService extends BukkitRunnable {
                 break;
             }
 
-            Location next = PullPhysics.stepToward(entity.getLocation(), player.getLocation(), config.getPullStepBlocks());
+            Location pullTarget = PullPhysics.pullTargetFromPlayer(player);
+            Location next = PullPhysics.stepToward(
+                    entity.getLocation(),
+                    pullTarget,
+                    config.getPullStepBlocks(),
+                    config.getVerticalPullMode()
+            );
             if (!next.equals(entity.getLocation())) {
-                entity.teleport(next);
+                movePulledEntity(entity, next);
                 spawnTrail(config, next);
             }
 
-            if (PullPhysics.distance(entity.getLocation(), player.getLocation()) > 1.0) {
+            if (!MagnetReach.isWithinPickupRange(
+                    player.getLocation(),
+                    entity.getLocation(),
+                    1.0,
+                    config.getVerticalReachBlocks()
+            )) {
                 continue;
             }
 
@@ -379,6 +426,42 @@ public final class MagnetService extends BukkitRunnable {
             ));
         }
         return absorbed;
+    }
+
+    private boolean tryCollectPulledItem(
+            Player player,
+            Item entity,
+            ItemStack stack,
+            MagnetConfig config
+    ) {
+        if (!MagnetReach.isWithinPickupRange(
+                player.getLocation(),
+                entity.getLocation(),
+                config.getPickupDistance(),
+                config.getVerticalReachBlocks()
+        )) {
+            return false;
+        }
+        if (shouldPauseForInventory(player, config, stack)) {
+            return false;
+        }
+
+        HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(stack.clone());
+        if (!leftover.isEmpty()) {
+            ItemStack remainder = leftover.values().iterator().next();
+            stack.setAmount(remainder.getAmount());
+            entity.setItemStack(stack);
+            return false;
+        }
+
+        entity.remove();
+        return true;
+    }
+
+    private void movePulledEntity(Item entity, Location next) {
+        entity.teleport(next);
+        entity.setVelocity(new Vector(0, 0, 0));
+        entity.setPickupDelay(0);
     }
 
     private void writeMagnet(Player player, MagnetSlot magnetSlot, MagnetData magnet, MagnetConfig config, long currentTick) {

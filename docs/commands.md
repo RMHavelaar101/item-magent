@@ -6,7 +6,7 @@ Running `/itemmagnet` or `/im` with no arguments shows the full help menu.
 
 ## /itemmagnet startup-message [on|off|toggle]
 
-Controls the console thank-you message logged when the plugin enables. The message includes the [ItemMagnet website](https://itemmagnet.theryn.org) and a reminder to leave a review.
+Controls the console thank-you message logged when the plugin enables. The message includes the [ItemMagnet website](https://www.theryn.org/itemmagnet) and a reminder to star the project on GitHub.
 
 - **Permission:** `itemmagnet.admin`
 - **Default:** enabled (`startup-message.enabled` in `config.yml`)

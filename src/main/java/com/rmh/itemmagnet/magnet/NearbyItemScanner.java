@@ -16,18 +16,28 @@ public final class NearbyItemScanner {
     }
 
     public static List<Item> findItems(Player player, double radius) {
+        return findItems(player, radius, 0);
+    }
+
+    public static List<Item> findItems(Player player, double horizontalRadius, double verticalReachBlocks) {
         World world = player.getWorld();
         Location center = player.getLocation();
-        double searchRadius = Math.max(0.5, radius);
-        Collection<Entity> entities = world.getNearbyEntities(center, searchRadius, searchRadius, searchRadius, entity -> entity instanceof Item);
-        double radiusSquared = radius * radius;
+        double horizontalSearch = Math.max(0.5, horizontalRadius);
+        double verticalSearch = MagnetReach.effectiveVerticalSearch(horizontalRadius, verticalReachBlocks);
+        Collection<Entity> entities = world.getNearbyEntities(
+                center,
+                horizontalSearch,
+                verticalSearch,
+                horizontalSearch,
+                entity -> entity instanceof Item
+        );
         List<Item> items = new ArrayList<>();
         for (Entity entity : entities) {
             Item item = (Item) entity;
             if (!item.isValid() || item.isDead()) {
                 continue;
             }
-            if (item.getLocation().distanceSquared(center) > radiusSquared) {
+            if (!MagnetReach.isWithinPullRange(center, item.getLocation(), horizontalRadius, verticalReachBlocks)) {
                 continue;
             }
             items.add(item);

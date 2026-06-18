@@ -209,21 +209,13 @@ public class ItemMagnetPlugin extends JavaPlugin {
             playerFilterStorage.shutdown();
         }
         if (magnetService != null) {
-            safeCancel(magnetService);
+            magnetService.stop();
         }
         if (proximityLoreService != null) {
-            safeCancel(proximityLoreService);
+            proximityLoreService.stop();
         }
         if (recipeService != null) {
             recipeService.unregisterRecipes();
-        }
-    }
-
-    private void safeCancel(org.bukkit.scheduler.BukkitRunnable runnable) {
-        try {
-            runnable.cancel();
-        } catch (IllegalStateException ignored) {
-            // Task was never scheduled (e.g. proximity lore disabled).
         }
     }
 
@@ -244,6 +236,7 @@ public class ItemMagnetPlugin extends JavaPlugin {
         magnetService.restart();
         proximityLoreService.restart();
         configManager.validateStartup();
+        updateChecker.restart();
         return ReloadResult.success(
                 List.of("settings", "fuel", "tiers", "integrations", "messages"),
                 configChangeTracker.getRestartRequiredKeys()

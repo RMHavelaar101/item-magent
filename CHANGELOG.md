@@ -4,6 +4,50 @@ All notable changes to ItemMagnet are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.6.6] - 2026-06-15
+
+### Added
+
+- **Update checker improvements** — prominent console banner on boot when a newer GitHub release exists; notifies online admins when the async check completes (no rejoin required)
+- **Clickable update link** — in-game `[Download]` opens configured URL (default GitHub releases)
+- **`/itemmagnet version`** — shows pending update and download link for admins
+- **`metrics.update-download-url`** — configurable download link (default GitHub releases latest)
+
+### Changed
+
+- **Semver comparison** — update checks compare version numbers correctly (e.g. `1.6.10` > `1.6.9`; no false positives when remote is older)
+- **Hot reload** — `metrics.update-check` and download URL apply on `/itemmagnet reload` without server restart
+- **URLs** — GitHub repo moved to [MCTheryn/item-magent](https://github.com/MCTheryn/item-magent); product page [theryn.org/itemmagnet](https://www.theryn.org/itemmagnet); user-facing links no longer reference Hangar
+
+## [1.6.5] - 2026-06-15
+
+### Fixed
+
+- **Stuck items near ledges** — horizontal-first pull now tries alternate axes (vertical, X/Z components, direct) when a step is blocked; item collision uses entity-height checks instead of strict diagonal line-of-sight only
+- **Items stopping short of the player** — magnet now collects items within `pickup-distance` using vertical reach (previously only XP orbs used pickup distance; items relied on vanilla collision)
+- **Entity physics fighting pull** — teleported items reset velocity and pickup delay so client/server collision does not snap them back
+
+## [1.6.4] - 2026-06-15
+
+### Added
+
+- **`settings.vertical-reach-blocks`** — pull items within horizontal tier radius even when they are above/below you (default `2`; set `0` for legacy 3D sphere)
+- **`settings.vertical-pull-mode`** — `HORIZONTAL_FIRST` (default) slides items on X/Z before adjusting Y so ledges and floor/ceiling offsets do not block pulls; `DIRECT` keeps the original straight-line physics
+
+## [1.6.3] - 2026-06-15
+
+### Fixed
+
+- **WorldGuard region blacklist** — region iteration no longer casts `Iterator` to `Iterable` (fixes `UnmodifiableCollection$1 cannot be cast to Iterable` and blocked pulls)
+
+## [1.6.2] - 2026-06-15
+
+### Fixed
+
+- **`/itemmagnet reload` crash** — magnet and proximity-lore schedulers can be restarted without `Already scheduled` errors (BukkitRunnable reuse limitation)
+- **WorldGuard hook** — fixed `argument type mismatch` when checking `ITEM_PICKUP` (varargs `StateFlag[]` reflection); hook failures no longer spam the magnet tick task
+- **Filter preset tags** — removed non-existent vanilla item tags (`minecraft:ores`, `minecraft:crops`, `minecraft:seeds`) from built-in presets; `DEEPSLATE_COBBLESTONE` resolves to `COBBLED_DEEPSLATE`
+
 ## [1.6.1] - 2026-06-15
 
 ### Changed

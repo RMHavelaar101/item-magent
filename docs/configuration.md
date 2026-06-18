@@ -15,7 +15,9 @@ All settings live in `plugins/ItemMagnet/config.yml`.
 | `scan-interval-ticks` | int | `2` | How often the magnet scans for items |
 | `max-items-per-tick` | int | `10` | Performance cap per player per scan |
 | `pull-step-blocks` | double | `0.4` | Distance items move per step |
-| `pickup-distance` | double | `1.5` | Distance at which vanilla pickup occurs |
+| `pickup-distance` | double | `1.5` | Distance at which items are collected (uses separate vertical limit when `vertical-reach-blocks` > 0) |
+| `vertical-reach-blocks` | double | `2` | Max blocks above/below player for pull range (horizontal radius still applies on X/Z). `0` = legacy 3D sphere |
+| `vertical-pull-mode` | enum | `HORIZONTAL_FIRST` | `DIRECT` (straight LOS) or `HORIZONTAL_FIRST` (slide horizontally, then vertically) |
 | `sneak-to-disable` | bool | `true` | Sneaking pauses the magnet |
 | `fuel-radius` | double | `3` | Auto-absorb radius for redstone fuel |
 | `show-charge-bar` | bool | `true` | Show durability-style charge bar |
@@ -41,7 +43,8 @@ All settings live in `plugins/ItemMagnet/config.yml`.
 | `bstats-enabled` | bool | `true` | Enable bStats |
 | `bstats-plugin-id` | int | `31998` | Your bStats plugin ID |
 | `bstats-block-reasons` | bool | `true` | Session charts for blocked-pull reasons |
-| `update-check` | enum | `ON_STARTUP` | `ALWAYS`, `ON_STARTUP`, `DISABLED` |
+| `update-check` | enum | `ON_STARTUP` | `ALWAYS`, `ON_STARTUP`, `DISABLED` — checks GitHub releases |
+| `update-download-url` | string | GitHub releases latest | Link in console banner and in-game update notifications |
 
 ## anti-afk
 

@@ -4,7 +4,7 @@
 #
 # After editing, run:  /itemmagnet reload
 #
-# Full reference: https://github.com/RMHavelaar101/item-magent/blob/main/docs/configuration.md
+# Full reference: https://github.com/MCTheryn/item-magent/blob/main/docs/configuration.md
 #
 # Quick start
 #   • Hold a magnet in your MAIN hand to pull nearby dropped items (line-of-sight).
@@ -39,9 +39,20 @@ settings:
   # Default: 0.4
   pull-step-blocks: 0.4
 
-  # When an item is this close (blocks), vanilla pickup runs.
+  # When an item is this close (blocks), it is collected into inventory.
+  # With vertical-reach-blocks > 0, horizontal and vertical distance are checked separately.
   # Default: 1.5
   pickup-distance: 1.5
+
+  # Max blocks above/below the player (feet) to detect and pull items, using horizontal
+  # tier radius for X/Z. Set to 0 to use legacy 3D sphere distance instead.
+  # Default: 2
+  vertical-reach-blocks: 2
+
+  # How items move when Y differs from the player:
+  # DIRECT = straight line with line-of-sight (can fail on ledges)
+  # HORIZONTAL_FIRST = slide on X/Z first, then adjust Y (default)
+  vertical-pull-mode: HORIZONTAL_FIRST
 
   # If true, sneaking while holding the magnet pauses pulling.
   # Default: true
@@ -139,10 +150,14 @@ metrics:
   # Default: 31998
   bstats-plugin-id: 31998
 
-  # When to check hangar.papermc.io for new versions and notify admins on join.
+  # When to check GitHub releases for new versions and notify admins.
   # Options: ALWAYS | ON_STARTUP | DISABLED
   # Default: ON_STARTUP
   update-check: ON_STARTUP
+
+  # Link shown in update notifications (in-game click + console banner).
+  # Default: GitHub releases latest
+  update-download-url: "https://github.com/MCTheryn/item-magent/releases/latest"
 
   # Include blocked-pull reason charts (session totals only).
   # Default: true

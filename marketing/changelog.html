@@ -1,0 +1,28 @@
+<h2>1.6.6 — 2026-06-15</h2>
+
+<h3>Added</h3>
+<ul>
+  <li><strong>Update checker improvements</strong> — prominent console banner on boot when a newer GitHub release exists; notifies online admins when the async check completes</li>
+  <li><strong>Clickable update link</strong> — in-game [Download] opens configured URL (default GitHub releases)</li>
+  <li><strong>/itemmagnet version</strong> — shows pending update and download link for admins</li>
+  <li><strong>metrics.update-download-url</strong> — configurable download link</li>
+</ul>
+
+<h3>Changed</h3>
+<ul>
+  <li><strong>Semver comparison</strong> — correct version ordering (e.g. 1.6.10 &gt; 1.6.9)</li>
+  <li><strong>Hot reload</strong> — update-check settings apply on /itemmagnet reload</li>
+  <li><strong>URLs</strong> — GitHub repo moved to MCTheryn/item-magent; product page theryn.org/itemmagnet</li>
+</ul>
+
+<h3>Fixed (since 1.6.0)</h3>
+<ul>
+  <li>Stuck items near ledges and items stopping short of the player</li>
+  <li>Vertical Y-level pull (vertical-reach-blocks, vertical-pull-mode)</li>
+  <li>WorldGuard region blacklist iteration crash</li>
+  <li>/itemmagnet reload scheduler crash</li>
+  <li>WorldGuard ITEM_PICKUP reflection errors</li>
+  <li>Smaller release JAR (~330 KB) via Paper libraries for JDBC</li>
+</ul>
+
+<p><a href="https://github.com/MCTheryn/item-magent/blob/main/CHANGELOG.md">Full changelog on GitHub</a></p>

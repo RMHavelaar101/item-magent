@@ -16,24 +16,32 @@ public final class NearbyExperienceScanner {
     }
 
     public static List<ExperienceOrb> findExperienceOrbs(Player player, double radius) {
+        return findExperienceOrbs(player, radius, 0);
+    }
+
+    public static List<ExperienceOrb> findExperienceOrbs(
+            Player player,
+            double horizontalRadius,
+            double verticalReachBlocks
+    ) {
         World world = player.getWorld();
         Location center = player.getLocation();
-        double searchRadius = Math.max(0.5, radius);
+        double horizontalSearch = Math.max(0.5, horizontalRadius);
+        double verticalSearch = MagnetReach.effectiveVerticalSearch(horizontalRadius, verticalReachBlocks);
         Collection<Entity> entities = world.getNearbyEntities(
                 center,
-                searchRadius,
-                searchRadius,
-                searchRadius,
+                horizontalSearch,
+                verticalSearch,
+                horizontalSearch,
                 entity -> entity instanceof ExperienceOrb
         );
-        double radiusSquared = radius * radius;
         List<ExperienceOrb> orbs = new ArrayList<>();
         for (Entity entity : entities) {
             ExperienceOrb orb = (ExperienceOrb) entity;
             if (!orb.isValid() || orb.isDead() || orb.getExperience() <= 0) {
                 continue;
             }
-            if (orb.getLocation().distanceSquared(center) > radiusSquared) {
+            if (!MagnetReach.isWithinPullRange(center, orb.getLocation(), horizontalRadius, verticalReachBlocks)) {
                 continue;
             }
             orbs.add(orb);

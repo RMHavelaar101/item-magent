@@ -99,6 +99,10 @@ public final class ConfigManager {
         int maxItems = settings != null ? settings.getInt("max-items-per-tick", 10) : 10;
         double pullStep = settings != null ? settings.getDouble("pull-step-blocks", 0.4) : 0.4;
         double pickupDistance = settings != null ? settings.getDouble("pickup-distance", 1.5) : 1.5;
+        double verticalReach = settings != null ? settings.getDouble("vertical-reach-blocks", 2.0) : 2.0;
+        VerticalPullMode verticalPullMode = VerticalPullMode.parse(
+                settings != null ? settings.getString("vertical-pull-mode", "HORIZONTAL_FIRST") : "HORIZONTAL_FIRST"
+        );
         boolean sneakDisable = settings == null || settings.getBoolean("sneak-to-disable", true);
         double fuelRadius = settings != null ? settings.getDouble("fuel-radius", 3) : 3;
         boolean fuelUseEffectiveRadius = settings == null || settings.getBoolean("fuel-use-effective-radius", true);
@@ -154,6 +158,8 @@ public final class ConfigManager {
                 maxItems,
                 pullStep,
                 pickupDistance,
+                verticalReach,
+                verticalPullMode,
                 sneakDisable,
                 fuelRadius,
                 fuelUseEffectiveRadius,
@@ -274,7 +280,7 @@ public final class ConfigManager {
 
     private MetricsConfig parseMetrics(ConfigurationSection section) {
         if (section == null) {
-            return new MetricsConfig(true, 0, UpdateCheckMode.ON_STARTUP, true);
+            return new MetricsConfig(true, 0, UpdateCheckMode.ON_STARTUP, true, null);
         }
         UpdateCheckMode mode = UpdateCheckMode.ON_STARTUP;
         try {
@@ -285,7 +291,8 @@ public final class ConfigManager {
                 section.getBoolean("bstats-enabled", true),
                 section.getInt("bstats-plugin-id", 0),
                 mode,
-                section.getBoolean("bstats-block-reasons", true)
+                section.getBoolean("bstats-block-reasons", true),
+                section.getString("update-download-url")
         );
     }
 

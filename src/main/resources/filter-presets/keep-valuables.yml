@@ -13,7 +13,7 @@ materials:
   - DIORITE
   - GRANITE
   - TUFF
-  - DEEPSLATE_COBBLESTONE
+  - COBBLED_DEEPSLATE
 tags:
   - minecraft:logs
   - minecraft:planks

@@ -33,4 +33,14 @@ class MaterialFilterResolverTest {
         assertFalse(rule.blocks(Material.DIAMOND));
         assertTrue(rule.getTags().contains("minecraft:not_a_real_tag"));
     }
+
+    @Test
+    void resolvesMaterialAlias() {
+        MaterialFilterRule rule = MaterialFilterResolver.resolve(
+                List.of("DEEPSLATE_COBBLESTONE"),
+                List.of(),
+                Logger.getLogger("test")
+        );
+        assertTrue(rule.blocks(Material.COBBLED_DEEPSLATE));
+    }
 }

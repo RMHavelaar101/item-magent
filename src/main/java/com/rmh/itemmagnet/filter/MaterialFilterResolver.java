@@ -9,10 +9,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
 public final class MaterialFilterResolver {
+
+    private static final Map<String, String> MATERIAL_ALIASES = Map.of(
+            "DEEPSLATE_COBBLESTONE", "COBBLED_DEEPSLATE"
+    );
 
     private MaterialFilterResolver() {
     }
@@ -21,7 +26,7 @@ public final class MaterialFilterResolver {
         List<Material> materials = new ArrayList<>();
         if (materialNames != null) {
             for (String entry : materialNames) {
-                Material material = Material.matchMaterial(entry);
+                Material material = matchMaterial(entry);
                 if (material != null) {
                     materials.add(material);
                 } else if (logger != null) {
@@ -87,5 +92,21 @@ public final class MaterialFilterResolver {
             return tagName.toLowerCase(Locale.ROOT);
         }
         return "minecraft:" + tagName.toLowerCase(Locale.ROOT);
+    }
+
+    private static Material matchMaterial(String entry) {
+        if (entry == null || entry.isBlank()) {
+            return null;
+        }
+        String normalized = entry.toUpperCase(Locale.ROOT);
+        Material material = Material.matchMaterial(normalized);
+        if (material != null) {
+            return material;
+        }
+        String alias = MATERIAL_ALIASES.get(normalized);
+        if (alias == null) {
+            return null;
+        }
+        return Material.matchMaterial(alias);
     }
 }

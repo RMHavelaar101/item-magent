@@ -88,6 +88,9 @@ public final class LandsHook implements ProtectionHook {
         } catch (ReflectiveOperationException exception) {
             plugin.getLogger().warning("Lands evaluation failed: " + exception.getMessage());
             return false;
+        } catch (RuntimeException exception) {
+            plugin.getLogger().warning("Lands evaluation failed: " + exception.getMessage());
+            return false;
         }
     }
 

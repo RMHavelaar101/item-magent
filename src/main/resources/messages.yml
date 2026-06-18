@@ -38,7 +38,9 @@ command:
   version: "{prefix}&7ItemMagnet &fv{version}&7 | Paper &f{paper}"
   version-hooks: "{prefix}&7Hooks: &f{hooks}"
   invalid-charge: "{prefix}&cInvalid charge amount: &f{value}"
-  update-available: "{prefix}&eA new version is available: &f{version}&e — &f{url}"
+  update-available: "{prefix}&eA new version is available: &f{version}&e — "
+  update-available-link: "&e[Download]"
+  version-update-available: "{prefix}&eUpdate available: &f{latest}&7 (running &f{current}&7) — "
   help-header: "{prefix}&7--- ItemMagnet Commands ---"
   help-reload: "&7/reload &f— Reload config and messages"
   help-version: "&7/version &f— Plugin version and hook status"
@@ -118,5 +120,5 @@ filter:
 startup:
   line-1: "Thanks for using ItemMagnet v{version}!"
   line-2: "Website: {website}"
-  line-3: "Enjoying it? Please leave a review on Hangar or SpigotMC."
+  line-3: "Enjoying it? Star the project on GitHub or visit our website."
   line-4: "Disable this message: /itemmagnet startup-message off"

@@ -2,6 +2,7 @@ package com.rmh.itemmagnet.metrics;
 
 import com.rmh.itemmagnet.ItemMagnetPlugin;
 import com.rmh.itemmagnet.util.PluginCompat;
+import com.rmh.itemmagnet.util.PluginUrls;
 import com.rmh.itemmagnet.util.TextUtil;
 
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.Map;
 public final class StartupMessageService {
 
     private static final String CONFIG_PATH = "startup-message.enabled";
-    private static final String WEBSITE = "https://itemmagnet.theryn.org";
 
     private final ItemMagnetPlugin plugin;
 
@@ -34,7 +34,7 @@ public final class StartupMessageService {
 
         Map<String, String> placeholders = Map.of(
                 "version", PluginCompat.getVersion(plugin),
-                "website", WEBSITE
+                "website", PluginUrls.WEBSITE
         );
 
         List<String> lines = plugin.getConfigManager().getMessagesConfig().getOrderedLines("startup.line-");
@@ -42,7 +42,7 @@ public final class StartupMessageService {
             lines = List.of(
                     "Thanks for using ItemMagnet v{version}!",
                     "Website: {website}",
-                    "Enjoying it? Please leave a review on Hangar or SpigotMC.",
+                    "Enjoying it? Star the project on GitHub or visit our website.",
                     "Disable this message: /itemmagnet startup-message off"
             );
         }

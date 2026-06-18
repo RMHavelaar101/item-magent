@@ -46,3 +46,5 @@ metrics:
 ```
 
 Or remove `itemmagnet.updates` permission from staff.
+
+When an update is available, the server console logs a banner on boot with current vs latest version, GitHub download link, and product page. Admins with `itemmagnet.updates` also get an in-game message with a clickable download link. Use `/itemmagnet version` to check manually.

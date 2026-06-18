@@ -1,0 +1,129 @@
+[HEADING=1]ItemMagnet Documentation[/HEADING]
+
+[B]Version:[/B] 1.6.6 · [B]Paper:[/B] 1.21.1+ · [B]Java:[/B] 21+
+
+[URL='https://www.theryn.org/itemmagnet']Product page[/URL] · [URL='https://github.com/MCTheryn/item-magent/tree/main/docs']Full docs on GitHub[/URL]
+
+[HEADING=2]Installation[/HEADING]
+[LIST=1]
+[*]Download [URL='https://github.com/MCTheryn/item-magent/releases/latest']ItemMagnet-1.6.6.jar[/URL]
+[*]Place the JAR in your server's [CODE]plugins/[/CODE] folder
+[*]Restart the server (Paper 1.21.1 or newer, Java 21+)
+[*]On first run, ItemMagnet creates [CODE]plugins/ItemMagnet/config.yml[/CODE] and [CODE]messages.yml[/CODE]
+[*]Give yourself a magnet: [CODE]/itemmagnet give YourName fragment 500[/CODE]
+[*]Tune settings via [CODE]/itemmagnet config[/CODE] or edit [CODE]config.yml[/CODE], then [CODE]/itemmagnet reload[/CODE]
+[/LIST]
+
+[HEADING=2]Quick start for players[/HEADING]
+[LIST]
+[*]Hold a magnet in your [B]main hand[/B] (unless hold-mode is changed in config)
+[*]Drop items nearby — they pull toward you with visible motion (line-of-sight physics)
+[*]Put redstone dust or a block in either hand; [B]sneak + right-click[/B] to transfer fuel
+[*]Redstone blocks add extra charge and a temporary radius boost (power surge)
+[*]Use [CODE]/itemmagnet filter[/CODE] to set personal item blacklist rules
+[/LIST]
+
+[HEADING=2]Commands[/HEADING]
+Base command: [CODE]/itemmagnet[/CODE] — aliases [CODE]/im[/CODE], [CODE]/magnet[/CODE]
+
+[TABLE]
+[TR][TH]Command[/TH][TH]Permission[/TH][TH]Description[/TH][/TR]
+[TR][TD]/itemmagnet[/TD][TD]—[/TD][TD]Show help (filtered by permission)[/TD][/TR]
+[TR][TD]/itemmagnet reload[/TD][TD]itemmagnet.reload[/TD][TD]Hot-reload config and messages[/TD][/TR]
+[TR][TD]/itemmagnet config[/TD][TD]itemmagnet.config[/TD][TD]Open in-game config editor[/TD][/TR]
+[TR][TD]/itemmagnet filter[/TD][TD]itemmagnet.filter[/TD][TD]Personal item filter GUI[/TD][/TR]
+[TR][TD]/itemmagnet filter clear[/TD][TD]itemmagnet.filter[/TD][TD]Clear personal filter rules[/TD][/TR]
+[TR][TD]/itemmagnet give <player> <tier|all> [charge][/TD][TD]itemmagnet.give[/TD][TD]Give a resonator[/TD][/TR]
+[TR][TD]/itemmagnet unlock <player> <tier|all>[/TD][TD]itemmagnet.unlock[/TD][TD]Unlock a tier recipe[/TD][/TR]
+[TR][TD]/itemmagnet debug[/TD][TD]itemmagnet.debug[/TD][TD]Stats for your active magnet[/TD][/TR]
+[TR][TD]/itemmagnet version[/TD][TD]itemmagnet.admin[/TD][TD]Version, hook status, update info[/TD][/TR]
+[TR][TD]/itemmagnet import ...[/TD][TD]varies[/TD][TD]Bulk merge blacklist/filter/preset[/TD][/TR]
+[TR][TD]/itemmagnet startup-message[/TD][TD]itemmagnet.admin[/TD][TD]Toggle console thank-you message[/TD][/TR]
+[/TABLE]
+
+[HEADING=2]Key permissions[/HEADING]
+[TABLE]
+[TR][TH]Node[/TH][TH]Default[/TH][TH]Purpose[/TH][/TR]
+[TR][TD]itemmagnet.use[/TD][TD]true[/TD][TD]Use magnets[/TD][/TR]
+[TR][TD]itemmagnet.filter[/TD][TD]true[/TD][TD]Personal filter GUI, clear, import[/TD][/TR]
+[TR][TD]itemmagnet.use.<tier>[/TD][TD]true[/TD][TD]Per-tier use (fragment, survey, anchor)[/TD][/TR]
+[TR][TD]itemmagnet.wilderness[/TD][TD]op[/TD][TD]Use in Lands/Towny wilderness[/TD][/TR]
+[TR][TD]itemmagnet.admin[/TD][TD]op[/TD][TD]Reload, give, unlock, config, version[/TD][/TR]
+[TR][TD]itemmagnet.updates[/TD][TD]op[/TD][TD]In-game update notifications[/TD][/TR]
+[TR][TD]itemmagnet.bypass.lands[/TD][TD]false[/TD][TD]Skip Lands checks[/TD][/TR]
+[TR][TD]itemmagnet.bypass.regions[/TD][TD]false[/TD][TD]Skip WorldGuard region lists[/TD][/TR]
+[/TABLE]
+
+Granular [CODE]itemmagnet.config.*[/CODE] nodes control access to individual config GUI sections and fields.
+
+[HEADING=2]Configuration overview[/HEADING]
+
+[HEADING=3]settings[/HEADING]
+Core magnet behaviour: scan interval, pull step size, hold mode, vertical reach, pickup distance, item blacklist/tags, XP pull, sounds.
+
+[HEADING=3]tiers[/HEADING]
+Define Fragment, Survey, Anchor (or custom tiers): material, display name, lore, radius, drain, recipes, unlock gates, tier filters.
+
+[HEADING=3]fuel[/HEADING]
+Redstone dust and block charge values, boost duration, radius bonus per boost level.
+
+[HEADING=3]integrations[/HEADING]
+Optional hooks for Lands, WorldGuard, Towny, GriefPrevention, Residence, PlotSquared, SuperiorSkyblock2, CMI, Quests. Each integration is independently enabled.
+
+[HEADING=3]player-filter[/HEADING]
+Default preset for new players; storage backend [CODE]YAML[/CODE], [CODE]SQLITE[/CODE], or [CODE]MYSQL[/CODE].
+
+[HEADING=3]metrics[/HEADING]
+[LIST]
+[*][CODE]update-check[/CODE] — [CODE]ON_STARTUP[/CODE], [CODE]ALWAYS[/CODE], or [CODE]DISABLED[/CODE]
+[*][CODE]update-download-url[/CODE] — link shown in update notifications (default GitHub releases)
+[*]bStats plugin ID and block-reason charts
+[/LIST]
+
+[HEADING=3]preset[/HEADING]
+Merge a built-in server preset on load: [CODE]none[/CODE], [CODE]theryn[/CODE], [CODE]skyblock[/CODE], [CODE]vanilla-survival[/CODE], [CODE]hub-spawn[/CODE], [CODE]testing[/CODE].
+
+[HEADING=2]Integrations[/HEADING]
+All integrations are optional soft dependencies. ItemMagnet runs standalone on Paper with no extra plugins required.
+
+[LIST]
+[*][B]Lands[/B] — wilderness, owner, member, and flag-based modes
+[*][B]WorldGuard[/B] — region whitelist/blacklist and item-pickup flag
+[*][B]Towny[/B] — town plot protection
+[*][B]GriefPrevention[/B] — claim respect
+[*][B]Residence[/B] — residence claim and itempickup flags
+[*][B]PlotSquared[/B] — plot membership checks
+[*][B]SuperiorSkyblock2[/B] — island permission hook
+[*][B]CMI[/B] — stat/rank unlock gates
+[*][B]LuckPerms[/B] — LP_GROUP unlock type
+[*][B]mcMMO[/B] — skill level unlock gates
+[*][B]Quests[/B] — quest-complete tier unlocks
+[*][B]PlaceholderAPI[/B] — charge, radius, tier, boost, filter placeholders
+[/LIST]
+
+[HEADING=2]FAQ[/HEADING]
+
+[HEADING=3]Does the magnet pull items through walls?[/HEADING]
+No. ItemMagnet uses stepped movement with line-of-sight checks. Items stop when a solid block blocks the path.
+
+[HEADING=3]Does it work without Lands or WorldGuard?[/HEADING]
+Yes. Both are optional. With integrations disabled, only permission checks apply.
+
+[HEADING=3]How do I fuel the magnet?[/HEADING]
+[LIST=1]
+[*]Shift + right-click with redstone dust or block in either hand
+[*]Auto-absorb — drop redstone nearby while holding a charged magnet
+[/LIST]
+
+[HEADING=3]How do I disable update notifications?[/HEADING]
+Set [CODE]metrics.update-check: DISABLED[/CODE] in config, or remove [CODE]itemmagnet.updates[/CODE] from staff.
+
+[HEADING=2]Support[/HEADING]
+[LIST]
+[*][URL='https://github.com/MCTheryn/item-magent/issues']Report a bug on GitHub[/URL]
+[*][URL='https://www.theryn.org/itemmagnet']ItemMagnet product page[/URL]
+[/LIST]
+
+Include your Paper version, Java version, ItemMagnet version, and steps to reproduce when reporting issues.
+
+MIT License.

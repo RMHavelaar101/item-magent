@@ -8,7 +8,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.util.Iterator;
 import java.util.List;
 
 public final class WorldGuardHook implements ProtectionHook {
@@ -22,6 +24,7 @@ public final class WorldGuardHook implements ProtectionHook {
     private Method wrapPlayerMethod;
     private Method testStateOnQueryMethod;
     private Method getIdMethod;
+    private Class<?> stateFlagClass;
 
     public WorldGuardHook(ItemMagnetPlugin plugin) {
         this.plugin = plugin;
@@ -54,8 +57,8 @@ public final class WorldGuardHook implements ProtectionHook {
             getApplicableRegionsMethod = regionQueryClass.getMethod("getApplicableRegions", weLocationClass);
 
             Class<?> localPlayerClass = Class.forName("com.sk89q.worldguard.LocalPlayer");
-            Class<?> stateFlagClass = Class.forName("com.sk89q.worldguard.protection.flags.StateFlag");
-            Class<?> stateFlagArrayClass = java.lang.reflect.Array.newInstance(stateFlagClass, 0).getClass();
+            stateFlagClass = Class.forName("com.sk89q.worldguard.protection.flags.StateFlag");
+            Class<?> stateFlagArrayClass = Array.newInstance(stateFlagClass, 0).getClass();
             testStateOnQueryMethod = regionQueryClass.getMethod(
                     "testState",
                     weLocationClass,
@@ -99,7 +102,7 @@ public final class WorldGuardHook implements ProtectionHook {
                             regionQuery,
                             wgLocation,
                             localPlayer,
-                            new Object[] { itemPickupFlag }
+                            createStateFlagArray(itemPickupFlag)
                     )) {
                 return false;
             }
@@ -127,17 +130,53 @@ public final class WorldGuardHook implements ProtectionHook {
         } catch (ReflectiveOperationException exception) {
             plugin.getLogger().warning("WorldGuard evaluation failed: " + exception.getMessage());
             return false;
+        } catch (RuntimeException exception) {
+            plugin.getLogger().warning("WorldGuard evaluation failed: " + exception.getMessage());
+            return false;
         }
     }
 
+    private Object createStateFlagArray(Object flag) {
+        Object array = Array.newInstance(stateFlagClass, 1);
+        Array.set(array, 0, flag);
+        return array;
+    }
+
     private boolean isInListedRegion(Object regions, List<String> regionList) throws ReflectiveOperationException {
-        Iterable<?> iterable = (Iterable<?>) regions.getClass().getMethod("iterator").invoke(regions);
-        for (Object region : iterable) {
-            String id = (String) getIdMethod.invoke(region);
-            for (String configured : regionList) {
-                if (id.equalsIgnoreCase(configured)) {
+        if (regions instanceof Iterable<?> iterable) {
+            for (Object region : iterable) {
+                if (regionMatches(region, regionList)) {
                     return true;
                 }
+            }
+            return false;
+        }
+
+        Method getRegionsMethod = regions.getClass().getMethod("getRegions");
+        Object regionCollection = getRegionsMethod.invoke(regions);
+        if (regionCollection instanceof Iterable<?> iterable) {
+            for (Object region : iterable) {
+                if (regionMatches(region, regionList)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        Iterator<?> iterator = (Iterator<?>) regions.getClass().getMethod("iterator").invoke(regions);
+        while (iterator.hasNext()) {
+            if (regionMatches(iterator.next(), regionList)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean regionMatches(Object region, List<String> regionList) throws ReflectiveOperationException {
+        String id = (String) getIdMethod.invoke(region);
+        for (String configured : regionList) {
+            if (id.equalsIgnoreCase(configured)) {
+                return true;
             }
         }
         return false;

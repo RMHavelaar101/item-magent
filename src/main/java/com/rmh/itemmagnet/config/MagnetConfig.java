@@ -16,6 +16,8 @@ public final class MagnetConfig {
     private final int maxItemsPerTick;
     private final double pullStepBlocks;
     private final double pickupDistance;
+    private final double verticalReachBlocks;
+    private final VerticalPullMode verticalPullMode;
     private final boolean sneakToDisable;
     private final double fuelRadius;
     private final boolean fuelUseEffectiveRadius;
@@ -56,6 +58,8 @@ public final class MagnetConfig {
             int maxItemsPerTick,
             double pullStepBlocks,
             double pickupDistance,
+            double verticalReachBlocks,
+            VerticalPullMode verticalPullMode,
             boolean sneakToDisable,
             double fuelRadius,
             boolean fuelUseEffectiveRadius,
@@ -95,6 +99,8 @@ public final class MagnetConfig {
         this.maxItemsPerTick = maxItemsPerTick;
         this.pullStepBlocks = pullStepBlocks;
         this.pickupDistance = pickupDistance;
+        this.verticalReachBlocks = verticalReachBlocks;
+        this.verticalPullMode = verticalPullMode;
         this.sneakToDisable = sneakToDisable;
         this.fuelRadius = fuelRadius;
         this.fuelUseEffectiveRadius = fuelUseEffectiveRadius;
@@ -148,6 +154,14 @@ public final class MagnetConfig {
 
     public double getPickupDistance() {
         return pickupDistance;
+    }
+
+    public double getVerticalReachBlocks() {
+        return verticalReachBlocks;
+    }
+
+    public VerticalPullMode getVerticalPullMode() {
+        return verticalPullMode;
     }
 
     public boolean isSneakToDisable() {

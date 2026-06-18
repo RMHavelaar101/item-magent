@@ -5,8 +5,9 @@ import com.rmh.itemmagnet.config.MagnetConfig;
 import com.rmh.itemmagnet.config.ProximityLoreConfig;
 import com.rmh.itemmagnet.config.ProximityLoreZone;
 import com.rmh.itemmagnet.util.TextUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,11 +16,12 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-public final class ProximityLoreService extends BukkitRunnable {
+public final class ProximityLoreService {
 
     private final ItemMagnetPlugin plugin;
     private final MagnetLocator magnetLocator;
     private final Map<String, Long> cooldowns = new HashMap<>();
+    private BukkitTask task;
 
     public ProximityLoreService(ItemMagnetPlugin plugin, MagnetLocator magnetLocator) {
         this.plugin = plugin;
@@ -27,22 +29,29 @@ public final class ProximityLoreService extends BukkitRunnable {
     }
 
     public void start() {
+        stop();
         ProximityLoreConfig config = plugin.getConfigManager().getMagnetConfig().getProximityLore();
         if (!config.isEnabled()) {
             return;
         }
         int interval = Math.max(1, config.getScanIntervalTicks());
-        runTaskTimer(plugin, interval, interval);
+        task = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, interval, interval);
     }
 
     public void restart() {
-        cancel();
+        stop();
         cooldowns.clear();
         start();
     }
 
-    @Override
-    public void run() {
+    public void stop() {
+        if (task != null) {
+            task.cancel();
+            task = null;
+        }
+    }
+
+    private void tick() {
         ProximityLoreConfig config = plugin.getConfigManager().getMagnetConfig().getProximityLore();
         if (!config.isEnabled() || config.getZones().isEmpty()) {
             return;

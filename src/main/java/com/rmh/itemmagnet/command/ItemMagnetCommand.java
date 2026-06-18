@@ -253,6 +253,13 @@ public final class ItemMagnetCommand implements CommandExecutor, TabCompleter {
         placeholders.put("hooks", integrationStatusService.formatHookStatusLine());
         sender.sendMessage(format(sender, "command.version", placeholders));
         sender.sendMessage(format(sender, "command.version-hooks", placeholders));
+        if (plugin.getUpdateChecker().isUpdateAvailable()) {
+            Map<String, String> updatePlaceholders = new HashMap<>();
+            updatePlaceholders.put("current", PluginCompat.getVersion(plugin));
+            String latest = plugin.getUpdateChecker().getLatestVersion();
+            updatePlaceholders.put("latest", latest == null ? "unknown" : latest);
+            sender.sendMessage(plugin.getUpdateChecker().buildUpdateAvailableMessage(updatePlaceholders));
+        }
         return true;
     }
 
@@ -462,7 +469,7 @@ public final class ItemMagnetCommand implements CommandExecutor, TabCompleter {
         double radius = RadiusCalculator.calculateEffectiveRadius(config, tier, magnet, player, tick);
         PullEligibilityService eligibility = plugin.getPullEligibilityService();
 
-        List<Item> nearby = NearbyItemScanner.findItems(player, radius).stream()
+        List<Item> nearby = NearbyItemScanner.findItems(player, radius, config.getVerticalReachBlocks()).stream()
                 .sorted(Comparator.comparingDouble(item -> item.getLocation().distanceSquared(player.getLocation())))
                 .limit(5)
                 .toList();

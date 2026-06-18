@@ -60,7 +60,6 @@ public final class MagnetListener implements Listener {
             );
         }
         unlockService.discoverRecipesOnJoin(event.getPlayer());
-        plugin.getUpdateChecker().notifyPlayer(event.getPlayer());
     }
 
     @EventHandler
